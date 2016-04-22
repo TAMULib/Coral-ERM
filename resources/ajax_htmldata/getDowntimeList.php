@@ -21,7 +21,13 @@ function generateDowntimeHTML($downtime,$associatedEntities=null) {
 	  		<dd>{$downtime->startDate}</dd>
 
 	  		<dt>Downtime Resolved:</dt> 
-	  		<dd>{$downtime->endDate}</dd>";
+	  		<dd>";
+	if ($downtime->endDate != null) {
+		$html .= $downtime->endDate;
+	} else {
+		$html .= "<a class=\"thickbox\" href=\"ajax_forms.php?action=getResolveDowntimeForm&height=363&width=345&modal=true&downtimeID={$downtime->downtimeID}\">Resolve</a>";
+	}
+	$html .= '</dd>';
 
 	if($downtime->subjectText) {
 		$html .= "
@@ -74,12 +80,14 @@ $resourceDowntimes = $resource->getDowntime($archivedFlag);
 echo '<h3 class="text-center">Resources</h3>';
 if(count($resourceDowntimes) > 0) {
 	foreach ($resourceDowntimes as $downtime) {
+/*
 		$associatedEntities = array();
 		if ($associatedResources = $downtime->getAssociatedResources()) {
 			foreach ($associatedResources as $resource) {
 				$associatedEntities[] = array("name"=>$resource->titleText,"id"=>$resource->resourceID,"entityType"=>2);
 			}
 		} 
+*/
 		echo generateDowntimeHTML($downtime,$associatedEntities);
 	}
 } else {
