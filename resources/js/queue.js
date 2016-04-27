@@ -15,36 +15,44 @@
 **************************************************************************************************************************
 */
 
- $(document).ready(function(){
+$(document).ready(function(){
 
-
-	 updateSavedRequestsNumber(); 
-	 updateOutstandingTasksNumber();
-	 updateSubmittedRequestsNumber();
+	updateSavedRequestsNumber(); 
+	updateOutstandingTasksNumber();
+	updateSubmittedRequestsNumber();
       
-
-      	 updateOutstandingTasks();
+	updateOutstandingTasks();
       
- 	 $('.deleteRequest').live('click', function () {
- 		  deleteRequest($(this).attr("id"));
- 	 });
+ 	$('.deleteRequest').live('click', function () {
+ 		deleteRequest($(this).attr("id"));
+ 	});
 
  
- 	 $("#SubmittedRequests").click(function () {
- 		  updateSubmittedRequests();
-	 });
+	$("#SubmittedRequests").click(function () {
+		updateSubmittedRequests();
+	});
 
- 	 $("#OutstandingTasks").click(function () {
- 		  updateOutstandingTasks();
-	 });
+	$("#OutstandingTasks").click(function () {
+		updateOutstandingTasks();
+	});
 
- 	 $("#SavedRequests").click(function () {
- 		  updateSavedRequests();
-	 });	 
-	 
- });
- 
+	$("#SavedRequests").click(function () {
+		updateSavedRequests();
+	});
 
+	$(".mark-complete").live("click", function(e) {
+		e.preventDefault();
+		$.ajax({
+			type:       "GET",
+			url:        "ajax_processing.php",
+			cache:      false,
+			data:       "action=markComplete&resourceStepID=" + $(this).attr("href"),
+			success:    function(html) {
+				updateOutstandingTasks();
+			}
+		});
+	});
+});
 
  function updateSavedRequests(){
  
