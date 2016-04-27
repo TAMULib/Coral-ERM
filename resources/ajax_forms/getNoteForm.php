@@ -66,6 +66,62 @@
 
 		</form>
 		</div>
+<?php
+$showNotes = (isset($_GET['shownotes']) && $_GET['shownotes']) ? true:false;
+if ($showNotes && $resourceID) {
+	$resource = new Resource(new NamedArguments(array('primaryKey' => $resourceID)));
+	//get notes for this tab
+	$sanitizedInstance = array();
+	$noteArray = array();
 
+	foreach ($resource->getNotes('Product') as $instance) {
+		foreach (array_keys($instance->attributeNames) as $attributeName) {
+			$sanitizedInstance[$attributeName] = $instance->$attributeName;
+		}
+
+		$sanitizedInstance[$instance->primaryKeyName] = $instance->primaryKey;
+
+		$updateUser = new User(new NamedArguments(array('primaryKey' => $instance->updateLoginID)));
+
+		//in case this user doesn't have a first / last name set up
+		if (($updateUser->firstName != '') || ($updateUser->lastName != '')){
+			$sanitizedInstance['updateUser'] = $updateUser->firstName . " " . $updateUser->lastName;
+		}else{
+			$sanitizedInstance['updateUser'] = $instance->updateLoginID;
+		}
+
+		$noteType = new NoteType(new NamedArguments(array('primaryKey' => $instance->noteTypeID)));
+
+		if (!$noteType->shortName){
+			$sanitizedInstance['noteTypeName'] = 'General Note';
+		}else{
+			$sanitizedInstance['noteTypeName'] = $noteType->shortName;
+		}
+
+		array_push($noteArray, $sanitizedInstance);
+	}
+
+	if (count($noteArray) > 0){
+?>
+		<table class='linedFormTable'>
+<?php 
+		foreach ($noteArray as $resourceNote) {
+?>
+			<tr>
+				<td style="width:25%">
+<?php echo $resourceNote['noteTypeName']; ?>
+				</td>
+				<td><?php echo nl2br($resourceNote['noteText']); ?><br /><i><?php echo format_date($resourceNote['updateDate']) . _(" by ") . $resourceNote['updateUser']; ?></i></td>
+			</tr>
+<?php 
+		}
+?>
+		</table>
+<?php
+	} else {
+		echo 'No notes';
+	}
+}
+?>
 		<script type="text/javascript" src="js/forms/resourceNoteForm.js?random=<?php echo rand(); ?>"></script>
 
