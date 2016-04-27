@@ -100,27 +100,31 @@ if ($showNotes && $resourceID) {
 
 		array_push($noteArray, $sanitizedInstance);
 	}
-
+?>
+		<div class="existing-notes">
+			<h3>Existing Notes</h3>
+<?php
 	if (count($noteArray) > 0){
 ?>
-		<table class='linedFormTable'>
+			<table class='linedFormTable'>
 <?php 
 		foreach ($noteArray as $resourceNote) {
 ?>
-			<tr>
-				<td style="width:25%">
+				<tr>
+					<td style="width:25%">
 <?php echo $resourceNote['noteTypeName']; ?>
-				</td>
-				<td><?php echo nl2br($resourceNote['noteText']); ?><br /><i><?php echo format_date($resourceNote['updateDate']) . _(" by ") . $resourceNote['updateUser']; ?></i></td>
-			</tr>
+					</td>
+					<td><?php echo nl2br($resourceNote['noteText']); ?><br /><i><?php echo format_date($resourceNote['updateDate']) . _(" by ") . $resourceNote['updateUser']; ?></i></td>
+				</tr>
 <?php 
 		}
 ?>
-		</table>
+			</table>
 <?php
 	} else {
 		echo 'No notes';
 	}
+	echo '</div>';
 }
 ?>
 		<script type="text/javascript" src="js/forms/resourceNoteForm.js?random=<?php echo rand(); ?>"></script>

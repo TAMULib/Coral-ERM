@@ -3279,3 +3279,12 @@ input#archiveInd {
 	margin-top: 0px !important;
 	overflow-x: hidden !important;
 }
+
+.existing-notes {
+	margin-top: 12px;
+}
+
+.existing-notes h3 {
+	margin: 8px 0;
+}
+
