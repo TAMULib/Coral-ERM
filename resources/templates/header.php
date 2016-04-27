@@ -176,7 +176,12 @@ $coralURL = $util->getCORALURL();
             <span><?php echo _("New Resource");?></span>
         </div>
     </a>
-
+    <a href='ajax_forms.php?action=getNewToDoForm&height=100&width=180&resourceID=&modal=true' class='thickbox' id="newToDoForm">
+        <div class="main-menu-link">
+            <img src="images/menu/icon-import.png" />
+            <span><?php echo _("Journal Maintenance");?></span>
+        </div>
+    </a>
     <a href='queue.php'>
         <div class="main-menu-link <?php if ($currentPage == 'queue.php') { echo "active"; } ?>">
             <img src="images/menu/icon-queue.png" />
