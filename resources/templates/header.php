@@ -114,7 +114,7 @@ $coralURL = $util->getCORALURL();
 
 <a href='index.php'><span class="menubtn<?php if ($currentPage == 'index.php') { echo " active"; } ?>" id="firstmenubtn"><?php echo _("Home");?></span></a><?php if ($user->isAdmin() || $user->canEdit()){ ?>
 <a href='ajax_forms.php?action=getNewResourceForm&height=503&width=775&resourceID=&modal=true' class='thickbox' id='newResourceForm'><span class="menubtn"><?php echo _("New Resource");?></span></a><!--
---><a href='queue.php'><span class="menubtn<?php if ($currentPage == 'queue.php') { echo " active"; } ?>"><?php echo _("My Queue");?></span></a><a href='import.php'><span class="menubtn<?php if ($currentPage == 'import.php') { echo " active"; } ?>"><?php echo _("Import");?></span></a><!--
+--><a href='ajax_forms.php?action=getNewToDoForm&height=100&width=180&resourceID=&modal=true' class='thickbox' id="newToDoForm"><span class="menubtn"><?php echo _("Journal Maintenance");?></span></a><a href='queue.php'><span class="menubtn<?php if ($currentPage == 'queue.php') { echo " active"; } ?>"><?php echo _("My Queue");?></span></a><a href='import.php'><span class="menubtn<?php if ($currentPage == 'import.php') { echo " active"; } ?>"><?php echo _("Import");?></span></a><!--
 --><?php if ($user->isAdmin()) { ?><a href='admin.php'><span class="menubtn<?php if ($currentPage == 'admin.php') { echo " active"; } ?>" id="lastmenubtn"><?php echo _("Admin");?></span></a><?php } ?>
 <?php } ?>
 
