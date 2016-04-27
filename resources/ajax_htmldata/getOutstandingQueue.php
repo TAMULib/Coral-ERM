@@ -20,6 +20,7 @@ foreach ($resourceGroups as $type => $resourceGroup) {
 				<th style='width:95px;'><?php echo _("Acquisition Type");?></th>
 				<th style='width:125px;'><?php echo _("Routing Step");?></th>
 				<th style='width:75px;'><?php echo _("Start Date");?></th>
+				<th><?php echo _("Completed");?></th>
 			</tr>
 
 <?php
@@ -48,8 +49,9 @@ foreach ($resourceGroups as $type => $resourceGroup) {
 <?php
 			$j=0;
 
-			if (count($taskArray) > 0){
-				foreach ($taskArray as $task){
+			if (count($taskArray) > 0) {
+				$eUser = new User(new NamedArguments(array('primaryKey' => $resource['endLoginID'])));
+				foreach ($taskArray as $task) {
 					if ($j > 0) {
 ?>
 			<tr>
@@ -66,11 +68,26 @@ foreach ($resourceGroups as $type => $resourceGroup) {
 					echo "
 				<td " . $classAdd . " " . $styleAdd . ">" . $task['stepName'] . "</td>
 				<td " . $classAdd . " " . $styleAdd . ">" . format_date($task['startDate']) . "</td>
+				<td " . $classAdd . " " . $styleAdd . ">";
+
+					if ($task['stepEndDate']) {
+						if (($eUser->firstName) || ($eUser->lastName)){
+							echo format_date($resourceStep->stepEndDate) . _(" by ") . $eUser->firstName . " " . $eUser->lastName;
+						}else{
+							echo format_date($task['stepEndDate']) . _(" by ") . $task['endLoginID'];
+						}
+					} else {
+						if (($user->isAdmin || $user->isInGroup($task['userGroupID'])) && $task['stepStartDate']) {
+							echo "<a href=\"{$task['resourceStepID']}\" class=\"markComplete\" id=\"task_{$task['resourceStepID']}\">"._("yes")."</a>";
+						}
+					}
+echo "			</td>
 			</tr>";
 					$j++;
 				}
 			} else {
 				echo "
+				<td " . $classAdd . ">&nbsp;</td>
 				<td " . $classAdd . ">&nbsp;</td>
 				<td " . $classAdd . ">&nbsp;</td>
 			</tr>";
@@ -83,4 +100,19 @@ foreach ($resourceGroups as $type => $resourceGroup) {
 	</div>';
 }
 ?>
+<script type="text/javascript">
+$(document).ready(function() {
+	$(".markComplete").live("click", function(e) {
+		e.preventDefault();
+		$.ajax({
+			type:       "GET",
+			url:        "ajax_processing.php",
+			cache:      false,
+			data:       "action=markComplete&resourceStepID=" + $(this).attr("href"),
+			success:    function(html) {
+			}
+		});
+	});
+});
+</script>
 
