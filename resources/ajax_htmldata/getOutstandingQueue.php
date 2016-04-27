@@ -80,7 +80,7 @@ foreach ($resourceGroups as $type=>$resourceGroup) {
 						}
 					} else {
 						if (($user->isAdmin || $user->isInGroup($task['userGroupID'])) && !$task['reviewDate']) {
-							echo "<a href=\"{$task['resourceStepID']}\" class=\"mark-reviewed\" id=\"task_{$task['resourceStepID']}\">"._("reviewed")."</a>";
+							echo "<a href=\"{$task['resourceStepID']}\" class=\"mark-reviewed\" id=\"task_{$task['resourceStepID']}\">"._("yes")."</a>";
 						}
 					}
 echo "			</td>
