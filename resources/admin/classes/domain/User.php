@@ -151,7 +151,9 @@ class User extends DatabaseObject {
 
 
 	//returns array of resource arrays that are in the outstanding queue for this user
-	public function getOutstandingTasks($type="current"){
+	public function getOutstandingTasks($type="current") {
+		$config = new Configuration();
+		$monthsIntoFuture = (is_numeric($config->settings->futureTaskMonths)) ? $config->settings->futureTaskMonths:1;
 
 		$status = new Status();
 		$excludeStatus =  Array();
@@ -171,11 +173,11 @@ class User extends DatabaseObject {
 				$whereAdd = "AND RS.reviewDate IS NOT NULL";
 			break;
 			case 'future':
-				$whereAdd = "AND RS.reviewDate IS NULL AND RS.stepStartDate > DATE_ADD(NOW(), INTERVAL 1 MONTH)";
+				$whereAdd = "AND RS.reviewDate IS NULL AND RS.stepStartDate > DATE_ADD(NOW(), INTERVAL {$monthsIntoFuture} MONTH)";
 			break;
 			case 'current':
 			default:
-				$whereAdd = "AND RS.reviewDate IS NULL AND RS.stepStartDate <= DATE_ADD(NOW(), INTERVAL 1 MONTH)";
+				$whereAdd = "AND RS.reviewDate IS NULL AND RS.stepStartDate <= DATE_ADD(NOW(), INTERVAL {$monthsIntoFuture} MONTH)";
 			break;
 		}
 
