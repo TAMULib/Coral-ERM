@@ -77,7 +77,7 @@ foreach ($resourceGroups as $type=>$resourceGroup) {
 							echo format_date($resourceStep->stepEndDate) . _(" by ") . $eUser->firstName . " " . $eUser->lastName;
 						}
 					} else {
-						if (($user->isAdmin || $user->isInGroup($task['userGroupID'])) && $task['reviewDate']) {
+						if (($user->isAdmin || $user->isInGroup($task['userGroupID'])) && !$task['reviewDate']) {
 							echo "<a href=\"{$task['resourceStepID']}\" class=\"mark-reviewed\" id=\"task_{$task['resourceStepID']}\">"._("reviewed")."</a>";
 						}
 					}
