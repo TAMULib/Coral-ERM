@@ -78,7 +78,7 @@ foreach ($resourceGroups as $type => $resourceGroup) {
 						}
 					} else {
 						if (($user->isAdmin || $user->isInGroup($task['userGroupID'])) && $task['stepStartDate']) {
-							echo "<a href=\"{$task['resourceStepID']}\" class=\"markComplete\" id=\"task_{$task['resourceStepID']}\">"._("yes")."</a>";
+							echo "<a href=\"{$task['resourceStepID']}\" class=\"mark-complete\" id=\"task_{$task['resourceStepID']}\">"._("yes")."</a>";
 						}
 					}
 echo "			</td>
@@ -100,19 +100,4 @@ echo "			</td>
 	</div>';
 }
 ?>
-<script type="text/javascript">
-$(document).ready(function() {
-	$(".markComplete").live("click", function(e) {
-		e.preventDefault();
-		$.ajax({
-			type:       "GET",
-			url:        "ajax_processing.php",
-			cache:      false,
-			data:       "action=markComplete&resourceStepID=" + $(this).attr("href"),
-			success:    function(html) {
-			}
-		});
-	});
-});
-</script>
 
