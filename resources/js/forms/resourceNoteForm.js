@@ -57,7 +57,11 @@ function submitResourceNote(){
 						$("#submitResourceNoteForm").removeAttr("disabled");
 					}else{
 						window.parent.tb_remove();
-						eval("window.parent.update" + $("#tab").val() + "();");
+						var updateFunction = "update" + $("#tab").val();
+						//don't try to execute the function unless it exists
+						if (typeof window.parent[updateFunction] == 'function') {
+							eval("window.parent.update" + $("#tab").val() + "();");
+						}
 						return false;
 					}			
 				 }
