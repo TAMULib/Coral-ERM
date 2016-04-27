@@ -4,8 +4,9 @@ $resourceGroups = array();
 
 $resourceGroups["current"] = $user->getOutstandingTasks("current");
 $resourceGroups["future"] = $user->getOutstandingTasks("future");
+$resourceGroups["reviewed"] = $user->getOutstandingTasks("reviewed");
 
-foreach ($resourceGroups as $type => $resourceGroup) {
+foreach ($resourceGroups as $type=>$resourceGroup) {
 	echo "<div class=\"task-group\">
 			<h3 class=\"capitalize\">"._("To Do {$type} Tasks")."</h3>";
 	if (count($resourceGroup) == 0){
@@ -20,6 +21,7 @@ foreach ($resourceGroups as $type => $resourceGroup) {
 				<th style='width:95px;'><?php echo _("Acquisition Type");?></th>
 				<th style='width:125px;'><?php echo _("Routing Step");?></th>
 				<th style='width:75px;'><?php echo _("Start Date");?></th>
+				<th><?php echo _("Reviewed");?></th>
 				<th><?php echo _("Completed");?></th>
 			</tr>
 
@@ -70,6 +72,17 @@ foreach ($resourceGroups as $type => $resourceGroup) {
 				<td " . $classAdd . " " . $styleAdd . ">" . format_date($task['startDate']) . "</td>
 				<td " . $classAdd . " " . $styleAdd . ">";
 
+					if ($task['reviewDate']) {
+						if (($eUser->firstName) || ($eUser->lastName)){
+							echo format_date($resourceStep->stepEndDate) . _(" by ") . $eUser->firstName . " " . $eUser->lastName;
+						}
+					} else {
+						if (($user->isAdmin || $user->isInGroup($task['userGroupID'])) && $task['reviewDate']) {
+							echo "<a href=\"{$task['resourceStepID']}\" class=\"mark-reviewed\" id=\"task_{$task['resourceStepID']}\">"._("reviewed")."</a>";
+						}
+					}
+echo "			</td>
+				<td " . $classAdd . " " . $styleAdd . ">";
 					if ($task['stepEndDate']) {
 						if (($eUser->firstName) || ($eUser->lastName)){
 							echo format_date($resourceStep->stepEndDate) . _(" by ") . $eUser->firstName . " " . $eUser->lastName;

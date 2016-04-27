@@ -168,13 +168,14 @@ class User extends DatabaseObject {
 
 		switch($type) {
 			case 'reviewed':
+				$whereAdd = "AND RS.reviewDate IS NOT NULL";
 			break;
 			case 'future':
-				$whereAdd = "AND RS.stepStartDate > DATE_ADD(NOW(), INTERVAL 1 MONTH)";
+				$whereAdd = "AND RS.reviewDate IS NULL AND RS.stepStartDate > DATE_ADD(NOW(), INTERVAL 1 MONTH)";
 			break;
 			case 'current':
 			default:
-				$whereAdd = "AND RS.stepStartDate <= DATE_ADD(NOW(), INTERVAL 1 MONTH)";
+				$whereAdd = "AND RS.reviewDate IS NULL AND RS.stepStartDate <= DATE_ADD(NOW(), INTERVAL 1 MONTH)";
 			break;
 		}
 
