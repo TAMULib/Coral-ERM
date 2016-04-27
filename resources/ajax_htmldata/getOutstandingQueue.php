@@ -22,6 +22,7 @@ foreach ($resourceGroups as $type=>$resourceGroup) {
 				<th><?php echo _("Routing Step");?></th>
 				<th><?php echo _("Start Date");?></th>
 				<th><?php echo _("Last Reviewed");?></th>
+				<th><?php echo _("Notes");?></th>
 				<th><?php echo _("Reviewed");?></th>
 				<th><?php echo _("Completed");?></th>
 			</tr>
@@ -71,7 +72,8 @@ foreach ($resourceGroups as $type=>$resourceGroup) {
 					echo "
 				<td " . $classAdd . " " . $styleAdd . ">" . $task['stepName'] . "</td>
 				<td " . $classAdd . " " . $styleAdd . ">" . format_date($task['startDate']) . "</td>
-				<td " . $classAdd . " " . $styleAdd . ">" .(($task['reviewDate']) ? format_date($task['reviewDate']):'not reviewed')."</td>
+				<td " . $classAdd . " " . $styleAdd . ">" .(($task['reviewDate']) ? format_date($task['reviewDate']):_('not reviewed'))."</td>
+				<td " . $classAdd . " " . $styleAdd . "><a class=\"thickbox\" href=\"ajax_forms.php?action=getNoteForm&height=233&width=410&tab=Product&resourceID={$resource['resourceID']}&resourceNoteID=&modal=true\">"._("view")."</a></td>
 				<td " . $classAdd . " " . $styleAdd . ">";
 
 					if ($task['reviewDate']) {

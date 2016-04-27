@@ -151,6 +151,7 @@ $(document).ready(function(){
  		  data:       "action=getOutstandingQueue",
  		  success:    function(html) { 
  			$('#div_QueueContent').html(html);
+			tb_reinit();
  		  }
  	   });
  	   
