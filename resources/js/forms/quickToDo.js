@@ -6,21 +6,17 @@ $(document).ready(function() {
 });
 
 function submitQuickToDo(formData) {
-	console.log(formData);
 	$('#submitQuickToDo').attr("disabled", "disabled"); 
-	  $.ajax({
-		 type:       "POST",
-		 url:        "ajax_processing.php?action=submitQuickToDo",
-		 cache:      false,
-		 data:       formData.serialize(),
-		 success:    function(html) {
-			if (html){
-				$("#span_errors").html(html);
-				$("#submitQuickToDo").removeAttr("disabled");
-			}else{
-				window.parent.tb_remove();
-				return false;
-			}			
-		 }
-	 });
+	$.ajax({
+		type:       "POST",
+		url:        "ajax_htmldata.php?action=getSearchResources",
+		cache:      false,
+		data:       formData.serialize(),
+		success:    function(html) {
+						tb_remove();
+						$("#searchResourceISBNOrISSN").val(formData.find("#toDoISBNOrISSN").val());
+						$("#div_feedback").html("&nbsp;");
+						$('#div_searchResults').html(html);  
+					}
+	});
 }
