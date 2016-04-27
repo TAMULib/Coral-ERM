@@ -151,7 +151,7 @@ class User extends DatabaseObject {
 
 
 	//returns array of resource arrays that are in the outstanding queue for this user
-	public function getOutstandingTasks(){
+	public function getOutstandingTasks($type="current"){
 
 		$status = new Status();
 		$excludeStatus =  Array();
@@ -164,6 +164,18 @@ class User extends DatabaseObject {
 			$whereAdd = "AND R.statusID != '" . implode("", $excludeStatus) . "'";
 		}else{
 			$whereAdd = "";
+		}
+
+		switch($type) {
+			case 'reviewed':
+			break;
+			case 'future':
+				$whereAdd = "AND RS.stepStartDate > DATE_ADD(NOW(), INTERVAL 1 MONTH)";
+			break;
+			case 'current':
+			default:
+				$whereAdd = "AND RS.stepStartDate <= DATE_ADD(NOW(), INTERVAL 1 MONTH)";
+			break;
 		}
 
 		$query = "SELECT DISTINCT R.resourceID, date_format(createDate, '%c/%e/%Y') createDate, acquisitionTypeID, titleText, statusID
