@@ -552,9 +552,9 @@ table.dataTable th {
 
 table.dataTable tr {vertical-align: top;}
 
-
-
-
+.task-group table.dataTable {	
+	width: 100%;
+}
 
 table.sample {
 	padding:0px;
