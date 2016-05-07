@@ -155,6 +155,11 @@ if ((file_exists($util->getCORALPath() . "index.php")) || ($config->settings->li
 				if ($config->settings->usageModule == 'Y') {
 				?>
 				<li><a href="<?php echo $coralURL; ?>usage/" target='_blank'><img src='images/change/coral-usage.gif'></a></li>
+				<?php 
+				} 
+				if ($config->settings->managementModule == 'Y') {
+				?>
+				<li><a href="<?php echo $coralURL; ?>management/" target='_blank'><img src='images/change/coral-management.gif'></a></li>
 				<?php } ?>
 			</ul>
 		</li>
