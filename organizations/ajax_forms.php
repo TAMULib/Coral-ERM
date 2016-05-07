@@ -1000,6 +1000,7 @@ if ($issues) {
 				</tr>
 				<?php
 
+				if (1==2) { // Disable for DEMO site
 				foreach($instanceArray as $instance) {
 					echo "<tr>";
 					echo "<td>" . $instance['loginID'] . "</td>";
@@ -1009,6 +1010,7 @@ if ($issues) {
 					echo "<td style='width:70px'><a href='ajax_forms.php?action=getAdminUserUpdateForm&loginID=" . $instance['loginID'] . "&height=185&width=250&modal=true' class='thickbox' id='expression'>"._("update")."</a></td>";
 					echo "<td style='width:50px'><a href='javascript:deleteUser(\"" . $instance['loginID'] . "\")'>"._("remove")."</a></td>";
 					echo "</tr>";
+				}
 				}
 
 				?>

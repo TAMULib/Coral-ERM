@@ -30,28 +30,33 @@
 				</tr>
 				<?php
 
-				foreach($instanceArray as $instance) {
-					if ($instance['accountTabIndicator'] == '1') {
-						$accountTab = 'Y';
-					}else{
-						$accountTab = 'N';
+				if (1 == 2) {	// Disable for DEMO Account
+					foreach($instanceArray as $instance) {
+						if ($instance['accountTabIndicator'] == '1') {
+							$accountTab = 'Y';
+						}else{
+							$accountTab = 'N';
+						}
+
+						echo "<tr>";
+						echo "<td>" . $instance['loginID'] . "</td>";
+						echo "<td>" . $instance['firstName'] . "</td>";
+						echo "<td>" . $instance['lastName'] . "</td>";
+						echo "<td>" . $instance['priv'] . "</td>";
+						echo "<td>" . $accountTab . "</td>";
+						echo "<td>" . $instance['emailAddress'] . "</td>";
+						echo "<td><a href='ajax_forms.php?action=getAdminUserUpdateForm&loginID=" . $instance['loginID'] . "&height=275&width=315&modal=true' class='thickbox'><img src='images/edit.gif' alt='"._("edit")."' title='"._("edit user")."'></a></td>";
+						echo "<td><a href='javascript:deleteUser(\"" . $instance['loginID'] . "\")'><img src='images/cross.gif' alt='"._("remove")."' title='"._("remove")."'></a></td>";
+						echo "</tr>";
 					}
-
-					echo "<tr>";
-					echo "<td>" . $instance['loginID'] . "</td>";
-					echo "<td>" . $instance['firstName'] . "</td>";
-					echo "<td>" . $instance['lastName'] . "</td>";
-					echo "<td>" . $instance['priv'] . "</td>";
-					echo "<td>" . $accountTab . "</td>";
-					echo "<td>" . $instance['emailAddress'] . "</td>";
-					echo "<td><a href='ajax_forms.php?action=getAdminUserUpdateForm&loginID=" . $instance['loginID'] . "&height=275&width=315&modal=true' class='thickbox'><img src='images/edit.gif' alt='"._("edit")."' title='"._("edit user")."'></a></td>";
-					echo "<td><a href='javascript:deleteUser(\"" . $instance['loginID'] . "\")'><img src='images/cross.gif' alt='"._("remove")."' title='"._("remove")."'></a></td>";
-					echo "</tr>";
 				}
-
 				?>
 			</table>
-			<a href='ajax_forms.php?action=getAdminUserUpdateForm&loginID=&height=275&width=315&modal=true' class='thickbox' id='addUser'><?php echo _("add new user");?></a>
+
+			<?php  // Disable for Demo Account
+				// <a href='ajax_forms.php?action=getAdminUserUpdateForm&loginID=&height=275&width=315&modal=true' class='thickbox' id='addUser'><?php echo _("add new user");</a>
+			?>
+
 			<?php
 
 		}else{

@@ -73,6 +73,10 @@ for($i=0; $i<count($parts) - 1; $i++){
 				<?php } ?>
 				</tr>
 				</table>
+			<br>	
+      <br> Need Help? Contact the <a href="mailto:coral-erm@listserv.nd.edu?subject=&quot;CORAL Help&quot;">List Server</a>.
+
+<br><span class="smallDarkRedText"><br>Don't have a login? <a href="http://coraldemo.library.tamu.edu/usermanagement/">Click Here</a> to create one.</span>
 
 				</div>
 				</center>
