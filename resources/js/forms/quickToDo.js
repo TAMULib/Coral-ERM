@@ -15,8 +15,8 @@ $(document).ready(function() {
 });
 
 function getDataByPO(poInput) {
-	//load new resource modal and populate it with the data returned by the server
-	tb_show(null,"ajax_forms.php?action=getNewResourceForm&height=503&width=775&resourceID=&modal=true&search[po]="+poInput.val());
+	//load new resource form into the open thickbox modal
+	tb_show(null,"ajax_forms.php?action=getUpdateProductForm&height=498&width=730&modal=true&search[po]="+poInput.val());
 }
 
 function submitQuickToDo(isnInput) {

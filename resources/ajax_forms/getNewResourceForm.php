@@ -10,16 +10,6 @@
 		//used for default currency
 		$config = new Configuration();
 
-		$po = !empty($_REQUEST['search']['po']) ? $_REQUEST['search']['po']:null;
-
-		if ($po) {
-			$remoteData = file_get_contents($config->settings->resourceDataUrl."?po={$po}");
-			$data = json_decode($remoteData,true);
-			echo '<pre>';
-			print_r($data);
-			echo '</pre>';			
-		}
-
 		//get all acquisition types for output in drop down
 		$acquisitionTypeArray = array();
 		$acquisitionTypeObj = new AcquisitionType();
