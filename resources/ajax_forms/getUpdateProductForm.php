@@ -1,36 +1,60 @@
 <?php
+
+$config = new Configuration();
+
+$po = !empty($_REQUEST['search']['po']) ? $_REQUEST['search']['po']:null;
+
+if ($po) {
+	$remoteData = file_get_contents($config->settings->resourceDataUrl."?po={$po}");
+	$data = json_decode($remoteData,true);
+	$resource = new Resource();
+	if ($data) {
+		$resource->titleText = $data['bib_title'];
+	}
+	$resource->resourceFormatID = 2;
+	$resource->acquisitionTypeID = 1;
+	$resource->createLoginID 		= $loginID;
+	$resource->createDate			= date( 'Y-m-d' );
+	$resource->updateLoginID 		= '';
+	$resource->updateDate			= '';
+
+	$resource->save();
+	$resourceID = $resource->primaryKey;
+} else {
 	$resourceID = $_GET['resourceID'];
 	$resource = new Resource(new NamedArguments(array('primaryKey' => $resourceID)));
+}
 
 
-		if (!is_null_date($resource->archiveDate)) {
-			$archiveChecked = 'checked';
-		}else{
-			$archiveChecked = '';
-		}
+
+if (!is_null_date($resource->archiveDate)) {
+	$archiveChecked = 'checked';
+}else{
+	$archiveChecked = '';
+}
 
 
-		//get all resource formats for output in drop down
-		$resourceFormatArray = array();
-		$resourceFormatObj = new ResourceFormat();
-		$resourceFormatArray = $resourceFormatObj->sortedArray();
+//get all resource formats for output in drop down
+$resourceFormatArray = array();
+$resourceFormatObj = new ResourceFormat();
+$resourceFormatArray = $resourceFormatObj->sortedArray();
 
-		//get all resource types for output in drop down
-		$resourceTypeArray = array();
-		$resourceTypeObj = new ResourceType();
-		$resourceTypeArray = $resourceTypeObj->allAsArray();
+//get all resource types for output in drop down
+$resourceTypeArray = array();
+$resourceTypeObj = new ResourceType();
+$resourceTypeArray = $resourceTypeObj->allAsArray();
 
-    //get parents resources
-    $sanitizedInstance = array();
-    $instance = new Resource();
-    $parentResourceArray = array();
-    foreach ($resource->getParentResources() as $instance) {
-      foreach (array_keys($instance->attributeNames) as $attributeName) {
-        $sanitizedInstance[$attributeName] = $instance->$attributeName;
-      }
-      $sanitizedInstance[$instance->primaryKeyName] = $instance->primaryKey;
-      array_push($parentResourceArray, $sanitizedInstance);
-    }
+//get parents resources
+$sanitizedInstance = array();
+$instance = new Resource();
+$parentResourceArray = array();
+foreach ($resource->getParentResources() as $instance) {
+	foreach (array_keys($instance->attributeNames) as $attributeName) {
+		$sanitizedInstance[$attributeName] = $instance->$attributeName;
+	}
+	$sanitizedInstance[$instance->primaryKeyName] = $instance->primaryKey;
+	array_push($parentResourceArray, $sanitizedInstance);
+}
 
 		//get all alias types for output in drop down
 		$aliasTypeArray = array();
