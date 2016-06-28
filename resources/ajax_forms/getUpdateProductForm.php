@@ -5,18 +5,19 @@ $config = new Configuration();
 $po = !empty($_REQUEST['search']['po']) ? $_REQUEST['search']['po']:null;
 
 if ($po) {
-	$remoteData = file_get_contents($config->settings->resourceDataUrl."?po={$po}");
-	$data = json_decode($remoteData,true);
 	$resource = new Resource();
-	if ($data) {
-		$resource->titleText = $data['bib_title'];
+	$remoteResource = new TAMUExternalResource($po);
+	foreach ($remoteResource->getCoralMapping() as $map) {
+		foreach ($map as $coralProperty=>$remoteAccessor) {
+			$resource->$coralProperty = $remoteResource->$remoteAccessor();
+		}
 	}
 	$resource->resourceFormatID = 2;
 	$resource->acquisitionTypeID = 1;
-	$resource->createLoginID 		= $loginID;
-	$resource->createDate			= date( 'Y-m-d' );
-	$resource->updateLoginID 		= '';
-	$resource->updateDate			= '';
+	$resource->createLoginID = $loginID;
+	$resource->createDate = date( 'Y-m-d' );
+	$resource->updateLoginID = '';
+	$resource->updateDate = '';
 
 	$resource->save();
 	$resourceID = $resource->primaryKey;
