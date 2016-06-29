@@ -3,8 +3,8 @@
 		<tr>
 			<td><label>PO:</label></td>
 			<td>
-				<input type="text" name="search[po]" id="searchPO" />
-				<span id='span_error_search_po' class='error smallDarkRedText'></span>
+				<input type="text" name="externalId" id="externalId" />
+				<span id='span_error_externalId' class='error smallDarkRedText'></span>
 			</td>
 		</tr>
 		<tr>
