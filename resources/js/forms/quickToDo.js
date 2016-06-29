@@ -8,18 +8,24 @@ $(document).ready(function() {
 		if (isnInput.val()) {
 			submitQuickToDo(isnInput);
 		} else if (externalIdInput.val())  {
-			getDataByExternalId(externalIdInput.val());
+			getDataByExternalId(externalIdInput);
 		}
 		return false;
 	});
 });
 
-function getDataByExternalId(externalId) {
-	//load new resource form into the open thickbox modal
-	$("#TB_ajaxContent").html("");
-	var tbParams = {"width":730,"height":498};
-	tb_resize(tbParams.width,tbParams.height);
-	tb_show(null,"ajax_forms.php?action=getUpdateProductForm&height="+tbParams.height+"&width="+tbParams.width+"&modal=true&externalId="+externalId);
+function getDataByExternalId(externalIdInput) {
+	$('#submitQuickToDo').attr("disabled", "disabled"); 
+	$.ajax({
+		type:       "POST",
+		url:        "ajax_processing.php?action=submitNewResource",
+		cache:      false,
+		data:       externalIdInput.serialize(),
+		success:    function(resourceID) {
+						window.parent.location = "resource.php?ref=new&resourceID="+resourceID;
+						tb_remove();
+					}
+	});
 }
 
 function submitQuickToDo(isnInput) {
