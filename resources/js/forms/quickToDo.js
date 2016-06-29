@@ -16,7 +16,10 @@ $(document).ready(function() {
 
 function getDataByExternalId(externalId) {
 	//load new resource form into the open thickbox modal
-	tb_show(null,"ajax_forms.php?action=getUpdateProductForm&height=498&width=730&modal=true&externalId="+externalId);
+	$("#TB_ajaxContent").html("");
+	var tbParams = {"width":730,"height":498};
+	tb_resize(tbParams.width,tbParams.height);
+	tb_show(null,"ajax_forms.php?action=getUpdateProductForm&height="+tbParams.height+"&width="+tbParams.width+"&modal=true&externalId="+externalId);
 }
 
 function submitQuickToDo(isnInput) {
