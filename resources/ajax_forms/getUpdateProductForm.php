@@ -1,68 +1,36 @@
 <?php
-
-/*
-if $externalId is defined and an ExternalResource implementation is configured, we will:
-	1) Try to retrieve the remote resource data by $externalId
-	2) Create and save a new CORAL Resource using the remote resource data
-	3) Set the newly created CORAL Resource to be edited
-*/
-
-$externalId = !empty($_REQUEST['externalId']) ? $_REQUEST['externalId']:null;
-
-$config = new Configuration();
-
-if ($externalId && class_exists($config->settings->externalResourceClass)) {
-	$resource = new Resource();
-	$remoteResource = new $config->settings->externalResourceClass($externalId);
-	foreach ($remoteResource->getCoralMapping() as $map) {
-		foreach ($map as $coralProperty=>$remoteAccessor) {
-			$resource->$coralProperty = $remoteResource->$remoteAccessor();
-		}
-	}
-	$resource->resourceFormatID = 2;
-	$resource->acquisitionTypeID = 1;
-	$resource->createLoginID = $loginID;
-	$resource->createDate = date( 'Y-m-d' );
-	$resource->updateLoginID = '';
-	$resource->updateDate = '';
-
-	$resource->save();
-	$resourceID = $resource->primaryKey;
-} else {
 	$resourceID = $_GET['resourceID'];
 	$resource = new Resource(new NamedArguments(array('primaryKey' => $resourceID)));
-}
 
 
-if ($resourceID) {
-	if (!is_null_date($resource->archiveDate)) {
-		$archiveChecked = 'checked';
-	}else{
-		$archiveChecked = '';
-	}
-
-
-	//get all resource formats for output in drop down
-	$resourceFormatArray = array();
-	$resourceFormatObj = new ResourceFormat();
-	$resourceFormatArray = $resourceFormatObj->sortedArray();
-
-	//get all resource types for output in drop down
-	$resourceTypeArray = array();
-	$resourceTypeObj = new ResourceType();
-	$resourceTypeArray = $resourceTypeObj->allAsArray();
-
-	//get parents resources
-	$sanitizedInstance = array();
-	$instance = new Resource();
-	$parentResourceArray = array();
-	foreach ($resource->getParentResources() as $instance) {
-		foreach (array_keys($instance->attributeNames) as $attributeName) {
-			$sanitizedInstance[$attributeName] = $instance->$attributeName;
+		if (!is_null_date($resource->archiveDate)) {
+			$archiveChecked = 'checked';
+		}else{
+			$archiveChecked = '';
 		}
-		$sanitizedInstance[$instance->primaryKeyName] = $instance->primaryKey;
-		array_push($parentResourceArray, $sanitizedInstance);
-	}
+
+
+		//get all resource formats for output in drop down
+		$resourceFormatArray = array();
+		$resourceFormatObj = new ResourceFormat();
+		$resourceFormatArray = $resourceFormatObj->sortedArray();
+
+		//get all resource types for output in drop down
+		$resourceTypeArray = array();
+		$resourceTypeObj = new ResourceType();
+		$resourceTypeArray = $resourceTypeObj->allAsArray();
+
+    //get parents resources
+    $sanitizedInstance = array();
+    $instance = new Resource();
+    $parentResourceArray = array();
+    foreach ($resource->getParentResources() as $instance) {
+      foreach (array_keys($instance->attributeNames) as $attributeName) {
+        $sanitizedInstance[$attributeName] = $instance->$attributeName;
+      }
+      $sanitizedInstance[$instance->primaryKeyName] = $instance->primaryKey;
+      array_push($parentResourceArray, $sanitizedInstance);
+    }
 
 		//get all alias types for output in drop down
 		$aliasTypeArray = array();
@@ -463,6 +431,4 @@ $parentResourceObj = new Resource(new NamedArguments(array('primaryKey' => $pare
 			</tr>
 		</table>
 		<script type="text/javascript" src="js/forms/resourceUpdateForm.js?random=<?php echo rand(); ?>"></script>
-<?php
-}
-?>
+
