@@ -7,7 +7,7 @@ class TAMUExternalResource implements ExternalResource {
 
 	public function __construct($po) {
 		$config = new Configuration();
-		$this->setApiUrl($config->settings->resourceDataUrl);
+		$this->setApiUrl($config->settings->externalResourceUrl);
 		$remoteData = file_get_contents($this->getApiUrl()."?po={$po}");
 		$data = json_decode($remoteData,true);
 		if ($data) {

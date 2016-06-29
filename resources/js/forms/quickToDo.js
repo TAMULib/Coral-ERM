@@ -3,20 +3,20 @@ $(document).ready(function() {
 	$("#quickToDoForm").live("submit", function() {
 		var $formData = $("#quickToDoForm");
 		var isnInput = $formData.find("#toDoISBNOrISSN");
-		var poInput = $formData.find("#searchPO");
+		var externalIdInput = $formData.find("#externalId");
 
 		if (isnInput.val()) {
 			submitQuickToDo(isnInput);
-		} else if (poInput.val())  {
-			getDataByPO(poInput);
+		} else if (externalIdInput.val())  {
+			getDataByExternalId(externalIdInput.val());
 		}
 		return false;
 	});
 });
 
-function getDataByPO(poInput) {
+function getDataByExternalId(externalId) {
 	//load new resource form into the open thickbox modal
-	tb_show(null,"ajax_forms.php?action=getUpdateProductForm&height=498&width=730&modal=true&search[po]="+poInput.val());
+	tb_show(null,"ajax_forms.php?action=getUpdateProductForm&height=498&width=730&modal=true&externalId="+externalId);
 }
 
 function submitQuickToDo(isnInput) {
