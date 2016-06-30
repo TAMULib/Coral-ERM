@@ -1,39 +1,33 @@
 <?php
-
-class TAMUExternalResource implements ExternalResource {
-	private $apiUrl;
-	private $api;
+class TAMUExternalResource implements ResourceInterface {
 	protected $title;
 
-	public function __construct($po) {
-		$config = new Configuration();
-		$this->setApiUrl($config->settings->externalResourceUrl);
-		$remoteData = file_get_contents($this->getApiUrl()."?po={$po}");
-		$data = json_decode($remoteData,true);
-		if ($data) {
-			$this->setTitle($data['bib_title']);
-		}
+	public function setTitleText($titleText) {
+		$this->titleText = $titleText;
 	}
 
-	protected function setApiUrl($apiUrl) {
-		$this->apiUrl = $apiUrl;
+	public function getTitleText() {
+		return $this->titleText;
 	}
 
-	protected function getApiUrl() {
-		return $this->apiUrl;
+	public function getDescriptionText() {
+		return null;
 	}
 
-	public function getTitle() {
-		return $this->title;
+	public function getOrderNumber() {
+		return null;
 	}
 
-	protected function setTitle($title) {
-		$this->title = $title;
+	public function getSystemNumber() {
+		return null;
 	}
 
-	public function getCoralMapping() {
-		return array(
-					array("titleText"=>"getTitle"));
+	public function getProviderText() {
+		return null;
+	}
+
+	public function getCoverageText() {
+		return null;
 	}
 }
 
