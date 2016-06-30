@@ -23,7 +23,6 @@ class IsbnOrIssn extends DatabaseObject {
 
 	protected function overridePrimaryKeyName() {}
 
-
 }
 
 ?>

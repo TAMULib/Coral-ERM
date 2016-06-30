@@ -21,20 +21,6 @@ if ($resourceID){
 	*/
 
 	$externalId = !empty($_POST['externalId']) ? $_POST['externalId']:null;
-
-	$config = new Configuration();
-
-	if ($externalId && class_exists($config->settings->externalResourceClass)) {
-		$status = new Status();
-		$statusID = $status->getIDFromName('progress');
-		$remoteResource = new $config->settings->externalResourceClass($externalId);
-		foreach ($remoteResource->getCoralMapping() as $map) {
-			foreach ($map as $coralProperty=>$remoteAccessor) {
-				$resource->$coralProperty = $remoteResource->$remoteAccessor();
-			}
-		}
-	}
-
 }
 
 if (!$externalId) {
@@ -77,6 +63,23 @@ try {
 	$resource->save();
 	echo $resource->primaryKey;
 	$resourceID=$resource->primaryKey;
+
+
+	$config = new Configuration();
+
+	if ($externalId && class_exists($config->settings->externalResourceRepoClass)) {
+		$status = new Status();
+		$statusID = $status->getIDFromName('progress');
+		$remoteResourceRepo = new $config->settings->externalResourceRepoClass($externalId);
+		$resource->setTitleText($remoteResourceRepo->getResourceObject()->getTitleText());
+
+		$addableIsbnOrIssns = array();
+		foreach ($remoteResourceRepo->getIsbnOrIssnObjects() as $isbnOrIssnObject) {
+			$addableIsbnOrIssns[] = $isbnOrIssnObject->getIsbnOrIssn();
+		}
+		$resource->setIsbnOrIssn($addableIsbnOrIssns);
+	}
+
 
 	//get the provider ID in case we insert what was entered in the provider text box as an organization link
 	$organizationRole = new OrganizationRole();
@@ -164,4 +167,5 @@ try {
 } catch (Exception $e) {
 	echo $e->getMessage();
 }
+
 ?>

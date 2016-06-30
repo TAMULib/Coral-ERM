@@ -17,13 +17,37 @@
 **************************************************************************************************************************
 */
 
-class Resource extends DatabaseObject {
+class Resource extends DatabaseObject implements ResourceInterface {
 
 	protected function defineRelationships() {}
 
-  protected function defineIsbnOrIssn() {}
+	protected function defineIsbnOrIssn() {}
 
 	protected function overridePrimaryKeyName() {}
+
+	public function getTitleText() {
+		return $this->titleText;
+	}
+
+	public function getDescriptionText() {
+		return $this->descriptionText;
+	}
+
+	public function getOrderNumber() {
+		return $this->orderNumber;
+	}
+
+	public function getSystemNumber() {
+		return $this->systemNumber;
+	}
+
+	public function getProviderText() {
+		return $this->providerText;
+	}
+
+	public function getCoverageText() {
+		return $this->coverageText;
+	}
 
 	//returns resource objects by title
 	public function getResourceByTitle($title){
