@@ -4,6 +4,7 @@ class TAMUExternalResourceRepo implements ResourceRepoInterface {
 	private $api;
 	private $resourceObject;
 	private $isbnOrIssnObjects;
+	private $orderNumberObject;
 
 	public function __construct($po) {
 		$config = new Configuration();
@@ -11,6 +12,7 @@ class TAMUExternalResourceRepo implements ResourceRepoInterface {
 		$remoteData = file_get_contents($this->getApiUrl()."?po={$po}");
 		$data = json_decode($remoteData,true);
 		if ($data) {
+			$this->setOrderNumberObject(new TAMUExternalOrderNumber($po));
 			$this->setResourceObject(new TAMUExternalResource());
 			$this->getResourceObject()->setTitleText($data['bib_title']);
 			if (!is_array($data['bib_isbn'])) {
