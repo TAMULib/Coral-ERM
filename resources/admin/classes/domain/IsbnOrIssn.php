@@ -17,11 +17,16 @@
 **************************************************************************************************************************
 */
 
-class IsbnOrIssn extends DatabaseObject {
+class IsbnOrIssn extends DatabaseObject implements IsbnOrIssnInterface {
+
+	public function getIsbnOrIssn() {
+		return $this->attributes['isbnOrIssn'];
+	}
 
 	protected function defineIsbnOrIssn() {}
 
 	protected function overridePrimaryKeyName() {}
+
 
 }
 

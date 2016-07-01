@@ -26,27 +26,27 @@ class Resource extends DatabaseObject implements ResourceInterface {
 	protected function overridePrimaryKeyName() {}
 
 	public function getTitleText() {
-		return $this->titleText;
+		return $this->attributes['titleText'];
 	}
 
 	public function getDescriptionText() {
-		return $this->descriptionText;
+		return $this->attributes['descriptionText'];
 	}
 
 	public function getOrderNumber() {
-		return $this->orderNumber;
+		return $this->attributes['orderNumber'];
 	}
 
 	public function getSystemNumber() {
-		return $this->systemNumber;
+		return $this->attributes['systemNumber'];
 	}
 
 	public function getProviderText() {
-		return $this->providerText;
+		return $this->attributes['providerText'];
 	}
 
 	public function getCoverageText() {
-		return $this->coverageText;
+		return $this->attributes['coverageText'];
 	}
 
 	//returns resource objects by title
