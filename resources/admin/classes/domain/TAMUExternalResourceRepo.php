@@ -38,34 +38,6 @@ class TAMUExternalResourceRepo implements ResourceRepoInterface {
 		$this->isbnOrIssnObjects[] = $isbnOrIssnObject;
 	}
 
-	protected function setTitle($title) {
-		$this->title = $title;
-	}
-
-	public function getTitleText() {
-		return $this->titleText;
-	}
-
-	public function getDescriptionText() {
-		return null;
-	}
-
-	public function getOrderNumber() {
-		return null;
-	}
-
-	public function getSystemNumber() {
-		return null;
-	}
-
-	public function getProviderText() {
-		return null;
-	}
-
-	public function getCoverageText() {
-		return null;
-	}
-
 	protected function setApiUrl($apiUrl) {
 		$this->apiUrl = $apiUrl;
 	}
