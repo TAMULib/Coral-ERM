@@ -1,6 +1,7 @@
 <?php
 class TAMUExternalResource implements ResourceInterface {
-	protected $title;
+	protected $titleText;
+	protected $vendorCode;
 
 	public function setTitleText($titleText) {
 		$this->titleText = $titleText;
@@ -28,6 +29,14 @@ class TAMUExternalResource implements ResourceInterface {
 
 	public function getCoverageText() {
 		return null;
+	}
+
+	public function setVendorCode($vendorCode) {
+		$this->vendorCode = $vendorCode;
+	}
+
+	public function getVendorCode() {
+		return $this->vendorCode;
 	}
 }
 

@@ -72,6 +72,7 @@ try {
 		$statusID = $status->getIDFromName('progress');
 		$remoteResourceRepo = new $config->settings->externalResourceRepoClass($externalId);
 		$resource->setTitleText($remoteResourceRepo->getResourceObject()->getTitleText());
+		$resource->setVendorCode($remoteResourceRepo->getResourceObject()->getVendorCode());
 
 		$addableIsbnOrIssns = array();
 		foreach ($remoteResourceRepo->getIsbnOrIssnObjects() as $isbnOrIssnObject) {

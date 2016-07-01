@@ -13,6 +13,7 @@ class TAMUExternalResourceRepo implements ResourceRepoInterface {
 		if ($data) {
 			$this->setResourceObject(new TAMUExternalResource());
 			$this->getResourceObject()->setTitleText($data['bib_title']);
+			$this->getResourceObject()->setVendorCode($data['vendor_code']);
 			if (!is_array($data['bib_isbn'])) {
 				$this->addIsbnOrIssnObject(new TAMUExternalIsbnOrIssn($data['bib_isbn']));
 			}
