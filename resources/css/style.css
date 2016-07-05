@@ -3288,3 +3288,10 @@ input#archiveInd {
 	margin: 8px 0;
 }
 
+#quickToDoForm td {
+	padding: 6px;
+}
+
+#quickToDoForm td label {
+	font-weight: bold;
+}
