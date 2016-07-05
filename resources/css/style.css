@@ -3275,3 +3275,11 @@ input#archiveInd {
 #div_resourceForm .surroundBox {
 	width: 100% !important;
 }
+
+#quickToDoForm td {
+	padding: 6px;
+}
+
+#quickToDoForm td label {
+	font-weight: bold;
+}

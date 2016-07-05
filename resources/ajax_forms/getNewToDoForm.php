@@ -1,5 +1,5 @@
 <form id='quickToDoForm'>
-	<table class="thickboxTable" style="width:98%;background-image:url('images/title.gif');background-repeat:no-repeat;">
+	<table>
 		<tr>
 			<td><label>PO:</label></td>
 			<td>
@@ -17,8 +17,8 @@
 	</table>
 	<table class='noBorderTable' style='width:125px;'>
 		<tr>
-			<td style='text-align:left'><input type='submit' value='submit' name='submitQuickToDo' id='submitQuickToDo'></td>
-			<td style='text-align:right'><input type='button' value='cancel' onclick="tb_remove();"></td>
+			<td style='text-align:left'><input class="submit-button" type='submit' value='submit' name='submitQuickToDo' id='submitQuickToDo'></td>
+			<td style='text-align:right'><input class="cancel-button" type='button' value='cancel' onclick="tb_remove();"></td>
 		</tr>
 	</table>
 
