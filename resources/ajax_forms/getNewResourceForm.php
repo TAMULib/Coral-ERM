@@ -2,8 +2,8 @@
 
 		$resourceID = $_GET['resourceID'];
 		if ($resourceID){
-		$resource = new Resource(new NamedArguments(array('primaryKey' => $resourceID)));
-		}else{
+			$resource = new Resource(new NamedArguments(array('primaryKey' => $resourceID)));
+		} else {
 			$resource = new Resource();
 		}
 

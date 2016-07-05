@@ -1,20 +1,43 @@
 $(document).ready(function() {
-	$("#submitQuickToDo").live("click", function(e) {
-		e.preventDefault();
-		submitQuickToDo($("#quickToDoForm"));
+
+	$("#quickToDoForm").live("submit", function() {
+		var $formData = $("#quickToDoForm");
+		var isnInput = $formData.find("#toDoISBNOrISSN");
+		var externalIdInput = $formData.find("#externalId");
+
+		if (isnInput.val()) {
+			submitQuickToDo(isnInput);
+		} else if (externalIdInput.val())  {
+			getDataByExternalId(externalIdInput);
+		}
+		return false;
 	});
 });
 
-function submitQuickToDo(formData) {
+function getDataByExternalId(externalIdInput) {
+	$('#submitQuickToDo').attr("disabled", "disabled"); 
+	$.ajax({
+		type:       "POST",
+		url:        "ajax_processing.php?action=submitNewResource",
+		cache:      false,
+		data:       externalIdInput.serialize(),
+		success:    function(resourceID) {
+						window.parent.location = "resource.php?ref=new&resourceID="+resourceID;
+						tb_remove();
+					}
+	});
+}
+
+function submitQuickToDo(isnInput) {
 	$('#submitQuickToDo').attr("disabled", "disabled"); 
 	$.ajax({
 		type:       "POST",
 		url:        "ajax_htmldata.php?action=getSearchResources",
 		cache:      false,
-		data:       formData.serialize(),
+		data:       isnInput.serialize(),
 		success:    function(html) {
 						tb_remove();
-						$("#searchResourceISBNOrISSN").val(formData.find("#toDoISBNOrISSN").val());
+						$("#searchResourceISBNOrISSN").val(isnInput.val());
 						$("#div_feedback").html("&nbsp;");
 						$('#div_searchResults').html(html);  
 					}
