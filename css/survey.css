@@ -1,0 +1,113 @@
+
+
+body {
+    background: url("images/background-texture.gif") repeat scroll 0 0 transparent;
+    color: #333333;
+    font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size: 14px;
+    line-height: 20px;
+    margin: 0;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+p.emp
+{
+   font-size: 123%;
+}
+
+#header {
+    border: medium none;
+	margin-bottom: 20px;
+}
+
+.navbar {
+    background: none repeat scroll 0 0 #000000;
+    box-shadow: 1px 0 2px #000000;
+    position: relative;
+    width: 100%;
+    z-index: 9999;
+	color: #999999;
+}
+
+.navbar-inner {
+    padding: 30px;
+    background: url("images/debut_dark.png") repeat scroll 0 0 transparent;
+}
+
+.brand {
+    float: left;
+    margin-left: 20px;
+	margin-top: -20px;
+}
+
+.container  {
+    display: block;
+    margin: 0 auto;
+    min-height: 30px;
+    max-width: 540px;
+	background-color: #F5F5F5;
+    padding: 10px;
+	border: 1px solid #D4D4D4;
+    border-radius: 0 0 0 0;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.067);
+}
+
+a {
+color: #0088CC;
+text-decoration: none;
+}
+
+a:hover {
+	color: #005580;
+}
+
+a img {
+ border: none;
+}
+
+.asmHighlight {
+	color: #777; 
+}
+
+.asmSelect {
+	margin: -1.3em 0 0.25em 1.30em;
+	display: block;
+	width: 370px;
+}
+
+.asmList {
+	/* html list that contains selected items */
+	margin: 0.25em 0 1em 14; 
+	padding-left: 15px; 
+}
+
+label {
+	display: block;
+	position:relative;
+}
+
+select {
+	width: 370px; 
+	margin: 2px;
+}
+
+option.bold
+{
+    font-weight: bold;
+}
+
+
+#Why_Did_You_Choose_This_Resource_Other_Text {
+	position:absolute;
+    right: 5px;
+    top: 2px;
+}
+
+.ie #Why_Did_You_Choose_This_Resource_Other_Text {
+	position:absolute;
+    right: 5px;
+    top: 2px;
+}
+
+
