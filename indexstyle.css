@@ -417,6 +417,36 @@ table.noBorderTable {padding:0px; width:100%; border-style:none;}
 table.noBorderTable td {padding:0px; border-style:none;}
 table.noBorderTable td.arrow {padding:0px; border-style:none;text-align:right;}
 
+.managementIco {
+    -moz-box-shadow: 2px 3px 6px -1px #666;
+      -webkit-box-shadow: 2px 3px 6px -1px #666;
+        -o-box-shadow: 2px 3px 6px -1px #666;
+          box-shadow: 2px 3px 6px -1px #666;
+}
+
+.managementBtn {
+    background-image: -webkit-gradient( linear, left top, left bottom, color-stop(0, #F2F5F5), color-stop(0.71, #C6D9DE) );
+      background-image: -o-linear-gradient(bottom, #F2F5F5 0%, #C6D9DE 71%);
+        background-image: -moz-linear-gradient(bottom, #F2F5F5 0%, #C6D9DE 71%);
+          background-image: -webkit-linear-gradient(bottom, #F2F5F5 0%, #C6D9DE 71%);
+            background-image: -ms-linear-gradient(bottom, #F2F5F5 0%, #C6D9DE 71%);
+              background-image: linear-gradient(to bottom, #F2F5F5 0%, #C6D9DE 71%);
+                padding: 6px 20px;
+                  font-size: 2em;
+                    text-decoration: none;
+                      font-weight: lighter;
+                        margin-left: 8px;
+                          -moz-box-shadow: 2px 3px 6px -1px #666;
+                            -webkit-box-shadow: 2px 3px 6px -1px #666;
+                              -o-box-shadow: 2px 3px 6px -1px #666;
+                                box-shadow: 2px 3px 6px -1px #666;
+                                  -moz-border-radius: 6px;
+                                    -webkit-border-radius: 6px;
+                                      -o-border-radius: 6px;
+                                        border-radius: 6px;
+}
+
+
 
 ul li {	margin-left: 1.5em;}
 
