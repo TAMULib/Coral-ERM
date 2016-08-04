@@ -21,9 +21,12 @@ function getDataByExternalId(externalIdInput) {
 		url:        "ajax_processing.php?action=submitNewResource",
 		cache:      false,
 		data:       externalIdInput.serialize(),
-		success:    function(resourceID) {
-						window.parent.location = "resource.php?ref=new&resourceID="+resourceID;
-						tb_remove();
+		success:    function(data) {
+						resourceResult = JSON.parse(data);
+						if (resourceResult.resourceID) {
+							window.parent.location = "resource.php?ref=new&resourceID="+resourceResult.resourceID;
+							tb_remove();
+						}
 					}
 	});
 }

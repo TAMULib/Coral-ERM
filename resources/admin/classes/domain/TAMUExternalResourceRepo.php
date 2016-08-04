@@ -4,7 +4,7 @@ class TAMUExternalResourceRepo implements ResourceRepoInterface {
 	private $api;
 	private $resourceObject;
 	private $isbnOrIssnObjects;
-	private $orderNumberObject;
+	private $resourcePaymentObjects;
 
 	public function __construct($po) {
 		$config = new Configuration();
@@ -12,7 +12,8 @@ class TAMUExternalResourceRepo implements ResourceRepoInterface {
 		$remoteData = file_get_contents($this->getApiUrl()."?po={$po}");
 		$data = json_decode($remoteData,true);
 		if ($data) {
-			$this->setOrderNumberObject(new TAMUExternalOrderNumber($po));
+			//currently, we only handle one RP on creation, but in the future it could be more
+			$this->addResourcePaymentObject(new TAMUExternalResourcePayment($data['fund'],$po));
 			$this->setResourceObject(new TAMUExternalResource());
 			$this->getResourceObject()->setTitleText($data['bib_title']);
 			if (!is_array($data['bib_isbn'])) {
@@ -38,6 +39,14 @@ class TAMUExternalResourceRepo implements ResourceRepoInterface {
 
 	private function addIsbnOrIssnObject($isbnOrIssnObject) {
 		$this->isbnOrIssnObjects[] = $isbnOrIssnObject;
+	}
+
+	public function getResourcePaymentObjects() {
+		return $this->resourcePaymentObjects;
+	}
+
+	private function addResourcePaymentObject($resourcePaymentObject) {
+		$this->resourcePaymentObjects[] = $resourcePaymentObject;
 	}
 
 	protected function setApiUrl($apiUrl) {

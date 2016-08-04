@@ -1,6 +1,20 @@
 <?php
 
+$config = new Configuration();
+
 $resourceID = $_POST['resourceID'];
+
+/*
+if $externalId is defined and an ExternalResource implementation is configured, we will:
+	1) Try to retrieve the remote resource data by $externalId
+	2) Create and save a new CORAL Resource using the remote resource data
+	3) Set the newly created CORAL Resource to be edited
+*/
+
+$externalId = !empty($_POST['externalId']) ? $_POST['externalId']:null;
+
+$fromExternal = ($externalId && class_exists($config->settings->externalResourceRepoClass));
+$outputJson = $fromExternal ? true:false;
 
 if ($resourceID){
 	//get this resource
@@ -13,17 +27,9 @@ if ($resourceID){
 	$resource->updateLoginID 		= '';
 	$resource->updateDate			= '';
 
-	/*
-	if $externalId is defined and an ExternalResource implementation is configured, we will:
-		1) Try to retrieve the remote resource data by $externalId
-		2) Create and save a new CORAL Resource using the remote resource data
-		3) Set the newly created CORAL Resource to be edited
-	*/
-
-	$externalId = !empty($_POST['externalId']) ? $_POST['externalId']:null;
 }
 
-if (!$externalId) {
+if (!$fromExternal) {
 	//determine status id
 	$status = new Status();
 	$statusID = $status->getIDFromName($_POST['resourceStatus']);
@@ -61,13 +67,8 @@ if (!$externalId) {
 
 try {
 	$resource->save();
-	echo $resource->primaryKey;
-	$resourceID=$resource->primaryKey;
 
-
-	$config = new Configuration();
-
-	if ($externalId && class_exists($config->settings->externalResourceRepoClass)) {
+	if ($fromExternal) {
 		$status = new Status();
 		$statusID = $status->getIDFromName('progress');
 		$remoteResourceRepo = new $config->settings->externalResourceRepoClass($externalId);
@@ -78,9 +79,34 @@ try {
 			$addableIsbnOrIssns[] = $isbnOrIssnObject->getIsbnOrIssn();
 		}
 		$resource->setIsbnOrIssn($addableIsbnOrIssns);
+
+		foreach ($remoteResourceRepo->getResourcePaymentObjects() as $remoteResourcePayment) {
+			$resourcePayment = new ResourcePayment();
+			$resourcePayment->resourceID    = $resource->primaryKey;
+			$resourcePayment->year          = date("Y");
+
+			$resourcePayment->fundName      = $remoteResourcePayment->getFundName();
+			$resourcePayment->purchaseOrder = $remoteResourcePayment->getPurchaseOrder();
+			$resourcePayment->paymentAmount = 0;
+			$resourcePayment->currencyCode  = $config->settings->defaultCurrency;
+			$resourcePayment->orderTypeID   = 0;
+			try {
+				$resourcePayment->save();
+			} catch (Exception $e) {
+				echo $e->getMessage();
+			}
+		}
 	}
 
+	if ($outputJson) {
+		$resourceData = array("resourceID"=>$resource->primaryKey);
+		echo json_encode($resourceData);
 
+	} else {
+		echo $resource->primaryKey;
+	}
+
+	$resourceID=$resource->primaryKey;
 	//get the provider ID in case we insert what was entered in the provider text box as an organization link
 	$organizationRole = new OrganizationRole();
 	$organizationRoleID = $organizationRole->getProviderID();
@@ -142,65 +168,46 @@ try {
 
 				$resourceNote->save();
 			}
-
-
-			//first remove the organizations if this is a saved request
-			$resource->removeResourceOrganizations();
-			if (($_POST['organizationID']) && ($organizationRoleID)){
-
-				$resourceOrganizationLink = new ResourceOrganizationLink();
-				$resourceOrganizationLink->resourceID = $resourceID;
-				$resourceOrganizationLink->organizationID = $_POST['organizationID'];
-				$resourceOrganizationLink->organizationRoleID = $organizationRoleID;
-
-				$resourceOrganizationLink->save();
-			}
-
-			$yearArray          = array();  $yearArray          = explode(':::',$_POST['years']);
-			$subStartArray      = array();  $subStartArray      = explode(':::',$_POST['subStarts']);
-			$subEndArray        = array();  $subEndArray        = explode(':::',$_POST['subEnds']);
-			$fundIDArray        = array();  $fundIDArray        = explode(':::',$_POST['fundIDs']);
-			$paymentAmountArray = array();  $paymentAmountArray = explode(':::',$_POST['paymentAmounts']);
-			$currencyCodeArray  = array();  $currencyCodeArray  = explode(':::',$_POST['currencyCodes']);
-			$orderTypeArray     = array();  $orderTypeArray     = explode(':::',$_POST['orderTypes']);
-			$costDetailsArray   = array();  $costDetailsArray   = explode(':::',$_POST['costDetails']);
-			$costNoteArray      = array();  $costNoteArray      = explode(':::',$_POST['costNotes']);
-			$invoiceArray       = array();  $invoiceArray       = explode(':::',$_POST['invoices']);
-
-			//first remove all payment records, then we'll add them back
-			$resource->removeResourcePayments();
-
-			foreach ($orderTypeArray as $key => $value){
-				if (($value) && ($paymentAmountArray[$key] || $yearArray[$key] || $fundIDArray[$key] || $costNoteArray[$key])){
-					$resourcePayment = new ResourcePayment();
-					$resourcePayment->resourceID    = $resourceID;
-					$resourcePayment->year          = $yearArray[$key];
-					$resourcePayment->subscriptionStartDate = $subStartArray[$key];
-					$resourcePayment->subscriptionEndDate   = $subEndArray[$key];
-					$resourcePayment->fundID        = $fundIDArray[$key];
-					$resourcePayment->paymentAmount = cost_to_integer($paymentAmountArray[$key]);
-					$resourcePayment->currencyCode  = $currencyCodeArray[$key];
-					$resourcePayment->orderTypeID   = $value;
-					$resourcePayment->costDetails   = $costDetailsArray[$key];
-					$resourcePayment->costNote      = $costNoteArray[$key];
-					$resourcePayment->invoice       = $invoiceArray[$key];
-					try {
-						$resourcePayment->save();
-					} catch (Exception $e) {
-						echo $e->getMessage();
-					}
-				}
-			}
-
-
-
-			//next if the resource was submitted, enter into workflow
-			if ($statusID == $status->getIDFromName('progress')){
-				$resource->enterNewWorkflow();
-			}
 		}
 	}
 
+	if (!$fromExternal) {
+		$yearArray          = array();  $yearArray          = explode(':::',$_POST['years']);
+		$subStartArray      = array();  $subStartArray      = explode(':::',$_POST['subStarts']);
+		$subEndArray        = array();  $subEndArray        = explode(':::',$_POST['subEnds']);
+		$fundIDArray        = array();  $fundIDArray        = explode(':::',$_POST['fundIDs']);
+		$paymentAmountArray = array();  $paymentAmountArray = explode(':::',$_POST['paymentAmounts']);
+		$currencyCodeArray  = array();  $currencyCodeArray  = explode(':::',$_POST['currencyCodes']);
+		$orderTypeArray     = array();  $orderTypeArray     = explode(':::',$_POST['orderTypes']);
+		$costDetailsArray   = array();  $costDetailsArray   = explode(':::',$_POST['costDetails']);
+		$costNoteArray      = array();  $costNoteArray      = explode(':::',$_POST['costNotes']);
+		$invoiceArray       = array();  $invoiceArray       = explode(':::',$_POST['invoices']);
+
+		//first remove all payment records, then we'll add them back
+		$resource->removeResourcePayments();
+
+		foreach ($orderTypeArray as $key => $value){
+			if (($value) && ($paymentAmountArray[$key] || $yearArray[$key] || $fundNameArray[$key] || $costNoteArray[$key])){
+				$resourcePayment = new ResourcePayment();
+				$resourcePayment->resourceID    = $resourceID;
+				$resourcePayment->year          = $yearArray[$key];
+				$resourcePayment->subscriptionStartDate = $subStartArray[$key];
+				$resourcePayment->subscriptionEndDate   = $subEndArray[$key];
+				$resourcePayment->fundName      = $fundNameArray[$key];
+				$resourcePayment->paymentAmount = cost_to_integer($paymentAmountArray[$key]);
+				$resourcePayment->currencyCode  = $currencyCodeArray[$key];
+				$resourcePayment->orderTypeID   = $value;
+				$resourcePayment->costDetails   = $costDetailsArray[$key];
+				$resourcePayment->costNote      = $costNoteArray[$key];
+				$resourcePayment->invoice       = $invoiceArray[$key];
+				try {
+					$resourcePayment->save();
+				} catch (Exception $e) {
+					echo $e->getMessage();
+				}
+			}
+		}
+	}
 	//next if the resource was submitted, enter into workflow
 	if ($statusID == $status->getIDFromName('progress')){
 		$resource->enterNewWorkflow();
