@@ -13,7 +13,7 @@ class TAMUExternalResourceRepo implements ResourceRepoInterface {
 		$data = json_decode($remoteData,true);
 		if ($data) {
 			//currently, we only handle one RP on creation, but in the future it could be more
-			$this->addResourcePaymentObject(new TAMUExternalResourcePayment($data['fund'],$po));
+			$this->addResourcePaymentObject(new TAMUExternalResourcePayment($data['fund'],$po,$data['bib_id']));
 			$this->setResourceObject(new TAMUExternalResource());
 			$this->getResourceObject()->setTitleText($data['bib_title']);
 			if (!is_array($data['bib_isbn'])) {

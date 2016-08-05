@@ -84,9 +84,9 @@ try {
 			$resourcePayment = new ResourcePayment();
 			$resourcePayment->resourceID    = $resource->primaryKey;
 			$resourcePayment->year          = date("Y");
-
 			$resourcePayment->fundName      = $remoteResourcePayment->getFundName();
 			$resourcePayment->purchaseOrder = $remoteResourcePayment->getPurchaseOrder();
+			$resourcePayment->systemID      = $remoteResourcePayment->getSystemID();
 			$resourcePayment->paymentAmount = 0;
 			$resourcePayment->currencyCode  = $config->settings->defaultCurrency;
 			$resourcePayment->orderTypeID   = 0;
