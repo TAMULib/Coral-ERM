@@ -113,6 +113,11 @@ class Fund extends DatabaseObject {
 
 				return $resultArray;
 		}
+
+	public function getByFundCode($fundCode) {
+		$query = "SELECT * FROM Fund WHERE fundCode='{$fundCode}' LIMIT 1";
+		return $this->db->processQuery($query, 'assoc');
+	}
 }
 
 ?>

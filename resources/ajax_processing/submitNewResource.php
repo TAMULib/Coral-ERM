@@ -80,11 +80,21 @@ try {
 		}
 		$resource->setIsbnOrIssn($addableIsbnOrIssns);
 
+		$fund = new Fund();
 		foreach ($remoteResourceRepo->getResourcePaymentObjects() as $remoteResourcePayment) {
+			$fundID = 0;
+ 			if (($fundCandidate = $fund->getByFundCode($remoteResourcePayment->getFundCode()))) {
+				$fundID = $fundCandidate['fundID'];
+			} else {
+				$fund->fundCode = $remoteResourcePayment->getFundCode();
+				$fund->save();
+				$fundID = $fund->primaryKey;
+			}
+
 			$resourcePayment = new ResourcePayment();
 			$resourcePayment->resourceID    = $resource->primaryKey;
 			$resourcePayment->year          = date("Y");
-			$resourcePayment->fundName      = $remoteResourcePayment->getFundName();
+			$resourcePayment->fundID      	= $fundID;
 			$resourcePayment->purchaseOrder = $remoteResourcePayment->getPurchaseOrder();
 			$resourcePayment->systemID      = $remoteResourcePayment->getSystemID();
 			$resourcePayment->paymentAmount = 0;
@@ -134,41 +144,17 @@ try {
 			$resourceNote->noteText 	= $_POST['noteText'];
 		}
 
-		try {
-			$resource->save();
-			echo $resource->primaryKey;
-			$resourceID=$resource->primaryKey;
+		$resourceNote->save();
+	}
 
-			//get the provider ID in case we insert what was entered in the provider text box as an organization link
-			$organizationRole = new OrganizationRole();
-			$organizationRoleID = $organizationRole->getProviderID();
-
-			//add notes
-			if (($_POST['noteText']) || (($_POST['providerText']) && (!$_POST['organizationID']))){
-				//first, remove existing notes in case this was saved before
-				$resource->removeResourceNotes();
-
-				//this is just to figure out what the creator entered note type ID is
-				$noteType = new NoteType();
-
-				$resourceNote = new ResourceNote();
-				$resourceNote->resourceNoteID 	= '';
-				$resourceNote->updateLoginID 	= $loginID;
-				$resourceNote->updateDate		= date( 'Y-m-d' );
-				$resourceNote->noteTypeID 		= $noteType->getInitialNoteTypeID();
-				$resourceNote->tabName 			= 'Product';
-				$resourceNote->resourceID 		= $resourceID;
-
-				//only insert provider as note if it's been submitted
-				if (($_POST['providerText']) && (!$_POST['organizationID']) && ($_POST['resourceStatus'] == 'progress')){
-					$resourceNote->noteText 	= "Provider:  " . $_POST['providerText'] . "\n\n" . $_POST['noteText'];
-				}else{
-					$resourceNote->noteText 	= $_POST['noteText'];
-				}
-
-				$resourceNote->save();
-			}
-		}
+	//first remove the organizations if this is a saved request
+	$resource->removeResourceOrganizations();
+	if (($_POST['organizationID']) && ($organizationRoleID)){
+		$resourceOrganizationLink = new ResourceOrganizationLink();
+		$resourceOrganizationLink->resourceID = $resourceID;
+		$resourceOrganizationLink->organizationID = $_POST['organizationID'];
+		$resourceOrganizationLink->organizationRoleID = $organizationRoleID;
+		$resourceOrganizationLink->save();
 	}
 
 	if (!$fromExternal) {
