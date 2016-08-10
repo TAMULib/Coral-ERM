@@ -1103,6 +1103,14 @@ a#showMoreOptions:hover {
 			margin-top: 6px;
 }
 
+.existing-notes {
+	margin-top: 12px;
+}
+
+.existing-notes h3 {
+	margin: 8px 0;
+}
+
 #div_searchISBNOrISSN {
 			margin-left: 0 !important;
 			margin-top: 6px;

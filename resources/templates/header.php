@@ -203,8 +203,10 @@ $coralURL = $util->getCORALURL();
             <span><?php echo _("Admin");?></span>
         </div>
     </a>
-	<?php } ?>
-<?php } ?>
+<?php
+        }
+    } 
+?>
 
 </td>
 

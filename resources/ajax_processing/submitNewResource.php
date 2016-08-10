@@ -26,7 +26,6 @@ if ($resourceID){
 	$resource->createDate			= date( 'Y-m-d' );
 	$resource->updateLoginID 		= '';
 	$resource->updateDate			= '';
-
 }
 
 if (!$fromExternal) {
@@ -73,6 +72,7 @@ try {
 		$statusID = $status->getIDFromName('progress');
 		$remoteResourceRepo = new $config->settings->externalResourceRepoClass($externalId);
 		$resource->setTitleText($remoteResourceRepo->getResourceObject()->getTitleText());
+		$resource->setVendorCode($remoteResourceRepo->getResourceObject()->getVendorCode());
 
 		$addableIsbnOrIssns = array();
 		foreach ($remoteResourceRepo->getIsbnOrIssnObjects() as $isbnOrIssnObject) {
@@ -117,6 +117,7 @@ try {
 	}
 
 	$resourceID=$resource->primaryKey;
+
 	//get the provider ID in case we insert what was entered in the provider text box as an organization link
 	$organizationRole = new OrganizationRole();
 	$organizationRoleID = $organizationRole->getProviderID();
@@ -194,6 +195,7 @@ try {
 			}
 		}
 	}
+
 	//next if the resource was submitted, enter into workflow
 	if ($statusID == $status->getIDFromName('progress')){
 		$resource->enterNewWorkflow();

@@ -49,6 +49,10 @@ class Resource extends DatabaseObject implements ResourceInterface {
 		return $this->attributes['coverageText'];
 	}
 
+	public function getVendorCode() {
+		return $this->attributes['vendorCode'];
+	}
+
 	//returns resource objects by title
 	public function getResourceByTitle($title) {
 
