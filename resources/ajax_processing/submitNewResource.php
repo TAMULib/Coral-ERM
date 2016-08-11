@@ -83,14 +83,15 @@ try {
 		$fund = new Fund();
 		foreach ($remoteResourceRepo->getResourcePaymentObjects() as $remoteResourcePayment) {
 			$fundID = 0;
- 			if (($fundCandidate = $fund->getByFundCode($remoteResourcePayment->getFundCode()))) {
-				$fundID = $fundCandidate['fundID'];
-			} else {
-				$fund->fundCode = $remoteResourcePayment->getFundCode();
-				$fund->save();
-				$fundID = $fund->primaryKey;
+			if ($remoteResourcePayment->getFundCode()) {
+	 			if (($fundCandidate = $fund->getByFundCode($remoteResourcePayment->getFundCode()))) {
+					$fundID = $fundCandidate['fundID'];
+				} else {
+					$fund->fundCode = $remoteResourcePayment->getFundCode();
+					$fund->save();
+					$fundID = $fund->primaryKey;
+				}
 			}
-
 			$resourcePayment = new ResourcePayment();
 			$resourcePayment->resourceID    = $resource->primaryKey;
 			$resourcePayment->year          = date("Y");
