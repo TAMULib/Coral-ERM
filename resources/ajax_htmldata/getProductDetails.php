@@ -219,7 +219,16 @@
 			</tr>
 			<?php
 			}
-
+if ($resource->vendorCode) {
+?>
+			<tr>
+				<td><?php echo _("Vendor Code:");?></td>
+				<td>
+					<?php echo $resource->vendorCode;?>
+				</td>
+			</tr>
+<?php
+}
 
 			if (count($orgArray) > 0){
 			?>
