@@ -8,8 +8,9 @@
 		$formWidth = 784;
                 ?>
 		<!-- Hide the helpful links, etc. -->
-        	<script>
-			$('#div_fullRightPanel').hide(); 
+ 		<script type="text/javascript">
+				$('#div_fullRightPanel').hide();
+				$("#div_acquisitions").addClass("enhanced-cost");
 		</script>
                 <?php
 	}else{
@@ -56,7 +57,7 @@
 				}
 
 				$fund = new Fund(new NamedArguments(array('primaryKey' => $instance->fundID)));
-				$sanitizedInstance['fundCode'] = $fund->shortName . " [" . $fund->fundCode . "]";
+				$sanitizedInstance['fundCode'] = $fund->shortName . " [" . $fund->fundCode . $instance->fundSpecial. "]";
 
 				array_push($paymentArray, $sanitizedInstance);
 

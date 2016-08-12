@@ -212,7 +212,7 @@ table.adminMenuTable {
 	border-width: 0 0 1px 1px;
 	border-style: solid;
 	border-color: #e6e5e9;
-	border-collapse: collapse;
+	border-collapse: collapse;#
 	border-spacing: 0;
 	font-size:95%;
 	background-color: #f6f8fa;
@@ -1427,6 +1427,19 @@ td.searchRow textarea {
 
 .resource_tab_content {
 			width: 630px !important;
+}
+
+/* Have to use important here, in order to override its use in .resource_tab_content */
+#div_acquisitions.enhanced-cost {
+    width: 900px !important;
+}
+
+#div_acquisitions.enhanced-cost .mainContent {
+    width: 880px;
+}
+
+#div_acquisitions.enhanced-cost #div_fullRightPanel {
+	display: none;
 }
 
 .sidemenu {
