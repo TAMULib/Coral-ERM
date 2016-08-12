@@ -68,6 +68,10 @@ try {
 	$resource->save();
 
 	if ($fromExternal) {
+		$resource->resourceTypeID = 2;
+		$resource->resourceFormatID = 2;
+		$resource->acquisitionTypeID = 1;
+
 		$status = new Status();
 		$statusID = $status->getIDFromName('progress');
 		$remoteResourceRepo = new $config->settings->externalResourceRepoClass($externalId);
