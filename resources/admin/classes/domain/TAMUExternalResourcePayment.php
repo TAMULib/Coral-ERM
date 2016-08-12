@@ -3,11 +3,13 @@ class TAMUExternalResourcePayment implements ResourcePaymentInterface {
 	protected $fundCode;
 	protected $purchaseOrder;
 	protected $systemID;
+	protected $vendorCode;
 
-	public function __construct($fundCode=null,$purchaseOrder=null,$systemID=null) {
+	public function __construct($fundCode=null,$purchaseOrder=null,$systemID=null,$vendorCode=null) {
 		$this->setFundCode($fundCode);
 		$this->setPurchaseOrder($purchaseOrder);
 		$this->setSystemID($systemID);
+		$this->setVendorCode($vendorCode);
 	}
 
 	public function getFundCode() {
@@ -32,6 +34,14 @@ class TAMUExternalResourcePayment implements ResourcePaymentInterface {
 
 	protected function setSystemID($systemID) {
 		$this->systemID = $systemID;
+	}
+
+	protected function setVendorCode($vendorCode) {
+		$this->vendorCode = $vendorCode;
+	}
+
+	public function getVendorCode() {
+		return $this->vendorCode;
 	}
 }
 ?>

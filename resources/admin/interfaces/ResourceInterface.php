@@ -6,6 +6,5 @@ interface ResourceInterface {
 	public function getSystemNumber();
 	public function getProviderText();
 	public function getCoverageText();
-	public function getVendorCode();
 }
 ?>

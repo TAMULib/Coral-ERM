@@ -72,7 +72,6 @@ try {
 		$statusID = $status->getIDFromName('progress');
 		$remoteResourceRepo = new $config->settings->externalResourceRepoClass($externalId);
 		$resource->setTitleText($remoteResourceRepo->getResourceObject()->getTitleText());
-		$resource->setVendorCode($remoteResourceRepo->getResourceObject()->getVendorCode());
 
 		$addableIsbnOrIssns = array();
 		foreach ($remoteResourceRepo->getIsbnOrIssnObjects() as $isbnOrIssnObject) {
@@ -98,6 +97,7 @@ try {
 			$resourcePayment->fundID      	= $fundID;
 			$resourcePayment->purchaseOrder = $remoteResourcePayment->getPurchaseOrder();
 			$resourcePayment->systemID      = $remoteResourcePayment->getSystemID();
+			$resourcePayment->vendorCode 	= $remoteResourcePayment->getVendorCode();
 			$resourcePayment->paymentAmount = 0;
 			$resourcePayment->currencyCode  = $config->settings->defaultCurrency;
 			$resourcePayment->orderTypeID   = 0;
