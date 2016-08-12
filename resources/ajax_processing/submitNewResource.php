@@ -87,8 +87,14 @@ try {
 		foreach ($remoteResourceRepo->getResourcePaymentObjects() as $remoteResourcePayment) {
 			$fundID = 0;
 			if ($remoteResourcePayment->getFundCode()) {
-	 			if (($fundCandidate = $fund->getByFundCode($remoteResourcePayment->getFundCode()))) {
+				$fundPrefix = substr($remoteResourcePayment->getFundCode(),0,3);
+				$fundSpecial = substr($remoteResourcePayment->getFundCode(),3,1);
+				
+	 			if ($fundCandidate = $fund->getByFundCode($fundPrefix)) {
 					$fundID = $fundCandidate['fundID'];
+					if (empty($organizationID)) {
+						$organizationID = !empty($fundCandidate['organizationID']) ? $fundCandidate['organizationID']:null;
+					}
 				} else {
 					$fund->fundCode = $remoteResourcePayment->getFundCode();
 					$fund->save();
@@ -99,6 +105,7 @@ try {
 			$resourcePayment->resourceID    = $resource->primaryKey;
 			$resourcePayment->year          = date("Y");
 			$resourcePayment->fundID      	= $fundID;
+			$resourcePayment->fundSpecial      	= $fundSpecial;
 			$resourcePayment->purchaseOrder = $remoteResourcePayment->getPurchaseOrder();
 			$resourcePayment->systemID      = $remoteResourcePayment->getSystemID();
 			$resourcePayment->vendorCode 	= $remoteResourcePayment->getVendorCode();
@@ -111,6 +118,8 @@ try {
 				echo $e->getMessage();
 			}
 		}
+	} else {
+		$organizationID = !empty($_POST['organizationID']) ? $_POST['organizationID']:null;
 	}
 
 	if ($outputJson) {
@@ -122,10 +131,6 @@ try {
 	}
 
 	$resourceID=$resource->primaryKey;
-
-	//get the provider ID in case we insert what was entered in the provider text box as an organization link
-	$organizationRole = new OrganizationRole();
-	$organizationRoleID = $organizationRole->getProviderID();
 
 	//add notes
 	if (($_POST['noteText']) || (($_POST['providerText']) && (!$_POST['organizationID']))){
@@ -153,14 +158,25 @@ try {
 		$resourceNote->save();
 	}
 
-	//first remove the organizations if this is a saved request
-	$resource->removeResourceOrganizations();
-	if (($_POST['organizationID']) && ($organizationRoleID)){
-		$resourceOrganizationLink = new ResourceOrganizationLink();
-		$resourceOrganizationLink->resourceID = $resourceID;
-		$resourceOrganizationLink->organizationID = $_POST['organizationID'];
-		$resourceOrganizationLink->organizationRoleID = $organizationRoleID;
-		$resourceOrganizationLink->save();
+	if ($organizationID) {
+		if ($fromExternal) {
+			$organizationRoleID = 5;
+		} else {
+			//get the provider ID in case we insert what was entered in the provider text box as an organization link
+			$organizationRole = new OrganizationRole();
+			$organizationRoleID = $organizationRole->getProviderID();
+
+			//first remove the organizations if this is a saved request
+			$resource->removeResourceOrganizations();
+		}
+
+		if ($organizationRoleID) {
+			$resourceOrganizationLink = new ResourceOrganizationLink();
+			$resourceOrganizationLink->resourceID = $resourceID;
+			$resourceOrganizationLink->organizationID = $organizationID;
+			$resourceOrganizationLink->organizationRoleID = $organizationRoleID;
+			$resourceOrganizationLink->save();
+		}
 	}
 
 	if (!$fromExternal) {
