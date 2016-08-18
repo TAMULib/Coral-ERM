@@ -3,7 +3,7 @@
 	$enhancedCostFlag = ((isset($config->settings->enhancedCostHistory)) && (strtoupper($config->settings->enhancedCostHistory) == 'Y')) ? 1 : 0;
 	$enhancedCostFlag = (strtoupper($config->settings->enhancedCostHistory) == 'Y') ? 1 : 0;
 	if ($enhancedCostFlag){
-		$numCols = 9;
+		$numCols = 10;
 		$tableWidth = 760;
 		$formWidth = 784;
                 ?>
@@ -195,6 +195,7 @@
 			<th><?php echo _("Notes");?></th>
 		<?php if ($enhancedCostFlag){ ?>
 			<th><?php echo _("Invoice");?></th>
+			<th><?php echo _("Vendor Code");?></th>
 		<?php } ?>
 			</tr>
 </thead>
@@ -222,6 +223,7 @@
 				$costDetails = $payment['costDetails'] ? $payment['costDetails'] : "&nbsp;";
 				$costNote = $payment['costNote'] ? $payment['costNote'] : "&nbsp;";
 				$invoiceNum = $payment['invoiceNum'] ? $payment['invoiceNum'] : "&nbsp;";
+				$vendorCode = !empty($payment['vendorCode']) ? $payment['vendorCode'] : "&nbsp;";
 
 				?>
 				<tr>
@@ -242,6 +244,7 @@
 				<td <?php echo $classAdd;?>><?php echo $costNote; ?></td>
 			<?php if ($enhancedCostFlag){ ?>
 				<td <?php echo $classAdd;?>><?php echo $invoiceNum; ?></td>
+				<td <?php echo $classAdd;?>><?php echo $vendorCode; ?></td>
 			<?php } ?>
 				</tr>
 
