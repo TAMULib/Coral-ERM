@@ -107,8 +107,8 @@ if ($enhancedCostFlag)
 										{
 											$fundCodeLength = strlen($fund['fundCode']) + 3;
 											$combinedLength = strlen($fund['shortName']) + $fundCodeLength;
-											$fundName = ($combinedLength <=50) ? $fund['shortName'] : substr($fund['shortName'],0,49-$fundCodeLength) . "&hellip;";
-											$fundName .= " [" . $fund['fundCode'] . "]</option>";
+											$fundName = " [" . $fund['fundCode'] . "] ";
+											$fundName .= ($combinedLength <=50) ? $fund['shortName'] : substr($fund['shortName'],0,49-$fundCodeLength) . "&hellip;";
 											echo "<option value='" . $fund['fundID'] . "'>" . $fundName . "</option>";
 										}
 									?>
@@ -228,8 +228,8 @@ if ($enhancedCostFlag)
 											{
 												$fundCodeLength = strlen($fund['fundCode']) + 3;
 												$combinedLength = strlen($fund['shortName']) + $fundCodeLength;
-												$fundName = ($combinedLength <=50) ? $fund['shortName'] : substr($fund['shortName'],0,49-$fundCodeLength) . "&hellip;";
-												$fundName .= " [" . $fund['fundCode'] . "]</option>";
+												$fundName = " [" . $fund['fundCode'] . "] ";
+												$fundName .= ($combinedLength <=50) ? $fund['shortName'] : substr($fund['shortName'],0,49-$fundCodeLength) . "&hellip;";
 												echo "<option";
 												if ($payment['fundID'] == $fund['fundID'])
 												{

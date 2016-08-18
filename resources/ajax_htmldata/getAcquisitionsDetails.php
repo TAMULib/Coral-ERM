@@ -57,7 +57,7 @@
 				}
 
 				$fund = new Fund(new NamedArguments(array('primaryKey' => $instance->fundID)));
-				$sanitizedInstance['fundCode'] = $fund->shortName . " [" . $fund->fundCode . $instance->fundSpecial. "]";
+				$sanitizedInstance['fundCode'] = "[" . $fund->fundCode . $instance->fundSpecial. "] ".$fund->shortName;
 
 				array_push($paymentArray, $sanitizedInstance);
 
