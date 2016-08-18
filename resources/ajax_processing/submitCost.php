@@ -18,6 +18,9 @@
 			$costDetailsArray   = array();  $costDetailsArray   = explode(':::',$_POST['costDetails']);
 			$costNoteArray      = array();  $costNoteArray      = explode(':::',$_POST['costNotes']);
 			$invoiceArray       = array();  $invoiceArray       = explode(':::',$_POST['invoices']);
+			$purchaseOrderArray = array();  $purchaseOrderArray = explode(':::',$_POST['purchaseOrders']);
+			$systemIDArray      = array();  $systemIDArray      = explode(':::',$_POST['systemIDs']);
+			$vendorCodeArray    = array();  $vendorCodeArray    = explode(':::',$_POST['vendorCodes']);
 			foreach ($orderTypeArray as $key => $value){
 				if (($value) && ($paymentAmountArray[$key] || $yearArray[$key] || $fundIDArray[$key] || $costNoteArray[$key])){
 					$resourcePayment = new ResourcePayment();
@@ -34,6 +37,11 @@
 					$resourcePayment->costDetailsID = $costDetailsArray[$key];
 					$resourcePayment->costNote      = $costNoteArray[$key];
 					$resourcePayment->invoiceNum    = $invoiceArray[$key];
+
+					$resourcePayment->purchaseOrder	= $purchaseOrderArray[$key];
+					$resourcePayment->systemID		= $systemIDArray[$key];
+					$resourcePayment->vendorCode   	= $vendorCodeArray[$key];
+
 					try {
 						$resourcePayment->save();
 					} catch (Exception $e) {

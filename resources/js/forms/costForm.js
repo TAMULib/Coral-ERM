@@ -136,6 +136,9 @@ $(function(){
 			$('.newPaymentTable').find('.costDetailsID').val('');
 			$('.newPaymentTable').find('.costNote').val('');
 			$('.newPaymentTable').find('.invoiceNum').val('');
+			$('.newPaymentTable').find('.purchaseOrder').val('');
+			$('.newPaymentTable').find('.systemID').val('');
+			$('.newPaymentTable').find('.vendorCode').val('');
 			var tableDiv=$('.paymentTableDiv')[0];
 			tableDiv.scrollTop=tableDiv.scrollHeight;
 			return true;
@@ -159,7 +162,11 @@ function submitCostForm()
 	var cNote      = $('.newPaymentTR').find('.costNote').val();
 	var invoiceNum = $('.newPaymentTR').find('.invoiceNum').val();
 
-	if(y != '' || ssd != '' || sed != '' || fName != '' || pAmount != '' || typeID != '' || detailsID != '' || cNote != '' || invoiceNum != '')
+	var purchaseOrder = $('.newPaymentTR').find('.purchaseOrder').val();
+	var systemID = $('.newPaymentTR').find('.systemID').val();
+	var vendorCode = $('.newPaymentTR').find('.vendorCode').val();
+
+	if(y != '' || ssd != '' || sed != '' || fName != '' || pAmount != '' || typeID != '' || detailsID != '' || cNote != '' || invoiceNum != '' || purchaseOrder != '' || systemID != '' || vendorCode != '')
 	{
 		if(confirm('There is unsaved information on the add line. To discard this information, click OK, otherwise click Cancel.')==false)
 		{
@@ -221,7 +228,27 @@ function submitCostForm()
 		invoiceList ='';
 		$(".paymentTable").find(".invoiceNum").each(function(id) {
 		      invoiceList += $(this).val() + ":::";
-		}); 
+		});
+
+		purchaseOrderList ='';
+		$(".paymentTable").find(".purchaseOrder").each(function(id) {
+		      purchaseOrderList += $(this).val() + ":::";
+		});
+
+		purchaseOrderList ='';
+		$(".paymentTable").find(".purchaseOrder").each(function(id) {
+		      purchaseOrderList += $(this).val() + ":::";
+		});
+
+		systemIDList ='';
+		$(".paymentTable").find(".systemID").each(function(id) {
+		      systemIDList += $(this).val() + ":::";
+		});
+
+		vendorCodeList ='';
+		$(".paymentTable").find(".vendorCode").each(function(id) {
+		      vendorCodeList += $(this).val() + ":::";
+		});
 
 		$('#submitCost').attr("disabled", "disabled"); 
 		$.ajax({
@@ -239,7 +266,10 @@ function submitCostForm()
 				orderTypes: orderTypeList,
 				costDetails: detailsList,
 				costNotes: costNoteList,
-				invoices: invoiceList
+				invoices: invoiceList,
+				purchaseOrders: purchaseOrderList,
+				systemIDs: systemIDList,
+				vendorCodes: vendorCodeList
 			},
 			success:   function(html) {
 				if (html){

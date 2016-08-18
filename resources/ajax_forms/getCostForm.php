@@ -41,7 +41,7 @@ $numCols = 6;
 if ($enhancedCostFlag)
 {
 	$baseWidth += 388;
-	$numCols += 5; // year, sub start, sub end, cost details, invoice num
+	$numCols += 7; // year, sub start, sub end, cost details, invoice num
 }
 ?>
 
@@ -78,6 +78,9 @@ if ($enhancedCostFlag)
 							<th><?php echo _("Note");?></th>
 							<?php if ($enhancedCostFlag){ ?>
 							<th><?php echo _("Invoice");?></th>
+							<th><?php echo _("Purchase Order");?></th>
+							<th><?php echo _("System ID");?></th>
+							<th><?php echo _("Vendor Code");?></th>
 							<?php } ?>
 							<th>&nbsp;</th>
 						</tr>
@@ -161,6 +164,15 @@ if ($enhancedCostFlag)
 							<?php if ($enhancedCostFlag){ ?>
 							<td>
 								<input type='text' value='' class='changeDefaultWhite changeInput invoiceNum costHistoryInvoice' />
+							</td>
+							<td>
+								<input type='text' value='<?php echo $payment['vendorCode']; ?>' class='changeDefaultWhite changeInput vendorCode costHistoryInvoice' />
+							</td>
+							<td>
+								<input type='text' value='<?php echo $payment['purchaseOrder']; ?>' class='changeDefaultWhite changeInput purchaseOrder costHistoryInvoice' />
+							</td>
+							<td>
+								<input type='text' value='<?php echo $payment['systemID']; ?>' class='changeDefaultWhite changeInput systemID costHistoryInvoice' />
 							</td>
 							<?php } ?>
 							<td class='costHistoryAction'>
@@ -293,6 +305,15 @@ if ($enhancedCostFlag)
 								<?php if ($enhancedCostFlag){ ?>
 								<td>
 									<input type='text' value='<?php echo $payment['invoiceNum']; ?>' class='changeInput invoiceNum costHistoryInvoice' />
+								</td>
+								<td>
+									<input type='text' value='<?php echo $payment['vendorCode']; ?>' class='changeInput vendorCode costHistoryInvoice' />
+								</td>
+								<td>
+									<input type='text' value='<?php echo $payment['purchaseOrder']; ?>' class='changeInput purchaseOrder costHistoryInvoice' />
+								</td>
+								<td>
+									<input type='text' value='<?php echo $payment['systemID']; ?>' class='changeInput systemID costHistoryInvoice' />
 								</td>
 								<?php } ?>
 								<td class='costHistoryAction'>
