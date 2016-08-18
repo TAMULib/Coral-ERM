@@ -87,6 +87,9 @@ select option { color: #3D545D; font-family: "arial"; font-size: 95%; margin:1px
 
 input, select, multiple, textarea{color: #3D545D; font-family: "arial"; font-size: 95%; font-weight: medium;}
 
+.capitalize {
+	text-transform: capitalize;
+}
 
 /* following is for the right panel (helpful links) in the resource page
 *************************/
