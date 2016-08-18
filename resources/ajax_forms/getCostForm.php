@@ -307,13 +307,13 @@ if ($enhancedCostFlag)
 									<input type='text' value='<?php echo $payment['invoiceNum']; ?>' class='changeInput invoiceNum costHistoryInvoice' />
 								</td>
 								<td>
-									<input type='text' value='<?php echo $payment['vendorCode']; ?>' class='changeInput vendorCode costHistoryInvoice' />
-								</td>
-								<td>
 									<input type='text' value='<?php echo $payment['purchaseOrder']; ?>' class='changeInput purchaseOrder costHistoryInvoice' />
 								</td>
 								<td>
 									<input type='text' value='<?php echo $payment['systemID']; ?>' class='changeInput systemID costHistoryInvoice' />
+								</td>
+								<td>
+									<input type='text' value='<?php echo $payment['vendorCode']; ?>' class='changeInput vendorCode costHistoryInvoice' />
 								</td>
 								<?php } ?>
 								<td class='costHistoryAction'>
