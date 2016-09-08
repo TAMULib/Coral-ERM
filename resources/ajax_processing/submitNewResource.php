@@ -96,7 +96,7 @@ try {
 						$organizationID = !empty($fundCandidate['organizationID']) ? $fundCandidate['organizationID']:null;
 					}
 				} else {
-					$fund->fundCode = $remoteResourcePayment->getFundCode();
+					$fund->fundCode = $fundPrefix;
 					$fund->save();
 					$fundID = $fund->primaryKey;
 				}
