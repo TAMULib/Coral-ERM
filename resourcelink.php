@@ -5,7 +5,7 @@ require_once('on_off_campus_check.php');
 
 if ($_SERVER["SERVER_NAME"] != 'localhost') {
 
- $host = "mysql2.l";
+ $host = "mysql-coral.l";
 //  $host = "mysqldev.l";
 	$username = "coral";
 	$password = "va7uCUQ2";

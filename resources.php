@@ -7,7 +7,7 @@ header("Content-type: text/xml");
 //$pass = "ZpvOI6xr~~";
 //$database = "coral_resources_prod";
 
-$host = "mysql2.l";
+$host = "mysql-coral.l";
 $database = "coral_resources_prod";
 $user = "coral";
 $pass = "va7uCUQ2";
