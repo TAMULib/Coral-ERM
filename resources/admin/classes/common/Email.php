@@ -98,6 +98,12 @@ class Email extends Object {
 		  }
 		  
 		} else {
+		
+			// Configure email to use feedback email as from address
+			if ($config->settings->feedbackEmailAddress){
+				$this->from = $config->settings->feedbackEmailAddress;
+			}
+			
 		  return mail($this->to, $this->subject, $this->message, rtrim($this->getHeaders()));
 	  }
 	}
