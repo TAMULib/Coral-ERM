@@ -4,7 +4,6 @@ $resourceGroups = array();
 
 $resourceGroups["current"] = $user->getOutstandingTasks("current");
 $resourceGroups["future"] = $user->getOutstandingTasks("future");
-$resourceGroups["reviewed"] = $user->getOutstandingTasks("reviewed");
 
 foreach ($resourceGroups as $type=>$resourceGroup) {
 	echo "<div class=\"task-group\">

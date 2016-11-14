@@ -168,16 +168,15 @@ class User extends DatabaseObject {
 			$whereAdd = "";
 		}
 
+		$orderBy = '1 desc';
 		switch($type) {
-			case 'reviewed':
-				$whereAdd = "AND RS.reviewDate IS NOT NULL";
-			break;
 			case 'future':
-				$whereAdd = "AND RS.reviewDate IS NULL AND RS.stepStartDate > DATE_ADD(NOW(), INTERVAL {$monthsIntoFuture} MONTH)";
+				$whereAdd = "AND RS.stepStartDate > DATE_ADD(NOW(), INTERVAL {$monthsIntoFuture} MONTH)";
 			break;
 			case 'current':
 			default:
-				$whereAdd = "AND RS.reviewDate IS NULL AND RS.stepStartDate <= DATE_ADD(NOW(), INTERVAL {$monthsIntoFuture} MONTH)";
+				$whereAdd = "AND RS.stepStartDate <= DATE_ADD(NOW(), INTERVAL {$monthsIntoFuture} MONTH)";
+				$orderBy = 'RS.reviewDate ASC, 1 DESC';
 			break;
 		}
 
@@ -189,7 +188,7 @@ class User extends DatabaseObject {
 			AND (RS.stepEndDate IS NULL OR RS.stepEndDate = '0000-00-00')
 			AND (RS.stepStartDate IS NOT NULL AND RS.stepStartDate != '0000-00-00')
 			" . $whereAdd . "
-			ORDER BY 1 desc";
+			ORDER BY {$orderBy}";
 
 		$result = $this->db->processQuery($query, 'assoc');
 
