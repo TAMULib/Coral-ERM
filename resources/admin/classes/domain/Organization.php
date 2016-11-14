@@ -37,23 +37,23 @@ class Organization extends DatabaseObject {
 
 	}
 
-	public function alreadyExists($shortName) {
+  public function alreadyExists($shortName) {
 		$query = "SELECT count(*) orgcount FROM Organization WHERE UPPER(shortName) = '" . str_replace("'", "''", strtoupper($shortName)) . "';";
 		$result = $this->db->processQuery($query, 'assoc');
 		return $result['orgcount'];
- 	}
+  }
 
-  	public function getOrganizationIDByName($shortName) {
-    	$query = "SELECT organizationID FROM Organization WHERE UPPER(shortName) = '" . str_replace("'", "''", strtoupper($shortName)) . "';";
+  public function getOrganizationIDByName($shortName) {
+    $query = "SELECT organizationID FROM Organization WHERE UPPER(shortName) = '" . str_replace("'", "''", strtoupper($shortName)) . "';";
 		$result = $this->db->processQuery($query, 'assoc');
 		return $result['organizationID'];
-  	}
+  }
 
 	public function getIssues($archivedOnly=false) {
 		$query = "SELECT i.* 
 			  FROM Issue i
 			  LEFT JOIN IssueRelationship ir ON (ir.issueID=i.issueID AND ir.entityTypeID=1)
-			  WHERE ir.entityID={$this->primaryKey}";
+			  WHERE ir.entityID='{$this->primaryKey}'";
 		if ($archivedOnly) {
 			$query .= " AND i.dateClosed IS NOT NULL";
 		} else {
@@ -98,7 +98,7 @@ class Organization extends DatabaseObject {
 								WHERE sie.issueID=i.issueID) AS `CCs`
 			  FROM Issue i
 			  LEFT JOIN IssueRelationship ir ON (ir.issueID=i.issueID AND ir.entityTypeID=1)
-			  WHERE ir.entityID={$this->primaryKey}";
+			  WHERE ir.entityID='{$this->primaryKey}'";
 		if ($archivedOnly) {
 			$query .= " AND i.dateClosed IS NOT NULL";
 		} else {
@@ -119,7 +119,7 @@ class Organization extends DatabaseObject {
 	private function getDownTimeResults($archivedOnly=false) {
 		$query = "SELECT d.* 
 			  FROM Downtime d
-			  WHERE d.entityID={$this->primaryKey} 
+			  WHERE d.entityID='{$this->primaryKey}'
 			  AND d.entityTypeID=1";
 
 		if ($archivedOnly) {
