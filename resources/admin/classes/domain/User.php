@@ -248,7 +248,7 @@ class User extends DatabaseObject {
 			$whereAdd = "";
 		}
 
-		$query = "SELECT DISTINCT RS.resourceStepID, RS.stepName, RS.userGroupID, RS.stepStartDate, date_format(stepStartDate, '%c/%e/%Y') startDate,RS.reviewDate
+		$query = "SELECT DISTINCT RS.resourceStepID, RS.stepName, RS.userGroupID, RS.stepStartDate, date_format(stepStartDate, '%c/%e/%Y') startDate,RS.reviewDate, RS.reviewLoginID
 			FROM Resource R, ResourceStep RS, UserGroupLink UGL
 			WHERE R.resourceID = RS.resourceID
 			AND RS.userGroupID = UGL.userGroupID
