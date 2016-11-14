@@ -156,15 +156,8 @@
 
 		if($("#startDate").val()=="") {	
 			errors.push({
-				message: "Must set a date.",
+				message: _("Must set a date."),
 				target: '#span_error_startDate'
-			});
-		} 
-
-		if($("#endDate").val()=="") {	
-			errors.push({
-				message: "Must set a date.",
-				target: '#span_error_endDate'
 			});
 		} 
 
@@ -173,6 +166,32 @@
 		} else {
 
 			$(".addDowntimeError").html("");
+
+			for(var index in errors) {
+				error = errors[index];
+				$(error.target).html(error.message);
+			}
+		}
+	
+	});
+
+	$("#submitUpdatedDowntime").live("click", function(e) {
+		e.preventDefault();
+		
+		var errors = [];
+
+		if($("#endDate").val()=="") {	
+			errors.push({
+				message: _("Must set an end date."),
+				target: '#span_error_endDate'
+			});
+		} 
+
+		if(errors.length == 0) {
+			submitUpdatedDowntime();
+		} else {
+
+			$(".updateDowntimeError").html("");
 
 			for(var index in errors) {
 				error = errors[index];
@@ -395,12 +414,27 @@ function submitNewDowntime() {
 		 cache:      false,
 		 data:       data,
 		 success:    function(res) {
-			updateIssues();
-			tb_remove()
+			tb_remove();
 		 }
 
 	  });
 
+}
+
+function submitUpdatedDowntime() {
+	
+	var data = $("#resolveDowntimeForm").serialize();
+
+	$.ajax({
+		 type:       "POST",
+		 url:        "ajax_processing.php?action=updateDowntime",
+		 cache:      false,
+		 data:       data,
+		 success:    function(res) {
+			$("#openDowntimeBtn").click();
+			tb_remove();
+		 }
+	  });
 }
 
 function updateResourceIssues(){
@@ -490,14 +524,14 @@ $("#createContact").live("click",function(e) {
 
 	if($("#contactAddName").val() == "") {	
 		errors.push({
-			message: "New contact must have a name.",
+			message: _("New contact must have a name."),
 			target: '#span_error_contactAddName'
 		});
 	} 
 
 	if(!validateEmail($("#emailAddress").val())) {	
 		errors.push({
-			message: "CC must be a valid email.",
+			message: _("CC must be a valid email."),
 			target: '#span_error_contactEmailAddress'
 		});
 	} 
