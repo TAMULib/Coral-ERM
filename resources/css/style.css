@@ -22,7 +22,6 @@ body {
 
 .wrapper {
 	margin: 0 auto -2em;
-	height; 120px;
 	background-image: url("../images/back-header.jpg");
 	background-repeat: repeat-x;
 }
@@ -944,6 +943,9 @@ table.noMargin { border:0px;margin:0px; padding:0px;text-align:center; }
 table.noMargin tr { border:0px;margin:0px; padding:0px; vertical-align:center; }
 table.noMargin td { border:0px;margin:0px; padding:0px; }
 
+table.newPaymentTable td { padding:2px;}
+table.paymentTable td { padding-right:8px;}
+
 
 .formText {font-weight:bold;}
 
@@ -1001,7 +1003,7 @@ input.dp-applied {
 }
 
 .adminAddInput{margin-top:5px;}
-.licenseAddInput{margin-top:5px;margin-bottom;5px;}
+.licenseAddInput{margin-top: 5px; margin-bottom: 5px;}
 
 
 
@@ -3105,6 +3107,7 @@ span#divider {
     text-decoration: none;
     font-size: 13px;
     font-weight: 600;
+    line-height: 15px;
 }
 
 .main-menu-link img {

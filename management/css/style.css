@@ -29,7 +29,6 @@ body {
 	height: 100%;
 	---*/
 	margin: 0 auto -2em;
-	height; 120px;
 	background-image: url("../images/back-header.jpg");
 	background-repeat: repeat-x;
 }
@@ -489,7 +488,7 @@ input.dp-applied {
 }
 
 .adminAddInput{margin-top:5px;}
-.licenseAddInput{margin-top:5px;margin-bottom;5px;}
+.licenseAddInput{margin-top: 5px; margin-bottom: 5px;}
 
 
 
@@ -1903,6 +1902,7 @@ span#divider {
     text-decoration: none;
     font-size: 13px;
     font-weight: 600;
+    line-height: 15px;
 }
 
 .main-menu-link img {
