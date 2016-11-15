@@ -3,7 +3,7 @@
 	$enhancedCostFlag = ((isset($config->settings->enhancedCostHistory)) && (strtoupper($config->settings->enhancedCostHistory) == 'Y')) ? 1 : 0;
 	$enhancedCostFlag = (strtoupper($config->settings->enhancedCostHistory) == 'Y') ? 1 : 0;
 	if ($enhancedCostFlag){
-		$numCols = 12;
+		$numCols = 15;
 		$tableWidth = 760;
 		$formWidth = 1084;
                 ?>
