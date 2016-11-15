@@ -153,7 +153,16 @@ class User extends DatabaseObject {
 	//returns array of resource arrays that are in the outstanding queue for this user
 	public function getOutstandingTasks($type="current") {
 		$config = new Configuration();
-		$monthsIntoFuture = (is_numeric($config->settings->futureTaskMonths)) ? $config->settings->futureTaskMonths:1;
+		//The current/future task results can be configured as splitting at n months into the future.
+		//The default behavior is for current tasks to fall as current year or earlier, future tasks as next year and later
+		$monthsIntoFuture = (is_numeric($config->settings->futureTaskMonths)) ? $config->settings->futureTaskMonths:null;
+		if ($monthsIntoFuture) {
+			$futureSql = "RS.stepStartDate > DATE_ADD(NOW(), INTERVAL {$monthsIntoFuture} MONTH)";
+			$currentSql = "RS.stepStartDate <= DATE_ADD(NOW(), INTERVAL {$monthsIntoFuture} MONTH)";
+		} else {
+			$futureSql = 'YEAR(RS.stepStartDate) > YEAR(CURDATE())';
+			$currentSql = 'YEAR(RS.stepStartDate) <= YEAR(CURDATE())';
+		}
 
 		$status = new Status();
 		$excludeStatus =  Array();
@@ -168,16 +177,15 @@ class User extends DatabaseObject {
 			$whereAdd = "";
 		}
 
+		$orderBy = '1 desc';
 		switch($type) {
-			case 'reviewed':
-				$whereAdd = "AND RS.reviewDate IS NOT NULL";
-			break;
 			case 'future':
-				$whereAdd = "AND RS.reviewDate IS NULL AND RS.stepStartDate > DATE_ADD(NOW(), INTERVAL {$monthsIntoFuture} MONTH)";
+				$whereAdd = "AND {$futureSql}";
 			break;
 			case 'current':
 			default:
-				$whereAdd = "AND RS.reviewDate IS NULL AND RS.stepStartDate <= DATE_ADD(NOW(), INTERVAL {$monthsIntoFuture} MONTH)";
+				$whereAdd = "AND {$currentSql}";
+				$orderBy = 'RS.reviewDate ASC, 1 DESC';
 			break;
 		}
 
@@ -189,7 +197,7 @@ class User extends DatabaseObject {
 			AND (RS.stepEndDate IS NULL OR RS.stepEndDate = '0000-00-00')
 			AND (RS.stepStartDate IS NOT NULL AND RS.stepStartDate != '0000-00-00')
 			" . $whereAdd . "
-			ORDER BY 1 desc";
+			ORDER BY {$orderBy}";
 
 		$result = $this->db->processQuery($query, 'assoc');
 
@@ -240,7 +248,7 @@ class User extends DatabaseObject {
 			$whereAdd = "";
 		}
 
-		$query = "SELECT DISTINCT RS.resourceStepID, RS.stepName, RS.userGroupID, RS.stepStartDate, date_format(stepStartDate, '%c/%e/%Y') startDate,RS.reviewDate
+		$query = "SELECT DISTINCT RS.resourceStepID, RS.stepName, RS.userGroupID, RS.stepStartDate, date_format(stepStartDate, '%c/%e/%Y') startDate,RS.reviewDate, RS.reviewLoginID
 			FROM Resource R, ResourceStep RS, UserGroupLink UGL
 			WHERE R.resourceID = RS.resourceID
 			AND RS.userGroupID = UGL.userGroupID

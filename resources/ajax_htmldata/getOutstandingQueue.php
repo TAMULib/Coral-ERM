@@ -4,7 +4,6 @@ $resourceGroups = array();
 
 $resourceGroups["current"] = $user->getOutstandingTasks("current");
 $resourceGroups["future"] = $user->getOutstandingTasks("future");
-$resourceGroups["reviewed"] = $user->getOutstandingTasks("reviewed");
 
 foreach ($resourceGroups as $type=>$resourceGroup) {
 	echo "<div class=\"task-group\">
@@ -54,7 +53,6 @@ foreach ($resourceGroups as $type=>$resourceGroup) {
 			$j=0;
 
 			if (count($taskArray) > 0) {
-				$eUser = new User(new NamedArguments(array('primaryKey' => $resource['endLoginID'])));
 				foreach ($taskArray as $task) {
 					if ($j > 0) {
 ?>
@@ -76,18 +74,20 @@ foreach ($resourceGroups as $type=>$resourceGroup) {
 				<td " . $classAdd . " " . $styleAdd . "><a class=\"thickbox\" href=\"ajax_forms.php?action=getNoteForm&height=500&width=410&tab=Product&resourceID={$resource['resourceID']}&resourceNoteID=&modal=true&shownotes=1\">"._("view")."</a></td>
 				<td " . $classAdd . " " . $styleAdd . ">";
 
+					if (($user->isAdmin || $user->isInGroup($task['userGroupID']))) {
+						echo "<div><a href=\"{$task['resourceStepID']}\" class=\"mark-reviewed\" id=\"task_{$task['resourceStepID']}\">"._("yes")."</a></div>";
+					}
+
 					if ($task['reviewDate']) {
+						$eUser = new User(new NamedArguments(array('primaryKey' => $task['reviewLoginID'])));
 						if (($eUser->firstName) || ($eUser->lastName)){
-							echo format_date($resourceStep->stepEndDate) . _(" by ") . $eUser->firstName . " " . $eUser->lastName;
-						}
-					} else {
-						if (($user->isAdmin || $user->isInGroup($task['userGroupID'])) && !$task['reviewDate']) {
-							echo "<a href=\"{$task['resourceStepID']}\" class=\"mark-reviewed\" id=\"task_{$task['resourceStepID']}\">"._("yes")."</a>";
+							echo format_date($task['reviewDate']) . _(" by ") . $eUser->firstName . " " . $eUser->lastName;
 						}
 					}
 echo "			</td>
 				<td " . $classAdd . " " . $styleAdd . ">";
 					if ($task['stepEndDate']) {
+						$eUser = new User(new NamedArguments(array('primaryKey' => $resource['endLoginID'])));
 						if (($eUser->firstName) || ($eUser->lastName)){
 							echo format_date($resourceStep->stepEndDate) . _(" by ") . $eUser->firstName . " " . $eUser->lastName;
 						}else{
