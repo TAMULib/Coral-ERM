@@ -118,7 +118,7 @@ try {
 				$resourcePayment->vendorCode 	= $remoteResourcePayment->getVendorCode();
 				$resourcePayment->paymentAmount = 0;
 				$resourcePayment->currencyCode  = $config->settings->defaultCurrency;
-				$resourcePayment->orderTypeID   = 0;
+				$resourcePayment->orderTypeID   = 1;
 				try {
 					$resourcePayment->save();
 				} catch (Exception $e) {
