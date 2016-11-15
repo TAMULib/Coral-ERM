@@ -15,7 +15,8 @@ $(document).ready(function() {
 });
 
 function getDataByExternalId(externalIdInput) {
-	$('#submitQuickToDo').attr("disabled", "disabled"); 
+	$('#submitQuickToDo').attr("disabled", "disabled");
+	$("#formButtons").addClass("loading");
 	$.ajax({
 		type:       "POST",
 		url:        "ajax_processing.php?action=submitNewResource",
@@ -27,12 +28,16 @@ function getDataByExternalId(externalIdInput) {
 							window.parent.location = "resource.php?ref=new&resourceID="+resourceResult.resourceID;
 							tb_remove();
 						}
+					},
+		error: 		function() {
+						$("#formButtons").removeClass("loading"); 
+						$('#submitQuickToDo').removeAttr("disabled");
 					}
 	});
 }
 
 function submitQuickToDo(isnInput) {
-	$('#submitQuickToDo').attr("disabled", "disabled"); 
+	$('#submitQuickToDo').attr("disabled", "disabled");
 	$.ajax({
 		type:       "POST",
 		url:        "ajax_htmldata.php?action=getSearchResources",

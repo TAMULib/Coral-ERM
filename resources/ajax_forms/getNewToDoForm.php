@@ -15,12 +15,13 @@
 			</td>
 		</tr>
 	</table>
-	<table class='noBorderTable' style='width:125px;'>
-		<tr>
-			<td style='text-align:left'><input class="submit-button" type='submit' value='submit' name='submitQuickToDo' id='submitQuickToDo'></td>
-			<td style='text-align:right'><input class="cancel-button" type='button' value='cancel' onclick="tb_remove();"></td>
-		</tr>
-	</table>
-
+	<div id="formButtons">
+		<table class='noBorderTable' style='width:125px;'>
+			<tr>
+				<td style='text-align:left'><input class="submit-button" type='submit' value='submit' name='submitQuickToDo' id='submitQuickToDo'></td>
+				<td style='text-align:right'><input class="cancel-button" type='button' value='cancel' onclick="tb_remove();"></td>
+			</tr>
+		</table>
+	</div>
 </form>
 <script type="text/javascript" src="js/forms/quickToDo.js?random=<?php echo rand(); ?>"></script>
