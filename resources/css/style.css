@@ -3322,3 +3322,17 @@ input#archiveInd {
 #quickToDoForm td label {
 	font-weight: bold;
 }
+
+#quickToDoForm #formButtons {
+	min-height: 40px;
+}
+
+#quickToDoForm #formButtons.loading {
+	background-image: url('../images/circle.gif');
+	background-position: center center;
+	background-repeat: no-repeat;
+}
+
+#quickToDoForm #formButtons.loading table {
+	display: none;
+}
