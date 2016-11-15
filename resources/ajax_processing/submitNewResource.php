@@ -75,55 +75,63 @@ try {
 		$status = new Status();
 		$statusID = $status->getIDFromName('progress');
 		$remoteResourceRepo = new $config->settings->externalResourceRepoClass($externalId);
-		$resource->setTitleText($remoteResourceRepo->getResourceObject()->getTitleText());
+		//$resourceData is the JSON response for New Resource records originating from an External API
+		$resourceData = array();
+		//if we don't at least have a title, give up
+		if (!$remoteResourceRepo->getResourceObject()->getTitleText()) {
+			$resourceData = array("error"=>"Unable to retrieve the External Resource");
+		} else {
 
-		$addableIsbnOrIssns = array();
-		foreach ($remoteResourceRepo->getIsbnOrIssnObjects() as $isbnOrIssnObject) {
-			$addableIsbnOrIssns[] = $isbnOrIssnObject->getIsbnOrIssn();
-		}
-		$resource->setIsbnOrIssn($addableIsbnOrIssns);
+			$resource->setTitleText($remoteResourceRepo->getResourceObject()->getTitleText());
 
-		$fund = new Fund();
-		foreach ($remoteResourceRepo->getResourcePaymentObjects() as $remoteResourcePayment) {
-			$fundID = 0;
-			if ($remoteResourcePayment->getFundCode()) {
-				$fundPrefix = substr($remoteResourcePayment->getFundCode(),0,3);
-				$fundSpecial = substr($remoteResourcePayment->getFundCode(),3,1);
-				
-	 			if ($fundCandidate = $fund->getByFundCode($fundPrefix)) {
-					$fundID = $fundCandidate['fundID'];
-					if (empty($organizationID)) {
-						$organizationID = !empty($fundCandidate['organizationID']) ? $fundCandidate['organizationID']:null;
+			$addableIsbnOrIssns = array();
+			foreach ($remoteResourceRepo->getIsbnOrIssnObjects() as $isbnOrIssnObject) {
+				$addableIsbnOrIssns[] = $isbnOrIssnObject->getIsbnOrIssn();
+			}
+			$resource->setIsbnOrIssn($addableIsbnOrIssns);
+
+			$fund = new Fund();
+			foreach ($remoteResourceRepo->getResourcePaymentObjects() as $remoteResourcePayment) {
+				$fundID = 0;
+				if ($remoteResourcePayment->getFundCode()) {
+					$fundPrefix = substr($remoteResourcePayment->getFundCode(),0,3);
+					$fundSpecial = substr($remoteResourcePayment->getFundCode(),3,1);
+					
+		 			if ($fundCandidate = $fund->getByFundCode($fundPrefix)) {
+						$fundID = $fundCandidate['fundID'];
+						if (empty($organizationID)) {
+							$organizationID = !empty($fundCandidate['organizationID']) ? $fundCandidate['organizationID']:null;
+						}
+					} else {
+						$fund->fundCode = $fundPrefix;
+						$fund->save();
+						$fundID = $fund->primaryKey;
 					}
-				} else {
-					$fund->fundCode = $fundPrefix;
-					$fund->save();
-					$fundID = $fund->primaryKey;
+				}
+				$resourcePayment = new ResourcePayment();
+				$resourcePayment->resourceID    = $resource->primaryKey;
+				$resourcePayment->year          = date("Y");
+				$resourcePayment->fundID      	= $fundID;
+				$resourcePayment->fundSpecial      	= $fundSpecial;
+				$resourcePayment->purchaseOrder = $remoteResourcePayment->getPurchaseOrder();
+				$resourcePayment->systemID      = $remoteResourcePayment->getSystemID();
+				$resourcePayment->vendorCode 	= $remoteResourcePayment->getVendorCode();
+				$resourcePayment->paymentAmount = 0;
+				$resourcePayment->currencyCode  = $config->settings->defaultCurrency;
+				$resourcePayment->orderTypeID   = 0;
+				try {
+					$resourcePayment->save();
+				} catch (Exception $e) {
+					echo $e->getMessage();
 				}
 			}
-			$resourcePayment = new ResourcePayment();
-			$resourcePayment->resourceID    = $resource->primaryKey;
-			$resourcePayment->year          = date("Y");
-			$resourcePayment->fundID      	= $fundID;
-			$resourcePayment->fundSpecial      	= $fundSpecial;
-			$resourcePayment->purchaseOrder = $remoteResourcePayment->getPurchaseOrder();
-			$resourcePayment->systemID      = $remoteResourcePayment->getSystemID();
-			$resourcePayment->vendorCode 	= $remoteResourcePayment->getVendorCode();
-			$resourcePayment->paymentAmount = 0;
-			$resourcePayment->currencyCode  = $config->settings->defaultCurrency;
-			$resourcePayment->orderTypeID   = 0;
-			try {
-				$resourcePayment->save();
-			} catch (Exception $e) {
-				echo $e->getMessage();
-			}
+			$resourceData = array("resourceID"=>$resource->primaryKey);
 		}
 	} else {
 		$organizationID = !empty($_POST['organizationID']) ? $_POST['organizationID']:null;
 	}
 
 	if ($outputJson) {
-		$resourceData = array("resourceID"=>$resource->primaryKey);
 		echo json_encode($resourceData);
 
 	} else {

@@ -1,4 +1,5 @@
 <form id='quickToDoForm'>
+	<span id="external_error" class='error smallDarkRedText'></span>
 	<table>
 		<tr>
 			<td><label>PO:</label></td>
