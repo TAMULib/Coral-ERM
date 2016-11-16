@@ -62,23 +62,30 @@ if (!$fromExternal) {
 	}else{
 		$resource->resourceAltURL = '';
 	}
+	try {
+		$resource->save();
+	} catch (Exception $e) {
+		echo $e->getMessage();
+	}
 }
 
 try {
-	$resource->save();
-
 	if ($fromExternal) {
 		$resource->resourceTypeID = 2;
 		$resource->resourceFormatID = 2;
 		$resource->acquisitionTypeID = 1;
-
+		try {
+			$resource->save();
+		} catch (Exception $e) {
+			echo $e->getMessage();
+		}
 		$status = new Status();
 		$statusID = $status->getIDFromName('progress');
 		$remoteResourceRepo = new $config->settings->externalResourceRepoClass($externalId);
 		//$resourceData is the JSON response for New Resource records originating from an External API
 		$resourceData = array();
 		//if we don't at least have a title, give up
-		if (!$remoteResourceRepo->getResourceObject()->getTitleText()) {
+		if (!$remoteResourceRepo->getResourceObject() || !$remoteResourceRepo->getResourceObject()->getTitleText()) {
 			$resourceData = array("error"=>"Unable to retrieve the External Resource");
 		} else {
 
@@ -139,7 +146,9 @@ try {
 
 	if ($outputJson) {
 		echo json_encode($resourceData);
-
+		if (!empty($resourceData['error'])) {
+			exit;
+		}
 	} else {
 		echo $resource->primaryKey;
 	}
