@@ -18,27 +18,51 @@ function getDataByExternalId(externalIdInput) {
 	$("#external_error").text('');
 	$('#submitQuickToDo').attr("disabled", "disabled");
 	$("#formButtons").addClass("loading");
+	if (!findExistingResourceByExternalId(externalIdInput)) {
+		$.ajax({
+			type:       "POST",
+			url:        "ajax_processing.php?action=submitNewResource",
+			cache:      false,
+			data:       externalIdInput.serialize(),
+			success:    function(data) {
+							resourceResult = JSON.parse(data);
+							if (resourceResult.resourceID) {
+								window.parent.location = "resource.php?ref=new&resourceID="+resourceResult.resourceID;
+								tb_remove();
+							} else if (resourceResult.error) {
+								$("#external_error").text(resourceResult.error);
+								$("#formButtons").removeClass("loading"); 
+								$('#submitQuickToDo').removeAttr("disabled");
+							}
+						},
+			error: 		function() {
+							$("#formButtons").removeClass("loading"); 
+							$('#submitQuickToDo').removeAttr("disabled");
+						}
+		});
+	}
+}
+
+
+function findExistingResourceByExternalId(externalIdInput) {
+	var resourceID = null;
 	$.ajax({
-		type:       "POST",
-		url:        "ajax_processing.php?action=submitNewResource",
+		async: 		false,
+		type:       "GET",
+		url:        "ajax_processing.php?action=findResourceByExternalId",
 		cache:      false,
 		data:       externalIdInput.serialize(),
 		success:    function(data) {
 						resourceResult = JSON.parse(data);
 						if (resourceResult.resourceID) {
-							window.parent.location = "resource.php?ref=new&resourceID="+resourceResult.resourceID;
-							tb_remove();
-						} else if (resourceResult.error) {
-							$("#external_error").text(resourceResult.error);
+							resourceID = resourceResult.resourceID;
+							$("#external_error").html("Resource Exists: <a href='resource.php?resourceID="+resourceResult.resourceID+"'>"+resourceResult.titleText+"</a>");
 							$("#formButtons").removeClass("loading"); 
 							$('#submitQuickToDo').removeAttr("disabled");
 						}
-					},
-		error: 		function() {
-						$("#formButtons").removeClass("loading"); 
-						$('#submitQuickToDo').removeAttr("disabled");
 					}
 	});
+	return resourceID;
 }
 
 function submitQuickToDo(isnInput) {
