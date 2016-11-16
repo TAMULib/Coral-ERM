@@ -119,6 +119,12 @@ try {
 				$resourcePayment->paymentAmount = 0;
 				$resourcePayment->currencyCode  = $config->settings->defaultCurrency;
 				$resourcePayment->orderTypeID   = 1;
+				$paymentYear = date("Y");
+				if (date("Y-m-d") > $currentYear.'-07-01') {
+					$paymentYear++;
+				}
+				$resourcePayment->subscriptionStartDate	= "{$paymentYear}-01-01";
+				
 				try {
 					$resourcePayment->save();
 				} catch (Exception $e) {
