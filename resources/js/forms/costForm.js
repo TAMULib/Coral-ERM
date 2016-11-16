@@ -151,6 +151,7 @@ $(function(){
 			$('.newPaymentTable').find('.subscriptionStartDate').val('');
 			$('.newPaymentTable').find('.subscriptionEndDate').val('');
 			$('.newPaymentTable').find('.fundID').val('');
+			$('.newPaymentTable').find('.fundSpecial').val('');
 			$('.newPaymentTable').find('.priceTaxExcluded').val('');
 			$('.newPaymentTable').find('.taxRate').val('');
 			$('.newPaymentTable').find('.priceTaxIncluded').val('');
@@ -223,6 +224,10 @@ function submitCostForm()
 		      fundNameList += $(this).val() + ":::";
 		});
 
+		fundSpecialList ='';
+		$(".paymentTable").find(".fundSpecial").each(function(id) {
+		      fundSpecialList += $(this).val() + ":::";
+		});
 
 		priceTaxExcludedList ='';
 		$(".paymentTable").find(".priceTaxExcluded").each(function(id) {
@@ -296,6 +301,7 @@ function submitCostForm()
 				subStarts: subStartList,
 				subEnds: subEndList,
 				fundIDs: fundNameList,
+				fundSpecials: fundSpecialList,
 				pricesTaxExcluded: priceTaxExcludedList,
 				taxRates: taxRateList,
 				pricesTaxIncluded: priceTaxIncludedList,

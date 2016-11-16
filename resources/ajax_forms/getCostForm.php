@@ -103,7 +103,7 @@ if ($enhancedCostFlag){
 								<input type='text' value='' class='date-pick changeDefaultWhite changeInput subscriptionEndDate costHistorySubEnd' placeholder='mm/dd/yyyy' />
 							</td>
 							<?php } ?>
-							<td>
+							<td class="fund">
 								<select class='changeDefaultWhite changeInput fundID costHistoryFund' id='searchFundID'>
 									<option value='' selected></option>
 									<?php
@@ -118,6 +118,7 @@ if ($enhancedCostFlag){
 										}
 									?>
 								</select>
+								<input type='text' value='' class='changeDefaultWhite changeInput fundSpecial' />
 							</td>
 							<?php if ($enhancedCostFlag){ ?>
 						    <td>
@@ -227,7 +228,7 @@ if ($enhancedCostFlag){
 									<input type='text' value='<?php echo normalize_date($payment['subscriptionEndDate']); ?>' class='date-pick changeInput subscriptionEndDate costHistorySubEnd' placeholder="mm/dd/yyyy" />
 								</td>
 								<?php } ?>
-								<td>
+								<td class="fund">
 									<select class='changeDefaultWhite changeInput fundID costHistoryFund' id='searchFundID'>
 										<option value=''></option>
 										<?php
@@ -256,6 +257,7 @@ if ($enhancedCostFlag){
 											}
 										?>
 									</select>
+									<input type='text' value='<?php echo $payment['fundSpecial']; ?>' class='changeInput fundSpecial' />
 								</td>
 								<?php if ($enhancedCostFlag){ ?>
 						        <td>

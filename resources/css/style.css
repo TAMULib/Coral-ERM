@@ -2321,6 +2321,20 @@ a.smallLink {
 	padding-left: 3px;
 }
 
+.paymentTable td.fund, .newPaymentTable td.fund {
+	width: 110px;
+	min-width: 110px;
+}
+
+.paymentTable td.fund select, .newPaymentTable td.fund select {
+	max-width: 80px;
+}
+
+.paymentTable td.fund input, .newPaymentTable td.fund input {
+	max-width: 20px;
+}
+
+
 .costHistoryYear {
 	width: 30px;
 }
@@ -2330,9 +2344,11 @@ a.smallLink {
 .costHistorySubEnd {
 	width: 60px !important;
 }
+/*
 .costHistoryFund {
 	width: 150px;
 }
+*/
 .costHistoryPayment {
 	width: 50px;
 }
