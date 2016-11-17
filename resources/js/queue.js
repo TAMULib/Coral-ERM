@@ -16,13 +16,23 @@
 */
 
 $(document).ready(function(){
+	$("#SubmittedRequests").click(function () {
+		updatePage($(this).attr("id"),"getSubmittedQueue");
+	});
 
-	updateSavedRequestsNumber(); 
-	updateOutstandingTasksNumber();
-	updateSubmittedRequestsNumber();
+	$("#OutstandingTasks").click(function () {
+		updatePage($(this).attr("id"),"getOutstandingQueue");
+	});
+
+	$("#SavedRequests").click(function () {
+		updatePage($(this).attr("id"),"getSavedQueue");
+	});
+
+	//load the initial tab on page load
+	$("#OutstandingTasks").click();
+
+	updateTaskNumbers(); 
       
-	updateOutstandingTasks();
-
 	$('#outstandingTasks th.sortable').live('click',function(){
 	    var table = $(this).parents('table').eq(0);
 	    var rows = table.find('tr:gt(0)').toArray().sort(comparer($(this).index()));
@@ -50,20 +60,7 @@ $(document).ready(function(){
  		deleteRequest($(this).attr("id"));
  	});
 
- 
-	$("#SubmittedRequests").click(function () {
-		updateSubmittedRequests();
-	});
-
-	$("#OutstandingTasks").click(function () {
-		updateOutstandingTasks();
-	});
-
-	$("#SavedRequests").click(function () {
-		updateSavedRequests();
-	});
-
-	$(".mark-complete").live("click", function(e) {
+ 	$(".mark-complete").live("click", function(e) {
 		e.preventDefault();
 		$.ajax({
 			type:       "GET",
@@ -91,219 +88,92 @@ $(document).ready(function(){
 
 });
 
- function updateSavedRequests(){
- 
-  	$("#SubmittedRequests").parent().parent().removeClass('selected');
-	$("#OutstandingTasks").parent().parent().removeClass('selected');
- 	$('#SavedRequests').parent().parent().addClass('selected');
- 
+function updatePage(activeTab,requestAction) {
+	$(".queueMenuLink a").parent().parent().removeClass('selected');
+ 	$('#'+activeTab).parent().parent().addClass('selected');
 	$('#div_feedback').html("<img src = 'images/circle.gif' />"+_("Refreshing..."));
+	$.ajax({
+	  type:       "GET",
+	  url:        "ajax_htmldata.php",
+	  cache:      false,
+	  data:       "action="+requestAction,
+	  success:    function(html) { 
+		$('#div_QueueContent').html(html);
+		tb_reinit();
+		completeTabUpdate();
+	  }
+	});
+}
 
-	  $.ajax({
-		  type:       "GET",
-		  url:        "ajax_htmldata.php",
-		  cache:      false,
-		  data:       "action=getSavedQueue",
-		  success:    function(html) { 
-			$('#div_QueueContent').html(html);
-			tb_reinit();
-		  }
-	   });
-	   
-	   //make sure error is empty
-	   $('#div_error').html("");
-	   
-	   //also reset feedback div
-	   $('#div_feedback').html("&nbsp;");
-	   
+function updateTaskNumbers(classSuffix,requestAction) {
+	taskData = [{"classSuffix":"OutstandingTasksNumber","requestAction":"getOutstandingTasksNumber"},
+				{"classSuffix":"SavedRequestsNumber","requestAction":"getSavedRequestsNumber"},
+				{"classSuffix":"SubmittedRequestsNumber","requestAction":"getSubmittedRequestsNumber"}];
+	$.each(taskData,function(i,task) {
+	   $.ajax({
+	 	 type:       "GET",
+	 	 url:        "ajax_htmldata.php",
+	 	 cache:      false,
+	 	 data:       "action="+task.requestAction,
+	 	 success:    function(remaining) {
+	 		if (remaining == 1){
+				html = "(" + remaining + _(" record)");
+	 		}else{
+				html = "(" + remaining + _(" records)");
+	 		}
+			$(".span_"+task.classSuffix).html(html);
+	 	 }
+	  });
+	});
+}
 
-	 updateSavedRequestsNumber(); 
-	 updateOutstandingTasksNumber();
-	 updateSubmittedRequestsNumber();      
- }
+function completeTabUpdate() {
+   //make sure error is empty
+   $('#div_error').html("");
+   
+   //also reset feedback div
+   $('#div_feedback').html("&nbsp;");
+	updateTaskNumbers();
+}
 
+//currently you can only delete saved requests, updateSavedRequests() is hardcoded
+function deleteRequest(deleteID){
+	if (confirm(_("Do you really want to delete this request?")) == true) {
+		$('#div_feedback').html("<img src = 'images/circle.gif' />"+_("Refreshing..."));
 
+		$.ajax({
+			type:       "GET",
+			url:        "ajax_processing.php",
+			cache:      false,
+			data:       "action=deleteResource&resourceID=" + deleteID,
+			success:    function(html) { 
+	  	
+				showError(html);  
 
+				// close the div in 3 secs
+				setTimeout("emptyError();",3000); 
 
- function updateSubmittedRequests(){
- 
-  	$("#SubmittedRequests").parent().parent().addClass('selected');
-	$("#OutstandingTasks").parent().parent().removeClass('selected');
- 	$('#SavedRequests').parent().parent().removeClass('selected');
- 
-	$('#div_feedback').html("<img src = 'images/circle.gif' />"+_("Refreshing..."));
+				updateSavedRequests();
 
-	  $.ajax({
-		  type:       "GET",
-		  url:        "ajax_htmldata.php",
-		  cache:      false,
-		  data:       "action=getSubmittedQueue",
-		  success:    function(html) { 
-			$('#div_QueueContent').html(html);
-		  }
-	   });
-	   
-	   //make sure error is empty
-	   $('#div_error').html("");
-	   
-	   //also reset feedback div
-	   $('#div_feedback').html("&nbsp;");
-	   
+				return false;	
+			}
+		});
 
-	 updateSavedRequestsNumber(); 
-	 updateOutstandingTasksNumber();
-	 updateSubmittedRequestsNumber();      
- }
- 
- 
- 
- 
- 
-  function updateOutstandingTasks(){
-  
-   	$("#SubmittedRequests").parent().parent().removeClass('selected');
- 	$("#OutstandingTasks").parent().parent().addClass('selected');
-  	$('#SavedRequests').parent().parent().removeClass('selected');
-  
- 	$('#div_feedback').html("<img src = 'images/circle.gif' />"+_("Refreshing..."));
- 
- 	  $.ajax({
- 		  type:       "GET",
- 		  url:        "ajax_htmldata.php",
- 		  cache:      false,
- 		  data:       "action=getOutstandingQueue",
- 		  success:    function(html) { 
- 			$('#div_QueueContent').html(html);
-			tb_reinit();
- 		  }
- 	   });
- 	   
- 	   //make sure error is empty
- 	   $('#div_error').html("");
- 	   
- 	   //also reset feedback div
- 	   $('#div_feedback').html("&nbsp;");
- 	   
-
-	 updateSavedRequestsNumber(); 
-	 updateOutstandingTasksNumber();
-	 updateSubmittedRequestsNumber();
-   }
-
-
-
-
- //currently you can only delete saved requests, updateSavedRequests() is hardcoded
- function deleteRequest(deleteID){
- 
- 	if (confirm(_("Do you really want to delete this request?")) == true) {
-
-	       $('#div_feedback').html("<img src = 'images/circle.gif' />"+_("Refreshing..."));
-
-	       $.ajax({
-		  type:       "GET",
-		  url:        "ajax_processing.php",
-		  cache:      false,
-		  data:       "action=deleteResource&resourceID=" + deleteID,
-		  success:    function(html) { 
-  			  	
-			showError(html);  
-
-			// close the div in 3 secs
-			setTimeout("emptyError();",3000); 
-
-			updateSavedRequests();
-
-			return false;	
-			
-		  }
-	      });
-	      
-	      //also reset feedback div
-	      $('#div_feedback').html("&nbsp;");
-
+		//also reset feedback div
+		$('#div_feedback').html("&nbsp;");
 	}
- }
+}
  
- 
- function updateSavedRequestsNumber(){
- 
- 
-   $.ajax({
- 	 type:       "GET",
- 	 url:        "ajax_htmldata.php",
- 	 cache:      false,
- 	 data:       "action=getSavedRequestsNumber",
- 	 success:    function(remaining) {
- 		if (remaining == 1){
- 			$(".span_SavedRequestsNumber").html("(" + remaining + _(" record)"));
- 		}else{
- 			$(".span_SavedRequestsNumber").html("(" + remaining + _(" records)"));
- 		}
- 	 }
-  });
- 
- }
-	 
-
-
- function updateOutstandingTasksNumber(){
- 
- 
-   $.ajax({
- 	 type:       "GET",
- 	 url:        "ajax_htmldata.php",
- 	 cache:      false,
- 	 data:       "action=getOutstandingTasksNumber",
- 	 success:    function(remaining) {
- 		if (remaining == 1){
- 			$(".span_OutstandingTasksNumber").html("(" + remaining + _(" record)"));
- 		}else{
- 			$(".span_OutstandingTasksNumber").html("(" + remaining + _(" records)"));
- 		}
- 	 }
-  });
- 
- }
-
-
-
- function updateSubmittedRequestsNumber(){
- 
- 
-   $.ajax({
- 	 type:       "GET",
- 	 url:        "ajax_htmldata.php",
- 	 cache:      false,
- 	 data:       "action=getSubmittedRequestsNumber",
- 	 success:    function(remaining) {
- 		if (remaining == 1){
- 			$(".span_SubmittedRequestsNumber").html("(" + remaining + _(" record)"));
- 		}else{
- 			$(".span_SubmittedRequestsNumber").html("(" + remaining + _(" records)"));
- 		}
- 	 }
-  });
- 
- }
-
-	 
-	   
- 
- function showError(html){
- 
-     $('#div_error').fadeTo(0, 5000, function () { 
- 	$('#div_error').html(html);
-     });
-  	
+function showError(html){
+ 	$('#div_error').fadeTo(0, 5000, function () { 
+ 		$('#div_error').html(html);
+ 	});
  }
 
 
  
- function emptyError(){
-
-    $('#div_error').fadeTo(500, 0, function () { 
-	$('#div_error').html("");
-    });
- 	
- }
+function emptyError(){
+	$('#div_error').fadeTo(500, 0, function () { 
+		$('#div_error').html("");
+	});
+}
