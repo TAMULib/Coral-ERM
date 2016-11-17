@@ -234,7 +234,6 @@ class User extends DatabaseObject {
 
 	//returns array of tasks that are in the outstanding queue for this resource and user
 	public function getOutstandingTasksByResource($outstandingResourceID){
-
 		$status = new Status();
 		$excludeStatus =  Array();
 		$excludeStatus[]=$status->getIDFromName('complete');
@@ -248,7 +247,8 @@ class User extends DatabaseObject {
 			$whereAdd = "";
 		}
 
-		$query = "SELECT DISTINCT RS.resourceStepID, RS.stepName, RS.userGroupID, RS.stepStartDate, date_format(stepStartDate, '%c/%e/%Y') startDate,RS.reviewDate, RS.reviewLoginID
+		$query = "SELECT DISTINCT RS.resourceStepID, RS.stepName, RS.userGroupID, RS.stepStartDate, date_format(stepStartDate, '%c/%e/%Y') startDate,RS.reviewDate, RS.reviewLoginID,
+					(SELECT IF(RP.fundSpecial IS NOT NULL,CONCAT(F.fundCode,RP.fundSpecial),F.fundCode) FROM ResourcePayment RP LEFT JOIN Fund F ON F.fundID=RP.fundID WHERE RP.resourceID=R.resourceID ORDER BY RP.resourcePaymentID DESC LIMIT 1) AS fundCode
 			FROM Resource R, ResourceStep RS, UserGroupLink UGL
 			WHERE R.resourceID = RS.resourceID
 			AND RS.userGroupID = UGL.userGroupID
@@ -257,8 +257,7 @@ class User extends DatabaseObject {
 			AND (RS.stepEndDate IS NULL OR RS.stepEndDate = '0000-00-00')
 			AND (RS.stepStartDate IS NOT NULL AND RS.stepStartDate != '0000-00-00')
 			" . $whereAdd . "
-			ORDER BY 1 desc LIMIT 0,25";
-
+			ORDER BY 1 DESC LIMIT 0,25";
 		$result = $this->db->processQuery($query, 'assoc');
 
 		$resourceArray = array();

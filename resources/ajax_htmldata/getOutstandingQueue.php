@@ -13,12 +13,13 @@ foreach ($resourceGroups as $type=>$resourceGroup) {
 	} else {
 ?>
 
-			<table class='dataTable'>
+			<table class='dataTable' id="outstandingTasks">
 			<tr>
 				<th><?php echo _("ID");?></th>
 				<th><?php echo _("Name");?></th>
 				<th><?php echo _("Acquisition Type");?></th>
 				<th><?php echo _("Routing Step");?></th>
+				<th class="sortable"><?php echo _("Fund");?></th>
 				<th><?php echo _("Start Date");?></th>
 				<th><?php echo _("Last Reviewed");?></th>
 				<th><?php echo _("Notes");?></th>
@@ -69,6 +70,7 @@ foreach ($resourceGroups as $type=>$resourceGroup) {
 
 					echo "
 				<td " . $classAdd . " " . $styleAdd . ">" . $task['stepName'] . "</td>
+				<td " . $classAdd . " " . $styleAdd . ">" . $task['fundCode'] . "</td>
 				<td " . $classAdd . " " . $styleAdd . ">" . format_date($task['startDate']) . "</td>
 				<td " . $classAdd . " " . $styleAdd . ">" .(($task['reviewDate']) ? format_date($task['reviewDate']):_('not reviewed'))."</td>
 				<td " . $classAdd . " " . $styleAdd . "><a class=\"thickbox\" href=\"ajax_forms.php?action=getNoteForm&height=500&width=410&tab=Product&resourceID={$resource['resourceID']}&resourceNoteID=&modal=true&shownotes=1\">"._("view")."</a></td>

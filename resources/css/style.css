@@ -201,6 +201,10 @@ table.queueDataTable tr {
 	vertical-align:top;
 }
 
+#outstandingTasks .sortable {
+	cursor: pointer;
+}
+
 /* following is all for admin and queue pages
 *************************/
 div.adminRightHeader{font-size:135%; color:#3D545D; margin-bottom:5px; }
