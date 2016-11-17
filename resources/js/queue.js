@@ -28,11 +28,14 @@ $(document).ready(function(){
 		updatePage($(this).attr("id"),"getSavedQueue");
 	});
 
+	$("#CompletedRequests").click(function () {
+		updatePage($(this).attr("id"),"getCompletedQueue");
+	});
+
+	updateTaskNumbers();
 	//load the initial tab on page load
 	$("#OutstandingTasks").click();
 
-	updateTaskNumbers(); 
-      
 	$('#outstandingTasks th.sortable').live('click',function(){
 	    var table = $(this).parents('table').eq(0);
 	    var rows = table.find('tr:gt(0)').toArray().sort(comparer($(this).index()));
@@ -68,7 +71,7 @@ $(document).ready(function(){
 			cache:      false,
 			data:       "action=markComplete&resourceStepID=" + $(this).attr("href"),
 			success:    function(html) {
-				updateOutstandingTasks();
+				$("#OutstandingTasks").click();
 			}
 		});
 	});
@@ -81,7 +84,7 @@ $(document).ready(function(){
 			cache:      false,
 			data:       "action=markReviewed&resourceStepID=" + $(this).attr("href"),
 			success:    function(html) {
- 		  		updateOutstandingTasks();
+				$("#OutstandingTasks").click();
 			}
 		});
 	});
@@ -108,7 +111,8 @@ function updatePage(activeTab,requestAction) {
 function updateTaskNumbers(classSuffix,requestAction) {
 	taskData = [{"classSuffix":"OutstandingTasksNumber","requestAction":"getOutstandingTasksNumber"},
 				{"classSuffix":"SavedRequestsNumber","requestAction":"getSavedRequestsNumber"},
-				{"classSuffix":"SubmittedRequestsNumber","requestAction":"getSubmittedRequestsNumber"}];
+				{"classSuffix":"SubmittedRequestsNumber","requestAction":"getSubmittedRequestsNumber"},
+				{"classSuffix":"CompletedRequestsNumber","requestAction":"getCompletedRequestsNumber"}];
 	$.each(taskData,function(i,task) {
 	   $.ajax({
 	 	 type:       "GET",
