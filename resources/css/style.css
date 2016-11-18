@@ -3352,3 +3352,7 @@ input#archiveInd {
 #quickToDoForm #formButtons.loading table {
 	display: none;
 }
+
+#quickToDoForm #forceDuplicate {
+	display: none;
+}

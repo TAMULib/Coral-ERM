@@ -12,6 +12,7 @@ if $externalId is defined and an ExternalResource implementation is configured, 
 */
 
 $externalId = !empty($_POST['externalId']) ? $_POST['externalId']:null;
+$forceDuplicate = !empty($_POST['forceDuplicate']) ? $_POST['forceDuplicate']:null;
 
 $fromExternal = ($externalId && class_exists($config->settings->externalResourceRepoClass));
 $outputJson = $fromExternal ? true:false;
@@ -71,23 +72,26 @@ if (!$fromExternal) {
 
 try {
 	if ($fromExternal) {
-		$resource->resourceTypeID = 2;
-		$resource->resourceFormatID = 2;
-		$resource->acquisitionTypeID = 1;
-		try {
-			$resource->save();
-		} catch (Exception $e) {
-			echo $e->getMessage();
-		}
-		$status = new Status();
-		$statusID = $status->getIDFromName('progress');
 		$remoteResourceRepo = new $config->settings->externalResourceRepoClass($externalId);
 		//$resourceData is the JSON response for New Resource records originating from an External API
 		$resourceData = array();
 		//if we don't at least have a title, give up
 		if (!$remoteResourceRepo->getResourceObject() || !$remoteResourceRepo->getResourceObject()->getTitleText()) {
 			$resourceData = array("error"=>"Unable to retrieve the External Resource");
+		} elseif (!$forceDuplicate && $resource->getResourceByTitle($remoteResourceRepo->getResourceObject()->getTitleText())) {
+			$resourceData = array("error"=>"Resource Exists: {$remoteResourceRepo->getResourceObject()->getTitleText()}","isDuplicate"=>1);
 		} else {
+
+			$resource->resourceTypeID = 2;
+			$resource->resourceFormatID = 2;
+			$resource->acquisitionTypeID = 1;
+			try {
+				$resource->save();
+			} catch (Exception $e) {
+				echo $e->getMessage();
+			}
+			$status = new Status();
+			$statusID = $status->getIDFromName('progress');
 
 			$resource->setTitleText($remoteResourceRepo->getResourceObject()->getTitleText());
 
