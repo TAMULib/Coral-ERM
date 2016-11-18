@@ -16,6 +16,9 @@
 			</td>
 		</tr>
 	</table>
+	<div id="forceDuplicate">
+		<input type="checkbox" name="forceDuplicate" value="1" /> Import anyway
+	</div>
 	<div id="formButtons">
 		<table class='noBorderTable' style='width:125px;'>
 			<tr>
