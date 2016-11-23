@@ -110,19 +110,7 @@ class Email extends Object {
 		  }
 		  
 		} else {
-		
-			// Configure email to use feedback email as from address
-			// Also force the return path to be the feedback.
-			// Attempt to avoid triggering spam
-			if ($config->settings->feedbackEmailAddress){
-				$this->from = $config->settings->feedbackEmailAddress;
-				return mail($this->to, $this->subject, $this->message, rtrim($this->getHeaders()), "-f " . $this->from);
-			} else {
-				return mail($this->to, $this->subject, $this->message, rtrim($this->getHeaders()));				
-			}
-			
-			
-
+		  return mail($this->to, $this->subject, $this->message, rtrim($this->getHeaders()));
 	  }
 	}
 
