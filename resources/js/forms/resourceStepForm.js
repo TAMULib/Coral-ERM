@@ -97,8 +97,8 @@ $(document).ready(function(){
 });
 
 function validateStep (){
-    //don't submit the form if it has the same usergroup.
-    if ($("#userGroupID").val() == $("#currentGroupID").val()){
+    //don't submit the form if nothing has changed.
+    if (($("#userGroupID").val() == $("#currentGroupID").val()) && ($("#currentStepStartDate").val() == $("#newStepStartDate").val())){
         return false;
     };
 
@@ -113,7 +113,7 @@ function updateResourceStep(){
             type:       "POST",
             url:        "ajax_processing.php?action=updateResourceStep",
             cache:      false,
-            data:       { resourceStepID: $("#editRSID").val(), userGroupID: $("#userGroupID").val(), applyToAll: $('#applyToAll').is(':checked'), orderNum: $('#orderNum').val() },
+            data:       { resourceStepID: $("#editRSID").val(), userGroupID: $("#userGroupID").val(), applyToAll: $('#applyToAll').is(':checked'), orderNum: $('#orderNum').val(),newStepStartDate: $("#newStepStartDate").val()},
             success:    function(html) {
                 if (html){
                     $("#span_errors").html(html);

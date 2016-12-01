@@ -811,14 +811,29 @@ span.surroundBoxTitle {
 	font-size:110%;
 }
 
+div.surroundBox .form-element {
+	display:inline-block;
+	vertical-align:middle;
+}
 
-table.surroundBox {
+div.surroundBox .form-element-label {
+	margin-right: 30px;
+}
+
+.surroundBox {
 	border-width: 1px;
 	border-style: solid;
 	border-color: #e6e5e9;
+	font-size:100%;
+}
+
+div.surroundBox {
+	padding: 24px;
+}
+
+table.surroundBox {
 	border-collapse: collapse;
 	border-spacing: 0;
-	font-size:100%;
 	width: 370px !important;
 }
 

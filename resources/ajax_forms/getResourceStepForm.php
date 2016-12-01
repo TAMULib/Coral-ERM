@@ -58,7 +58,25 @@ if (!isset($_GET['resourceStepID'])){
                     </td>
                 </tr>
             </table>
-
+<?php
+if ($resourceStep->stepStartDate) {
+    $formattedStepStartDate = date('m/d/Y',strtotime($resourceStep->stepStartDate));
+?>
+            <div>
+                <span class='surroundBoxTitle'>&nbsp;&nbsp;<label for='rule'><b><?php echo _("Edit Step Details");?></b></label>&nbsp;&nbsp;</span>
+                <div class="surroundBox">
+                    <div class="form-element form-element-label">
+                        <label for="newStepStartDate">Step Start Date</label>
+                    </div>
+                    <div class="form-element form-element-input">
+                        <input type='hidden' name='currentStepStartDate' id='currentStepStartDate' value='<?php echo $formattedStepStartDate; ?>'>
+                        <input class="date-pick" type="text" name="newStepStartDate" id="newStepStartDate" value="<?php echo $formattedStepStartDate;?>" />
+                    </div>
+                </div>
+            </div>
+<?php
+}
+?>
             <table class='noBorderTable' style='width:125px;'>
                 <tr>
                     <td style='text-align:left'><input type='button' class='submit-button' value='<?php echo _("submit");?>' name='submitResourceStepForm' id ='submitResourceStepForm'></td>
