@@ -119,8 +119,14 @@ function updateResourceStep(){
                     $("#span_errors").html(html);
                 }else{
                     tb_remove();
-                    window.parent.updateRouting();
-                    //eval("window.parent.update" + $("#tab").val() + "();");
+                    var updateFunctions = ['updateRouting','updateOutstandingTasks'];
+                    $.each(updateFunctions,function(i,functionName) {
+                        //if a function exists, call it, and break out of the loop
+                        if (typeof window.parent[functionName] == 'function') {
+                            window.parent[functionName].call();
+                            return false;
+                        }
+                    });
                     return false;
                 }
 

@@ -91,6 +91,11 @@ $(document).ready(function(){
 
 });
 
+//this wrapper function allows us to refresh the tasks view from other contexts. Currently used by resourceStepForm.js
+function updateOutstandingTasks() {
+	$("#OutstandingTasks").click();
+}
+
 function updatePage(activeTab,requestAction) {
 	$(".queueMenuLink a").parent().parent().removeClass('selected');
  	$('#'+activeTab).parent().parent().addClass('selected');
