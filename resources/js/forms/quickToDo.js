@@ -33,28 +33,51 @@ function exitLoadingState() {
 
 function getDataByExternalId(form) {
 	enterLoadingState();
+	if (!findExistingResourceByExternalId(form.find("#externalId"))) {
+		$.ajax({
+			type:       "POST",
+			url:        "ajax_processing.php?action=submitNewResource",
+			cache:      false,
+			data:       form.serialize(),
+			success:    function(data) {
+							resourceResult = JSON.parse(data);
+							if (resourceResult.resourceID) {
+								window.parent.location = "resource.php?ref=new&resourceID="+resourceResult.resourceID;
+								tb_remove();
+							} else if (resourceResult.error) {
+								$("#external_error").text(resourceResult.error);
+								if(resourceResult.isDuplicate) {
+									$("#forceDuplicate").fadeIn("fast");
+								}
+								exitLoadingState();
+							}
+						},
+			error: 		function() {
+							exitLoadingState();
+						}
+		});
+	}
+}
+
+function findExistingResourceByExternalId(externalIdInput) {
+	var resourceID = null;
 	$.ajax({
-		type:       "POST",
-		url:        "ajax_processing.php?action=submitNewResource",
+		async: 		false,
+		type:       "GET",
+		url:        "ajax_processing.php?action=findExistingResource",
 		cache:      false,
-		data:       form.serialize(),
+		data:       externalIdInput.serialize(),
 		success:    function(data) {
 						resourceResult = JSON.parse(data);
 						if (resourceResult.resourceID) {
-							window.parent.location = "resource.php?ref=new&resourceID="+resourceResult.resourceID;
-							tb_remove();
-						} else if (resourceResult.error) {
-							$("#external_error").text(resourceResult.error);
-							if(resourceResult.isDuplicate) {
-								$("#forceDuplicate").fadeIn("fast");
-							}
-							exitLoadingState();
+							resourceID = resourceResult.resourceID;
+							$("#external_error").html("Resource Exists: <a href='resource.php?resourceID="+resourceResult.resourceID+"'>"+resourceResult.titleText+"</a>");
+							$("#formButtons").removeClass("loading"); 
+							$('#submitQuickToDo').removeAttr("disabled");
 						}
-					},
-		error: 		function() {
-						exitLoadingState();
 					}
 	});
+	return resourceID;
 }
 
 function submitQuickToDo(isnInput) {

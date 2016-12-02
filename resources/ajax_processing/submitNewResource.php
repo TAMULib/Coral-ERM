@@ -79,7 +79,7 @@ try {
 		if (!$remoteResourceRepo->getResourceObject() || !$remoteResourceRepo->getResourceObject()->getTitleText()) {
 			$resourceData = array("error"=>"Unable to retrieve the External Resource");
 		} elseif (!$forceDuplicate && $resource->getResourceByTitle($remoteResourceRepo->getResourceObject()->getTitleText())) {
-			$resourceData = array("error"=>"Resource Exists: {$remoteResourceRepo->getResourceObject()->getTitleText()}","isDuplicate"=>1);
+			$resourceData = array("error"=>"Title Exists: {$remoteResourceRepo->getResourceObject()->getTitleText()}","isDuplicate"=>1);
 		} else {
 
 			$resource->resourceTypeID = 2;
