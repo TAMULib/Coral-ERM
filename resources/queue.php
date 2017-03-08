@@ -52,7 +52,14 @@ $tabs = array(array("id"=>"OutstandingTasks","spanClass"=>"OutstandingTasksNumbe
 			<table class='queueMenuTable' style='width:170px;'>
 <?php
 foreach ($tabs as $tab) {
-	echo "<tr><td><div class='queueMenuLink'><a href='#' id='{$tab['id']}'>"._($tab['text'])."</a></div><span class='task-number span_".$tab['spanClass']." smallGreyText' style='clear:right; margin-left:10px;'></span></td></tr>";
+	echo "		<tr>
+					<td>
+						<div class='queueMenuLink'>
+							<a href='#' id='{$tab['id']}'>"._($tab['text'])."</a>
+						</div>
+						<span class='task-number span_".$tab['spanClass']." smallGreyText' style='clear:right; margin-left:10px;'></span>
+					</td>
+				</tr>";
 }
 ?>
 			</table>

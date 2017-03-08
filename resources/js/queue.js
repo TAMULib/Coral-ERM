@@ -15,7 +15,8 @@
 **************************************************************************************************************************
 */
 
-$(document).ready(function(){
+ $(document).ready(function(){
+
 	$("#SubmittedRequests").click(function () {
 		updatePage($(this).attr("id"),"getSubmittedQueue");
 	});
@@ -30,6 +31,10 @@ $(document).ready(function(){
 
 	$("#CompletedRequests").click(function () {
 		updatePage($(this).attr("id"),"getCompletedQueue");
+	});
+
+	$('.deleteRequest').live('click', function () {
+		deleteRequest($(this).attr("id"));
 	});
 
 	updateTaskNumbers();
@@ -118,6 +123,7 @@ function updateTaskNumbers(classSuffix,requestAction) {
 				{"classSuffix":"SavedRequestsNumber","requestAction":"getSavedRequestsNumber"},
 				{"classSuffix":"SubmittedRequestsNumber","requestAction":"getSubmittedRequestsNumber"},
 				{"classSuffix":"CompletedRequestsNumber","requestAction":"getCompletedRequestsNumber"}];
+
 	$.each(taskData,function(i,task) {
 	   $.ajax({
 	 	 type:       "GET",
@@ -145,27 +151,27 @@ function completeTabUpdate() {
 	updateTaskNumbers();
 }
 
-//currently you can only delete saved requests, updateSavedRequests() is hardcoded
-function deleteRequest(deleteID){
-	if (confirm(_("Do you really want to delete this request?")) == true) {
+ //currently you can only delete saved requests
+ function deleteRequest(deleteID){
+ 	if (confirm(_("Do you really want to delete this request?")) == true) {
 		$('#div_feedback').html("<img src = 'images/circle.gif' />"+_("Refreshing..."));
-
 		$.ajax({
-			type:       "GET",
-			url:        "ajax_processing.php",
-			cache:      false,
-			data:       "action=deleteResource&resourceID=" + deleteID,
-			success:    function(html) { 
-	  	
-				showError(html);  
+		  type:       "GET",
+		  url:        "ajax_processing.php",
+		  cache:      false,
+		  data:       "action=deleteResource&resourceID=" + deleteID,
+		  success:    function(html) { 
+  			  	
+			showError(html);  
 
-				// close the div in 3 secs
-				setTimeout("emptyError();",3000); 
+			// close the div in 3 secs
+			setTimeout("emptyError();",3000); 
 
-				updateSavedRequests();
+			$("#SavedRequests").click();
 
-				return false;	
-			}
+			return false;	
+			
+		  }
 		});
 
 		//also reset feedback div
@@ -174,13 +180,11 @@ function deleteRequest(deleteID){
 }
  
 function showError(html){
- 	$('#div_error').fadeTo(0, 5000, function () { 
- 		$('#div_error').html(html);
- 	});
- }
+	$('#div_error').fadeTo(0, 5000, function () { 
+		$('#div_error').html(html);
+	});
+}
 
-
- 
 function emptyError(){
 	$('#div_error').fadeTo(500, 0, function () { 
 		$('#div_error').html("");

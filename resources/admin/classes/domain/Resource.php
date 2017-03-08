@@ -62,22 +62,19 @@ class Resource extends DatabaseObject implements ResourceInterface {
 		$objects = array();
 
 		//need to do this since it could be that there's only one request and this is how the dbservice returns result
-		if (isset($result['resourceID'])) {
-			$object = new Resource(new NamedArguments(array('primaryKey' => $result['resourceID'])));
+		if (isset($result['resourceID'])) { $result = [$result]; }
+		foreach ($result as $row) {
+			$object = new Resource(new NamedArguments(array('primaryKey' => $row['resourceID'])));
 			array_push($objects, $object);
-		}else{
-			foreach ($result as $row) {
-				$object = new Resource(new NamedArguments(array('primaryKey' => $row['resourceID'])));
-				array_push($objects, $object);
-			}
 		}
 
 		return $objects;
 	}
 
+
+
 	//returns resource objects by title
 	public function getResourceByIsbnOrISSN($isbnOrISSN) {
-
 		$query = "SELECT DISTINCT(resourceID)
 			FROM IsbnOrIssn";
 
@@ -101,18 +98,16 @@ class Resource extends DatabaseObject implements ResourceInterface {
 		$objects = array();
 
 		//need to do this since it could be that there's only one request and this is how the dbservice returns result
-		if (isset($result['resourceID'])) {
-			$object = new Resource(new NamedArguments(array('primaryKey' => $result['resourceID'])));
+		if (isset($result['resourceID'])) { $result = [$result]; }
+		foreach ($result as $row) {
+			$object = new Resource(new NamedArguments(array('primaryKey' => $row['resourceID'])));
 			array_push($objects, $object);
-		}else{
-			foreach ($result as $row) {
-				$object = new Resource(new NamedArguments(array('primaryKey' => $row['resourceID'])));
-				array_push($objects, $object);
-			}
 		}
 
 		return $objects;
 	}
+
+
 
 	public function getIsbnOrIssn() {
 		$query = "SELECT *
@@ -125,20 +120,16 @@ class Resource extends DatabaseObject implements ResourceInterface {
 		$objects = array();
 
 		//need to do this since it could be that there's only one request and this is how the dbservice returns result
-		if (isset($result['isbnOrIssnID'])) {
-			$object = new IsbnOrIssn(new NamedArguments(array('primaryKey' => $result['isbnOrIssnID'])));
+		if (isset($result['isbnOrIssnID'])) { $result = [$result]; }
+		foreach ($result as $row) {
+			$object = new IsbnOrIssn(new NamedArguments(array('primaryKey' => $row['isbnOrIssnID'])));
 			array_push($objects, $object);
-		} else {
-			foreach ($result as $row) {
-				$object = new IsbnOrIssn(new NamedArguments(array('primaryKey' => $row['isbnOrIssnID'])));
-				array_push($objects, $object);
-			}
-
 		}
 
 		return $objects;
-
 	}
+
+
 
 	//returns array of parent resource objects
 	public function getParentResources() {
@@ -146,13 +137,16 @@ class Resource extends DatabaseObject implements ResourceInterface {
 	}
 
 
+
 	//returns array of child resource objects
 	public function getChildResources() {
 		return $this->getRelatedResources('relatedResourceID');
 	}
 
-	// return array of related resource objects
-	private function getRelatedResources($key) {
+
+
+  // return array of related resource objects
+  private function getRelatedResources($key) {
 
 		$query = "SELECT *
 			FROM ResourceRelationship
@@ -180,6 +174,8 @@ class Resource extends DatabaseObject implements ResourceInterface {
 
 	}
 
+
+
 	//returns array of purchase site objects
 	public function getResourcePurchaseSites() {
 
@@ -190,19 +186,14 @@ class Resource extends DatabaseObject implements ResourceInterface {
 		$objects = array();
 
 		//need to do this since it could be that there's only one request and this is how the dbservice returns result
-		if (isset($result['purchaseSiteID'])) {
-			$object = new PurchaseSite(new NamedArguments(array('primaryKey' => $result['purchaseSiteID'])));
+		if (isset($result['purchaseSiteID'])) { $result = [$result]; }
+		foreach ($result as $row) {
+			$object = new PurchaseSite(new NamedArguments(array('primaryKey' => $row['purchaseSiteID'])));
 			array_push($objects, $object);
-		}else{
-			foreach ($result as $row) {
-				$object = new PurchaseSite(new NamedArguments(array('primaryKey' => $row['purchaseSiteID'])));
-				array_push($objects, $object);
-			}
 		}
 
 		return $objects;
 	}
-
 
 
 
@@ -216,18 +207,15 @@ class Resource extends DatabaseObject implements ResourceInterface {
 		$objects = array();
 
 		//need to do this since it could be that there's only one request and this is how the dbservice returns result
-		if (isset($result['resourcePaymentID'])) {
-			$object = new ResourcePayment(new NamedArguments(array('primaryKey' => $result['resourcePaymentID'])));
+		if (isset($result['resourcePaymentID'])) { $result = [$result]; }
+		foreach ($result as $row) {
+			$object = new ResourcePayment(new NamedArguments(array('primaryKey' => $row['resourcePaymentID'])));
 			array_push($objects, $object);
-		}else{
-			foreach ($result as $row) {
-				$object = new ResourcePayment(new NamedArguments(array('primaryKey' => $row['resourcePaymentID'])));
-				array_push($objects, $object);
-			}
 		}
 
 		return $objects;
 	}
+
 
 
 	//returns array of associated licenses
@@ -287,7 +275,6 @@ class Resource extends DatabaseObject implements ResourceInterface {
 
 
 
-
 	//returns array of resource license status objects
 	public function getResourceLicenseStatuses() {
 
@@ -298,19 +285,14 @@ class Resource extends DatabaseObject implements ResourceInterface {
 		$objects = array();
 
 		//need to do this since it could be that there's only one request and this is how the dbservice returns result
-		if (isset($result['resourceLicenseStatusID'])) {
-			$object = new ResourceLicenseStatus(new NamedArguments(array('primaryKey' => $result['resourceLicenseStatusID'])));
+		if (isset($result['resourceLicenseStatusID'])) { $result = [$result]; }
+		foreach ($result as $row) {
+			$object = new ResourceLicenseStatus(new NamedArguments(array('primaryKey' => $row['resourceLicenseStatusID'])));
 			array_push($objects, $object);
-		}else{
-			foreach ($result as $row) {
-				$object = new ResourceLicenseStatus(new NamedArguments(array('primaryKey' => $row['resourceLicenseStatusID'])));
-				array_push($objects, $object);
-			}
 		}
 
 		return $objects;
 	}
-
 
 
 
@@ -329,6 +311,7 @@ class Resource extends DatabaseObject implements ResourceInterface {
 	}
 
 
+
 	//returns array of authorized site objects
 	public function getResourceAuthorizedSites() {
 
@@ -339,19 +322,14 @@ class Resource extends DatabaseObject implements ResourceInterface {
 		$objects = array();
 
 		//need to do this since it could be that there's only one request and this is how the dbservice returns result
-		if (isset($result['authorizedSiteID'])) {
-			$object = new AuthorizedSite(new NamedArguments(array('primaryKey' => $result['authorizedSiteID'])));
+		if (isset($result['authorizedSiteID'])) { $result = [$result]; }
+		foreach ($result as $row) {
+			$object = new AuthorizedSite(new NamedArguments(array('primaryKey' => $row['authorizedSiteID'])));
 			array_push($objects, $object);
-		}else{
-			foreach ($result as $row) {
-				$object = new AuthorizedSite(new NamedArguments(array('primaryKey' => $row['authorizedSiteID'])));
-				array_push($objects, $object);
-			}
 		}
 
 		return $objects;
 	}
-
 
 
 
@@ -365,19 +343,14 @@ class Resource extends DatabaseObject implements ResourceInterface {
 		$objects = array();
 
 		//need to do this since it could be that there's only one request and this is how the dbservice returns result
-		if (isset($result['administeringSiteID'])) {
-			$object = new AdministeringSite(new NamedArguments(array('primaryKey' => $result['administeringSiteID'])));
+		if (isset($result['administeringSiteID'])) { $result = [$result]; }
+		foreach ($result as $row) {
+			$object = new AdministeringSite(new NamedArguments(array('primaryKey' => $row['administeringSiteID'])));
 			array_push($objects, $object);
-		}else{
-			foreach ($result as $row) {
-				$object = new AdministeringSite(new NamedArguments(array('primaryKey' => $row['administeringSiteID'])));
-				array_push($objects, $object);
-			}
 		}
 
 		return $objects;
 	}
-
 
 
 
@@ -391,7 +364,6 @@ class Resource extends DatabaseObject implements ResourceInterface {
 
 
 
-
 	//returns array of alias objects
 	public function getAliases() {
 
@@ -402,14 +374,10 @@ class Resource extends DatabaseObject implements ResourceInterface {
 		$objects = array();
 
 		//need to do this since it could be that there's only one request and this is how the dbservice returns result
-		if (isset($result['aliasID'])) {
-			$object = new Alias(new NamedArguments(array('primaryKey' => $result['aliasID'])));
+		if (isset($result['aliasID'])) { $result = [$result]; }
+		foreach ($result as $row) {
+			$object = new Alias(new NamedArguments(array('primaryKey' => $row['aliasID'])));
 			array_push($objects, $object);
-		}else{
-			foreach ($result as $row) {
-				$object = new Alias(new NamedArguments(array('primaryKey' => $row['aliasID'])));
-				array_push($objects, $object);
-			}
 		}
 
 		return $objects;
@@ -417,14 +385,9 @@ class Resource extends DatabaseObject implements ResourceInterface {
 
 
 
-
-
-
-
 	//returns array of contact objects
 	public function getUnarchivedContacts($moduleFilter=false) {
 		$config = new Configuration;
-		$resultArray = array();
 		$contactsArray = array();
 
 		if (!$moduleFilter || $moduleFilter == 'resources') {
@@ -440,25 +403,10 @@ class Resource extends DatabaseObject implements ResourceInterface {
 
 			$result = $this->db->processQuery($query, 'assoc');
 
-
 			//need to do this since it could be that there's only one request and this is how the dbservice returns result
-			if (isset($result['contactID'])) {
-
-				foreach (array_keys($result) as $attributeName) {
-					$resultArray[$attributeName] = $result[$attributeName];
-				}
-
-				array_push($contactsArray, $resultArray);
-
-			}else{
-				foreach ($result as $row) {
-					$resultArray = array();
-					foreach (array_keys($row) as $attributeName) {
-						$resultArray[$attributeName] = $row[$attributeName];
-					}
-
-					array_push($contactsArray, $resultArray);
-				}
+			if (isset($result['contactID'])) { $result = [$result]; }
+			foreach ($result as $row) {
+				array_push($contactsArray, $row);
 			}
 		}
 
@@ -481,35 +429,15 @@ class Resource extends DatabaseObject implements ResourceInterface {
 
 			$result = $this->db->processQuery($query, 'assoc');
 
-
 			//need to do this since it could be that there's only one request and this is how the dbservice returns result
-			if (isset($result['contactID'])) {
-
-				foreach (array_keys($result) as $attributeName) {
-					$resultArray[$attributeName] = $result[$attributeName];
-				}
-
-				array_push($contactsArray, $resultArray);
-
-			}else{
-				foreach ($result as $row) {
-					$resultArray = array();
-					foreach (array_keys($row) as $attributeName) {
-						$resultArray[$attributeName] = $row[$attributeName];
-					}
-
-					array_push($contactsArray, $resultArray);
-				}
+			if (isset($result['contactID'])) { $result = [$result]; }
+			foreach ($result as $row) {
+				array_push($contactsArray, $row);
 			}
 
-
-
 		}
-
-
 		return $contactsArray;
 	}
-
 
 
 
@@ -533,26 +461,10 @@ class Resource extends DatabaseObject implements ResourceInterface {
 
 
 		//need to do this since it could be that there's only one request and this is how the dbservice returns result
-		if (isset($result['contactID'])) {
-
-			foreach (array_keys($result) as $attributeName) {
-				$resultArray[$attributeName] = $result[$attributeName];
-			}
-
-			array_push($contactsArray, $resultArray);
-
-		}else{
-			foreach ($result as $row) {
-				$resultArray = array();
-				foreach (array_keys($row) as $attributeName) {
-					$resultArray[$attributeName] = $row[$attributeName];
-				}
-
-				array_push($contactsArray, $resultArray);
-			}
+		if (isset($result['contactID'])) { $result = [$result]; }
+		foreach ($result as $row) {
+			array_push($contactsArray, $row);
 		}
-
-
 
 		//if the org module is installed also get the org contacts from org database
 		if ($config->settings->organizationsModule == 'Y') {
@@ -575,36 +487,14 @@ class Resource extends DatabaseObject implements ResourceInterface {
 
 
 			//need to do this since it could be that there's only one request and this is how the dbservice returns result
-			if (isset($result['contactID'])) {
-
-				foreach (array_keys($result) as $attributeName) {
-					$resultArray[$attributeName] = $result[$attributeName];
-				}
-
-				array_push($contactsArray, $resultArray);
-
-			}else{
-				foreach ($result as $row) {
-					$resultArray = array();
-					foreach (array_keys($row) as $attributeName) {
-						$resultArray[$attributeName] = $row[$attributeName];
-					}
-
-					array_push($contactsArray, $resultArray);
-				}
+			if (isset($result['contactID'])) { $result = [$result]; }
+			foreach ($result as $row) {
+				array_push($contactsArray, $row);
 			}
 
-
-
 		}
-
 		return $contactsArray;
-
-
-
 	}
-
-
 
 
 
@@ -612,7 +502,6 @@ class Resource extends DatabaseObject implements ResourceInterface {
 	public function getCreatorsArray() {
 
 		$creatorsArray = array();
-		$resultArray = array();
 
 		//get resource specific creators
 		$query = "SELECT distinct loginID, firstName, lastName
@@ -622,38 +511,19 @@ class Resource extends DatabaseObject implements ResourceInterface {
 
 		$result = $this->db->processQuery($query, 'assoc');
 
-
 		//need to do this since it could be that there's only one request and this is how the dbservice returns result
-		if (isset($result['loginID'])) {
-
-			foreach (array_keys($result) as $attributeName) {
-				$resultArray[$attributeName] = $result[$attributeName];
-			}
-
-			array_push($creatorsArray, $resultArray);
-
-		}else{
-			foreach ($result as $row) {
-				$resultArray = array();
-				foreach (array_keys($row) as $attributeName) {
-					$resultArray[$attributeName] = $row[$attributeName];
-				}
-
-				array_push($creatorsArray, $resultArray);
-			}
+		if (isset($result['loginID'])){ $result = [$result] ;}
+		foreach ($result as $row) {
+			array_push($creatorsArray, $row);
 		}
 
 		return $creatorsArray;
-
-
 	}
-
 
 
 
 	//returns array of external login records
 	public function getExternalLoginArray() {
-
 
 		$config = new Configuration;
 		$elArray = array();
@@ -667,28 +537,11 @@ class Resource extends DatabaseObject implements ResourceInterface {
 
 		$result = $this->db->processQuery($query, 'assoc');
 
-
 		//need to do this since it could be that there's only one request and this is how the dbservice returns result
-		if (isset($result['externalLoginID'])) {
-
-			foreach (array_keys($result) as $attributeName) {
-				$resultArray[$attributeName] = $result[$attributeName];
-			}
-
-			array_push($elArray, $resultArray);
-
-		}else{
-			foreach ($result as $row) {
-				$resultArray = array();
-				foreach (array_keys($row) as $attributeName) {
-					$resultArray[$attributeName] = $row[$attributeName];
-				}
-
-				array_push($elArray, $resultArray);
-			}
+		if (isset($result['externalLoginID'])){ $result = [$result]; }
+		foreach ($result as $row) {
+			array_push($elArray, $row);
 		}
-
-
 
 		//if the org module is installed also get the external logins from org database
 		if ($config->settings->organizationsModule == 'Y') {
@@ -704,36 +557,15 @@ class Resource extends DatabaseObject implements ResourceInterface {
 						AND R.resourceID = '" . $this->resourceID . "'
 						ORDER BY ELT.shortName;";
 
-
 			$result = $this->db->processQuery($query, 'assoc');
 
-
 			//need to do this since it could be that there's only one request and this is how the dbservice returns result
-			if (isset($result['externalLoginID'])) {
-
-				foreach (array_keys($result) as $attributeName) {
-					$resultArray[$attributeName] = $result[$attributeName];
-				}
-
-				array_push($elArray, $resultArray);
-
-			}else{
-				foreach ($result as $row) {
-					$resultArray = array();
-					foreach (array_keys($row) as $attributeName) {
-						$resultArray[$attributeName] = $row[$attributeName];
-					}
-
-					array_push($elArray, $resultArray);
-				}
+			if (isset($result['externalLoginID'])){ $result = [$result]; }
+			foreach ($result as $row) {
+				array_push($elArray, $row);
 			}
 
-
-
 		}
-
-
-
 		return $elArray;
 	}
 
@@ -760,18 +592,16 @@ class Resource extends DatabaseObject implements ResourceInterface {
 		$objects = array();
 
 		//need to do this since it could be that there's only one request and this is how the dbservice returns result
-		if (isset($result['resourceNoteID'])) {
-			$object = new ResourceNote(new NamedArguments(array('primaryKey' => $result['resourceNoteID'])));
+		if (isset($result['resourceNoteID'])) { $result = [$result]; }
+		foreach ($result as $row) {
+			$object = new ResourceNote(new NamedArguments(array('primaryKey' => $row['resourceNoteID'])));
 			array_push($objects, $object);
-		}else{
-			foreach ($result as $row) {
-				$object = new ResourceNote(new NamedArguments(array('primaryKey' => $row['resourceNoteID'])));
-				array_push($objects, $object);
-			}
 		}
 
 		return $objects;
 	}
+
+
 
 	//returns array of the initial note object
 	public function getInitialNote() {
@@ -787,14 +617,13 @@ class Resource extends DatabaseObject implements ResourceInterface {
 
 		//need to do this since it could be that there's only one request and this is how the dbservice returns result
 		if (isset($result['resourceNoteID'])) {
-			$resourceNote = new ResourceNote(new NamedArguments(array('primaryKey' => $result['resourceNoteID'])));
-			return $resourceNote;
+			return new ResourceNote(new NamedArguments(array('primaryKey' => $result['resourceNoteID'])));
 		} else{
-			$resourceNote = new ResourceNote();
-			return $resourceNote;
+			return new ResourceNote();
 		}
-
 	}
+
+
 
 	public function getIssues($archivedOnly=false) {
 		$query = "SELECT i.*
@@ -813,17 +642,15 @@ class Resource extends DatabaseObject implements ResourceInterface {
 		$objects = array();
 
 		//need to do this since it could be that there's only one request and this is how the dbservice returns result
-		if (isset($result['issueID'])) {
-			$object = new Issue(new NamedArguments(array('primaryKey' => $result['issueID'])));
+		if (isset($result['issueID'])){ $result = [$result]; }
+		foreach ($result as $row) {
+			$object = new Issue(new NamedArguments(array('primaryKey' => $row['issueID'])));
 			array_push($objects, $object);
-		}else{
-			foreach ($result as $row) {
-				$object = new Issue(new NamedArguments(array('primaryKey' => $row['issueID'])));
-				array_push($objects, $object);
-			}
 		}
 		return $objects;
 	}
+
+
 
 	public function getExportableIssues($archivedOnly=false){
 		if ($this->db->config->settings->organizationsModule == 'Y' && $this->db->config->settings->organizationsDatabaseName) {
@@ -865,6 +692,8 @@ class Resource extends DatabaseObject implements ResourceInterface {
 		}
 	}
 
+
+
 	private function getDownTimeResults($archivedOnly=false) {
 		$query = "SELECT d.*
 					FROM Downtime d
@@ -879,23 +708,23 @@ class Resource extends DatabaseObject implements ResourceInterface {
 		return $this->db->processQuery($query, 'assoc');
 	}
 
-	public function getDowntime($archivedOnly=false){
+
+
+	public function getDowntime($archivedOnly=false) {
 		$result = $this->getDownTimeResults($archivedOnly);
 
 		$objects = array();
 
 		//need to do this since it could be that there's only one request and this is how the dbservice returns result
-		if (isset($result['downtimeID'])){
-			$object = new Downtime(new NamedArguments(array('primaryKey' => $result['downtimeID'])));
+		if (isset($result['downtimeID'])) { $result = [$result]; }
+		foreach ($result as $row) {
+			$object = new Downtime(new NamedArguments(array('primaryKey' => $row['downtimeID'])));
 			array_push($objects, $object);
-		}else{
-			foreach ($result as $row) {
-				$object = new Downtime(new NamedArguments(array('primaryKey' => $row['downtimeID'])));
-				array_push($objects, $object);
-			}
 		}
 		return $objects;
 	}
+
+
 
 	public function getExportableDowntimes($archivedOnly=false){
 		$result = $this->getDownTimeResults($archivedOnly);
@@ -910,6 +739,8 @@ class Resource extends DatabaseObject implements ResourceInterface {
 		}
 	}
 
+
+
 	//returns array of attachments objects
 	public function getAttachments() {
 
@@ -923,19 +754,14 @@ class Resource extends DatabaseObject implements ResourceInterface {
 		$objects = array();
 
 		//need to do this since it could be that there's only one request and this is how the dbservice returns result
-		if (isset($result['attachmentID'])) {
-			$object = new Attachment(new NamedArguments(array('primaryKey' => $result['attachmentID'])));
+		if (isset($result['attachmentID'])) { $result = [$result]; }
+		foreach ($result as $row) {
+			$object = new Attachment(new NamedArguments(array('primaryKey' => $row['attachmentID'])));
 			array_push($objects, $object);
-		}else{
-			foreach ($result as $row) {
-				$object = new Attachment(new NamedArguments(array('primaryKey' => $row['attachmentID'])));
-				array_push($objects, $object);
-			}
 		}
 
 		return $objects;
 	}
-
 
 
 
@@ -950,19 +776,14 @@ class Resource extends DatabaseObject implements ResourceInterface {
 		$objects = array();
 
 		//need to do this since it could be that there's only one request and this is how the dbservice returns result
-		if (isset($result['contactID'])) {
-			$object = new Contact(new NamedArguments(array('primaryKey' => $result['contactID'])));
+		if (isset($result['contactID'])) { $result = [$result]; }
+		foreach ($result as $row) {
+			$object = new Contact(new NamedArguments(array('primaryKey' => $row['contactID'])));
 			array_push($objects, $object);
-		}else{
-			foreach ($result as $row) {
-				$object = new Contact(new NamedArguments(array('primaryKey' => $row['contactID'])));
-				array_push($objects, $object);
-			}
 		}
 
 		return $objects;
 	}
-
 
 
 
@@ -977,18 +798,15 @@ class Resource extends DatabaseObject implements ResourceInterface {
 		$objects = array();
 
 		//need to do this since it could be that there's only one request and this is how the dbservice returns result
-		if (isset($result['externalLoginID'])) {
-			$object = new ExternalLogin(new NamedArguments(array('primaryKey' => $result['externalLoginID'])));
+		if (isset($result['externalLoginID'])){ $result = [$result]; }
+		foreach ($result as $row) {
+			$object = new ExternalLogin(new NamedArguments(array('primaryKey' => $row['externalLoginID'])));
 			array_push($objects, $object);
-		}else{
-			foreach ($result as $row) {
-				$object = new ExternalLogin(new NamedArguments(array('primaryKey' => $row['externalLoginID'])));
-				array_push($objects, $object);
-			}
 		}
 
 		return $objects;
 	}
+
 
 
 	public static function setSearch($search) {
@@ -1016,9 +834,13 @@ class Resource extends DatabaseObject implements ResourceInterface {
 		CoralSession::set('resourceSearch', $search);
 	}
 
+
+
 	public static function resetSearch() {
 		Resource::setSearch(array());
 	}
+
+
 
 	public static function getSearch() {
 		if (!CoralSession::get('resourceSearch')) {
@@ -1026,6 +848,8 @@ class Resource extends DatabaseObject implements ResourceInterface {
 		}
 		return CoralSession::get('resourceSearch');
 	}
+
+
 
 	public static function getSearchDetails() {
 		// A successful mysqli_connect must be run before mysqli_real_escape_string will function.  Instantiating a resource model will set up the connection
@@ -1059,10 +883,6 @@ class Resource extends DatabaseObject implements ResourceInterface {
 		}
 
 		//get where statements together (and escape single quotes)
-		if ($search['resourceID']) {
-			$whereAdd[] = "R.resourceID = '" . $resource->db->escapeString($search['resourceID']) . "'";
-			$searchDisplay[] = _("Resource ID: ") . $search['resourceID'];
-		}
 		if ($search['resourceISBNOrISSN']) {
 			$resourceISBNOrISSN = $resource->db->escapeString(str_replace("-","",$search['resourceISBNOrISSN']));
 			$whereAdd[] = "REPLACE(I.isbnOrIssn,'-','') = '" . $resourceISBNOrISSN . "'";
@@ -1247,6 +1067,8 @@ class Resource extends DatabaseObject implements ResourceInterface {
 		return array("where" => $whereAdd, "page" => $page, "order" => $orderBy, "perPage" => $recordsPerPage, "display" => $searchDisplay);
 	}
 
+
+
 	public function searchQuery($whereAdd, $orderBy = '', $limit = '', $count = false) {
 		$config = new Configuration();
 		$status = new Status();
@@ -1345,6 +1167,8 @@ class Resource extends DatabaseObject implements ResourceInterface {
 		return $query;
 	}
 
+
+
 	//returns array based on search
 	public function search($whereAdd, $orderBy, $limit) {
 		$query = $this->searchQuery($whereAdd, $orderBy, $limit, false);
@@ -1352,37 +1176,37 @@ class Resource extends DatabaseObject implements ResourceInterface {
 		$result = $this->db->processQuery($query, 'assoc');
 
 		$searchArray = array();
-		$resultArray = array();
 
 		//need to do this since it could be that there's only one result and this is how the dbservice returns result
-		if (isset($result['resourceID'])) {
-
-			foreach (array_keys($result) as $attributeName) {
-				$resultArray[$attributeName] = $result[$attributeName];
-			}
-
-			array_push($searchArray, $resultArray);
-		}else{
-			foreach ($result as $row) {
-				$resultArray = array();
-				foreach (array_keys($row) as $attributeName) {
-					$resultArray[$attributeName] = $row[$attributeName];
-				}
-				array_push($searchArray, $resultArray);
-			}
+		if (isset($result['resourceID'])) { $result = [$result]; }
+		foreach ($result as $row) {
+			$row = static::addIdsToResourcesRow($row);
+			array_push($searchArray, $row);
 		}
-
 		return $searchArray;
 	}
+
+
+
+	private static function addIdsToResourcesRow($row) {
+		$resource = new Resource(new NamedArguments(array('primaryKey' => $row['resourceID'])));
+		$isbnOrIssns = $resource->getIsbnOrIssn();
+		$row['isbnOrIssns'] = [];
+		foreach ($isbnOrIssns as $isbnOrIssn) {
+			array_push($row['isbnOrIssns'], $isbnOrIssn->isbnOrIssn);
+		}
+		return $row;
+	}
+
+
 
 	public function searchCount($whereAdd) {
 		$query = $this->searchQuery($whereAdd, '', '', true);
 		$result = $this->db->processQuery($query, 'assoc');
 
-	//echo $query;
-
 		return $result['count'];
 	}
+
 
 
 	//used for A-Z on search (index)
@@ -1390,7 +1214,7 @@ class Resource extends DatabaseObject implements ResourceInterface {
 		$alphArray = array();
 		$result = $this->db->query("SELECT DISTINCT UPPER(SUBSTR(TRIM(LEADING 'The ' FROM titleText),1,1)) letter, COUNT(SUBSTR(TRIM(LEADING 'The ' FROM titleText),1,1)) letter_count
 								FROM Resource R
-								GROUP BY SUBSTR(TRIM(LEADING 'The ' FROM titleText),1,1)
+								GROUP BY UPPER(SUBSTR(TRIM(LEADING 'The ' FROM titleText),1,1))
 								ORDER BY 1;");
 
 		while ($row = $result->fetch_assoc()) {
@@ -1399,8 +1223,6 @@ class Resource extends DatabaseObject implements ResourceInterface {
 
 		return $alphArray;
 	}
-
-
 
 
 
@@ -1512,32 +1334,15 @@ class Resource extends DatabaseObject implements ResourceInterface {
 		$result = $this->db->processQuery(stripslashes($query), 'assoc');
 
 		$searchArray = array();
-		$resultArray = array();
 
 		//need to do this since it could be that there's only one result and this is how the dbservice returns result
-		if (isset($result['resourceID'])) {
-
-			foreach (array_keys($result) as $attributeName) {
-				$resultArray[$attributeName] = $result[$attributeName];
-			}
-
-			array_push($searchArray, $resultArray);
-		}else{
-			foreach ($result as $row) {
-				$resultArray = array();
-				foreach (array_keys($row) as $attributeName) {
-					$resultArray[$attributeName] = $row[$attributeName];
-				}
-				array_push($searchArray, $resultArray);
-			}
+		if (isset($result['resourceID'])) { $result = [$result]; }
+		foreach ($result as $row) {
+			array_push($searchArray, $row);
 		}
 
 		return $searchArray;
 	}
-
-
-
-
 
 
 
@@ -1560,28 +1365,13 @@ class Resource extends DatabaseObject implements ResourceInterface {
 
 		$result = $this->db->processQuery($query, 'assoc');
 
-		$resultArray = array();
-
 		//need to do this since it could be that there's only one result and this is how the dbservice returns result
-		if (isset($result['organizationID'])) {
-
-			foreach (array_keys($result) as $attributeName) {
-				$resultArray[$attributeName] = $result[$attributeName];
-			}
-
-			array_push($orgArray, $resultArray);
-		}else{
-			foreach ($result as $row) {
-				$resultArray = array();
-				foreach (array_keys($row) as $attributeName) {
-					$resultArray[$attributeName] = $row[$attributeName];
-				}
-				array_push($orgArray, $resultArray);
-			}
+		if (isset($result['organizationID'])){ $result = [$result]; }
+		foreach ($result as $row) {
+			array_push($orgArray, $row);
 		}
 
 		return $orgArray;
-
 	}
 
 
@@ -1744,6 +1534,8 @@ class Resource extends DatabaseObject implements ResourceInterface {
 		return $resourceOrgArray;
 	}
 
+
+
 	public function getSiblingResourcesArray($organizationID) {
 
 			$query = "SELECT DISTINCT r.resourceID, r.titleText FROM ResourceOrganizationLink rol
@@ -1759,6 +1551,8 @@ class Resource extends DatabaseObject implements ResourceInterface {
 
 			return $result;
 	}
+
+
 
 	//gets an array of distinct organizations set up for this resource (organizationID, organization)
 	public function getDistinctOrganizationArray() {
@@ -1877,10 +1671,10 @@ class Resource extends DatabaseObject implements ResourceInterface {
 	}
 
 
+
 	public function hasCatalogingInformation() {
 		return ($this->recordSetIdentifier || $this->recordSetIdentifier || $this->bibSourceURL || $this->catalogingTypeID || $this->catalogingStatusID || $this->numberRecordsAvailable || $this->numberRecordsLoaded || $this->hasOclcHoldings);
 	}
-
 
 
 
@@ -1910,7 +1704,6 @@ class Resource extends DatabaseObject implements ResourceInterface {
 		// Finally, we remove the parent
 		$this->removeResource();
 	}
-
 
 
 
@@ -1985,7 +1778,6 @@ class Resource extends DatabaseObject implements ResourceInterface {
 
 
 
-
 	//removes resource authorized sites
 	public function removeAuthorizedSites() {
 
@@ -2020,6 +1812,8 @@ class Resource extends DatabaseObject implements ResourceInterface {
 		$result = $this->db->processQuery($query);
 	}
 
+
+
 	//removes resource licenses
 	public function removeResourceLicenses() {
 
@@ -2029,6 +1823,8 @@ class Resource extends DatabaseObject implements ResourceInterface {
 
 		$result = $this->db->processQuery($query);
 	}
+
+
 
 	//removes resource license statuses
 	public function removeResourceLicenseStatuses() {
@@ -2040,6 +1836,8 @@ class Resource extends DatabaseObject implements ResourceInterface {
 		$result = $this->db->processQuery($query);
 	}
 
+
+
 	//removes resource organizations
 	public function removeResourceOrganizations() {
 
@@ -2049,6 +1847,7 @@ class Resource extends DatabaseObject implements ResourceInterface {
 
 		$result = $this->db->processQuery($query);
 	}
+
 
 
 	//removes resource note records
@@ -2063,18 +1862,15 @@ class Resource extends DatabaseObject implements ResourceInterface {
 
 
 
-
 	//removes resource steps
 	public function removeResourceSteps() {
 
 		$query = "DELETE
 			FROM ResourceStep
-			WHERE resourceID = '" . $this->resourceID . "'";
+			WHERE resourceID = '" . $this->resourceID . "' AND archivingDate IS NOT NULL";
 
 		$result = $this->db->processQuery($query);
 	}
-
-
 
 
 
@@ -2092,6 +1888,7 @@ class Resource extends DatabaseObject implements ResourceInterface {
 
 		return $resourceArray;
 	}
+
 
 
 	//search used for the organization autocomplete
@@ -2134,7 +1931,6 @@ class Resource extends DatabaseObject implements ResourceInterface {
 
 
 
-
 	//search used for the license autocomplete
 	public function licenseAutocomplete($q) {
 		$config = new Configuration;
@@ -2161,6 +1957,7 @@ class Resource extends DatabaseObject implements ResourceInterface {
 	}
 
 
+
 	///////////////////////////////////////////////////////////////////////////////////
 	//
 	//  Workflow functions follow
@@ -2174,14 +1971,44 @@ class Resource extends DatabaseObject implements ResourceInterface {
 
 		$query = "SELECT * FROM ResourceStep
 					WHERE resourceID = '" . $this->resourceID . "'
-					ORDER BY displayOrderSequence, stepID";
+					ORDER BY (archivingDate IS NOT NULL), archivingDate DESC, displayOrderSequence, stepID";
 
 		$result = $this->db->processQuery($query, 'assoc');
 
 		$objects = array();
 
 		//need to do this since it could be that there's only one request and this is how the dbservice returns result
-		if (isset($result['resourceStepID'])) {
+		if (isset($result['resourceStepID'])) { $result = [$result]; }
+		foreach ($result as $row) {
+			$object = new ResourceStep(new NamedArguments(array('primaryKey' => $row['resourceStepID'])));
+			array_push($objects, $object);
+		}
+
+		return $objects;
+
+	}
+
+    public function getCurrentWorkflowID() {
+        $query = "SELECT Step.workflowID FROM Step, ResourceStep 
+                    WHERE ResourceStep.resourceID = '" . $this->resourceID . "'
+                    AND ResourceStep.archivingDate IS NULL 
+                    AND ResourceStep.stepID = Step.stepID LIMIT 1";
+
+		$result = $this->db->processQuery($query, 'assoc');
+        return $result['workflowID'];
+    }
+
+    public function getCurrentWorkflowResourceSteps(){
+		$query = "SELECT * FROM ResourceStep
+					WHERE resourceID = '" . $this->resourceID . "'
+                    AND archivingDate IS NULL ORDER BY displayOrderSequence, stepID";
+
+		$result = $this->db->processQuery($query, 'assoc');
+
+		$objects = array();
+
+		//need to do this since it could be that there's only one request and this is how the dbservice returns result
+		if (isset($result['resourceStepID'])){
 			$object = new ResourceStep(new NamedArguments(array('primaryKey' => $result['resourceStepID'])));
 			array_push($objects, $object);
 		}else{
@@ -2195,29 +2022,31 @@ class Resource extends DatabaseObject implements ResourceInterface {
 
 	}
 
+    public function isCurrentWorkflowComplete() {
+        $steps = $this->getCurrentWorkflowResourceSteps(); 
+        foreach ($steps as $step) {
+            if (!$step->isComplete()) return false;
+        }
+        return true;
+    }
 
 
-
-	//returns current step location in the workflow for this resource
-	//used to display the group on the tabs
-	public function getCurrentStepGroup() {
-
-
-		$query = "SELECT groupName FROM ResourceStep RS, UserGroup UG
+    public function getDistinctWorkflows() {
+        $query = "SELECT DISTINCT archivingDate FROM ResourceStep
 					WHERE resourceID = '" . $this->resourceID . "'
-					ORDER BY stepID";
+                    AND archivingDate IS NOT NULL
+					ORDER BY archivingDate ASC";
 
 		$result = $this->db->processQuery($query, 'assoc');
 
-		$objects = array();
+		return $result;
 
-		//need to do this since it could be that there's only one request and this is how the dbservice returns result
-		if (isset($result['resourceStepID'])) {
+    }
 
-		}
 
-	}
-
+    public function getArchivedResourceSteps() {
+        return $this->getResourceSteps(true);
+    }
 
 
 	//returns first steps (object) in the workflow for this resource
@@ -2226,6 +2055,7 @@ class Resource extends DatabaseObject implements ResourceInterface {
 		$query = "SELECT * FROM ResourceStep
 					WHERE resourceID = '" . $this->resourceID . "'
 					AND (priorStepID is null OR priorStepID = '0')
+                    AND archivingDate IS NULL
 					ORDER BY stepID";
 
 		$result = $this->db->processQuery($query, 'assoc');
@@ -2233,29 +2063,30 @@ class Resource extends DatabaseObject implements ResourceInterface {
 		$objects = array();
 
 		//need to do this since it could be that there's only one request and this is how the dbservice returns result
-		if (isset($result['resourceStepID'])) {
-			$object = new ResourceStep(new NamedArguments(array('primaryKey' => $result['resourceStepID'])));
+		if (isset($result['resourceStepID'])) { $result = [$result]; }
+		foreach ($result as $row) {
+			$object = new ResourceStep(new NamedArguments(array('primaryKey' => $row['resourceStepID'])));
 			array_push($objects, $object);
-		}else{
-			foreach ($result as $row) {
-				$object = new ResourceStep(new NamedArguments(array('primaryKey' => $row['resourceStepID'])));
-				array_push($objects, $object);
-			}
 		}
 
 		return $objects;
-
-
 	}
 
+    public function archiveWorkflow() {
 
+        // And archive the workflow
+        $query = "UPDATE ResourceStep SET archivingDate=NOW() WHERE archivingDate IS NULL AND resourceID = '" . $this->resourceID . "'";
+		$result = $this->db->processQuery($query);
+    }
+
+    public function deleteWorkflow() {
+        $query = "DELETE FROM ResourceStep WHERE archivingDate IS NULL AND resourceID = '" . $this->resourceID . "'";
+		$result = $this->db->processQuery($query);
+    }
 
 	//enters resource into new workflow
-	public function enterNewWorkflow() {
+	public function enterNewWorkflow($workflowID = null){
 		$config = new Configuration();
-
-		//remove any current workflow steps
-		$this->removeResourceSteps();
 
 		//make sure this resource is marked in progress in case it was archived
 		$status = new Status();
@@ -2265,11 +2096,23 @@ class Resource extends DatabaseObject implements ResourceInterface {
 
 		//Determine the workflow this resource belongs to
 		$workflowObj = new Workflow();
-		$workflowID = $workflowObj->getWorkflowID($this->resourceTypeID, $this->resourceFormatID, $this->acquisitionTypeID);
 
-		if ($workflowID) {
+        if ($workflowID == null) {
+            $workflowID = $workflowObj->getWorkflowID($this->resourceTypeID, $this->resourceFormatID, $this->acquisitionTypeID);
+        }
+		if ($workflowID){
+
 			$workflow = new Workflow(new NamedArguments(array('primaryKey' => $workflowID)));
+			$resourceTypeObj = new ResourceType();
+            $resourceFormatObj = new ResourceFormat();
+            $acquisitionTypeObj = new AcquisitionType();
 
+            //set new resourceType, resourceFormat and acquisitionType for the resource, according to the selected workflow
+            $this->resourceTypeID = ($workflow->resourceTypeIDValue != null) ? $workflow->resourceTypeIDValue : $resourceTypeObj->getResourceTypeIDByName('any');
+            $this->resourceFormatID =  ($workflow->resourceFormatIDValue != null) ? $workflow->resourceFormatIDValue : $resourceFormatObj->getResourceFormatIDByName('any');
+            $this->acquisitionTypeID = ($workflow->acquisitionTypeIDValue != null) ? $workflow->acquisitionTypeIDValue : $acquisitionTypeObj->getAcquisitionTypeIDByName('any');
+
+            $this->save();
 
 			//Copy all of the step attributes for this workflow to a new resource step
 			foreach ($workflow->getSteps() as $step) {
@@ -2280,13 +2123,16 @@ class Resource extends DatabaseObject implements ResourceInterface {
 				$resourceStep->stepID 				= $step->stepID;
 				$resourceStep->priorStepID			= $step->priorStepID;
 				$resourceStep->stepName				= $step->stepName;
+                $resourceStep->stepStartDate        = '';
+                $resourceStep->stepEndDate          = '';
+                $resourceStep->archivingDate        = '';
+                $resourceStep->endLoginID           = '';
 				$resourceStep->userGroupID			= $step->userGroupID;
 				$resourceStep->displayOrderSequence	= $step->displayOrderSequence;
 
 				$resourceStep->save();
 
 			}
-
 
 			//Start the first step
 			//this handles updating the db and sending notifications for approval groups
@@ -2340,7 +2186,6 @@ class Resource extends DatabaseObject implements ResourceInterface {
 
 
 
-
 	//completes a workflow (changes status to complete and sends notifications to creator and "master email")
 	public function completeWorkflow() {
 		$config = new Configuration();
@@ -2379,6 +2224,8 @@ class Resource extends DatabaseObject implements ResourceInterface {
 		$email->send();
 	}
 
+
+
 	//returns array of subject objects
 	public function getGeneralDetailSubjectLinkID() {
 
@@ -2402,18 +2249,16 @@ class Resource extends DatabaseObject implements ResourceInterface {
 		$objects = array();
 
 		//need to do this since it could be that there's only one request and this is how the dbservice returns result
-		if (isset($result['generalDetailSubjectLinkID'])) {
-			$object = new GeneralDetailSubjectLink(new NamedArguments(array('primaryKey' => $result['generalDetailSubjectLinkID'])));
+		if (isset($result['generalDetailSubjectLinkID'])) { $result = [$result]; }
+		foreach ($result as $row) {
+			$object = new GeneralDetailSubjectLink(new NamedArguments(array('primaryKey' => $row['generalDetailSubjectLinkID'])));
 			array_push($objects, $object);
-		}else{
-			foreach ($result as $row) {
-				$object = new GeneralDetailSubjectLink(new NamedArguments(array('primaryKey' => $row['generalDetailSubjectLinkID'])));
-				array_push($objects, $object);
-			}
 		}
 
 		return $objects;
 	}
+
+
 
 	//returns array of subject objects
 	public function getDetailedSubjects($resourceID, $generalSubjectID) {
@@ -2437,18 +2282,15 @@ class Resource extends DatabaseObject implements ResourceInterface {
 		$objects = array();
 
 		//need to do this since it could be that there's only one request and this is how the dbservice returns result
-		if (isset($result['detailedSubjectID'])) {
-			$object = new DetailedSubject(new NamedArguments(array('primaryKey' => $result['detailedSubjectID'])));
+		if (isset($result['detailedSubjectID'])) { $result = [$result]; }
+		foreach ($result as $row) {
+			$object = new DetailedSubject(new NamedArguments(array('primaryKey' => $row['detailedSubjectID'])));
 			array_push($objects, $object);
-		}else{
-			foreach ($result as $row) {
-				$object = new DetailedSubject(new NamedArguments(array('primaryKey' => $row['detailedSubjectID'])));
-				array_push($objects, $object);
-			}
 		}
 
 		return $objects;
 	}
+
 
 
 	//removes all resource subjects
@@ -2459,8 +2301,9 @@ class Resource extends DatabaseObject implements ResourceInterface {
 			WHERE resourceID = '" . $this->resourceID . "'";
 
 		$result = $this->db->processQuery($query);
-
 	}
+
+
 
 	public function removeAllIsbnOrIssn() {
 		$query = "DELETE
@@ -2468,8 +2311,9 @@ class Resource extends DatabaseObject implements ResourceInterface {
 			WHERE resourceID = '" . $this->resourceID . "'";
 
 		$result = $this->db->processQuery($query);
-
 	}
+
+
 
 	public function setIsbnOrIssn($isbnorissns) {
 		$this->removeAllIsbnOrIssn();
@@ -2494,5 +2338,4 @@ class Resource extends DatabaseObject implements ResourceInterface {
 		return false;
 	}
 }
-
 ?>
