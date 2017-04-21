@@ -96,10 +96,10 @@ if ($enhancedCostFlag){
 							<td>
 								<input type='text' value='' class='changeDefaultWhite changeInput year costHistoryYear' />
 							</td>
-							<td>
+							<td class="date-wrapper">
 								<input type='text' value='' class='date-pick changeDefaultWhite changeInput subscriptionStartDate costHistorySubStart' placeholder='mm/dd/yyyy' />
 							</td>
-							<td>
+							<td class="date-wrapper">
 								<input type='text' value='' class='date-pick changeDefaultWhite changeInput subscriptionEndDate costHistorySubEnd' placeholder='mm/dd/yyyy' />
 							</td>
 							<?php } ?>
@@ -221,10 +221,10 @@ if ($enhancedCostFlag){
 								<td>
 									<input type='text' value='<?php echo $payment['year']; ?>' class='changeInput year costHistoryYear' />
 								</td>
-								<td>
+								<td class="date-wrapper">
 									<input type='text' value='<?php echo normalize_date($payment['subscriptionStartDate']); ?>' class='date-pick changeInput subscriptionStartDate costHistorySubStart' placeholder="mm/dd/yyyy" />
 								</td>
-								<td>
+								<td class="date-wrapper">
 									<input type='text' value='<?php echo normalize_date($payment['subscriptionEndDate']); ?>' class='date-pick changeInput subscriptionEndDate costHistorySubEnd' placeholder="mm/dd/yyyy" />
 								</td>
 								<?php } ?>
