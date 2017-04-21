@@ -183,13 +183,13 @@ if ($enhancedCostFlag){
 								<input type='text' value='' class='changeDefaultWhite changeInput invoiceNum costHistoryInvoice' />
 							</td>
 							<td>
-								<input type='text' value='<?php echo $payment['vendorCode']; ?>' class='changeDefaultWhite changeInput vendorCode costHistoryInvoice' />
-							</td>
-							<td>
 								<input type='text' value='<?php echo $payment['purchaseOrder']; ?>' class='changeDefaultWhite changeInput purchaseOrder costHistoryInvoice' />
 							</td>
 							<td>
 								<input type='text' value='<?php echo $payment['systemID']; ?>' class='changeDefaultWhite changeInput systemID costHistoryInvoice' />
+							</td>
+							<td>
+								<input type='text' value='<?php echo $payment['vendorCode']; ?>' class='changeDefaultWhite changeInput vendorCode costHistoryInvoice' />
 							</td>
 							<?php } ?>
 							<td class='costHistoryAction'>
