@@ -49,7 +49,7 @@ if ($enhancedCostFlag){
 		<form id='resourceForm'>
 		<input type='hidden' name='editResourceID' id='editResourceID' value='<?php echo $resourceID; ?>'>
 
-		<div class='formTitle' style='width:<?php echo $baseWidth + 46 ?>px; margin-bottom:5px;'><span class='headerText'><?php echo _("Edit Cost Information");?></span></div>
+		<div class='formTitle' style='width:<?php echo $baseWidth + 46 ?>px; margin-bottom:5px;'><span class='headerText'><?php echo _("Edit Cost History");?></span></div>
 
 		<span class='smallDarkRedText' id='span_errors'></span>
 
