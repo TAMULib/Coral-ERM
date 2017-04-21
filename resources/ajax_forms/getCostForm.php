@@ -68,7 +68,7 @@ if ($enhancedCostFlag){
 							<th><?php echo _("Sub Start");?></th>
 							<th><?php echo _("Sub End");?></th>
 							<?php } ?>
-							<th><?php echo _("Fund");?></th>
+							<th><?php echo _("Fund/Fund Code");?></th>
 							<?php if ($enhancedCostFlag){ ?>
 							<th><?php echo _("Tax Excl.");?></th>
 							<th><?php echo _("Tax Rate");?></th>
