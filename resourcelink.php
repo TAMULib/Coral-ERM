@@ -5,7 +5,7 @@ require_once('on_off_campus_check.php');
 
 if ($_SERVER["SERVER_NAME"] != 'localhost') {
 
- $host = "mysql-coral.l";
+	$host = "srv-mysql-coral.library.tamu.edu";
 //  $host = "mysqldev.l";
 	$username = "coral";
 	$password = "va7uCUQ2";
