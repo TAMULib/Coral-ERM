@@ -120,12 +120,12 @@
 
            <span id="newParent">
            <div class="oneParent">
-           <input type='text' class='parentResource parentResource_new' name='parentResourceName' value='' style='width:140px;' class='changeInput'  /><input type='hidden' class='parentResource parentResource_new' name='parentResourceID' value='' /><span id='span_error_parentResourceName' class='smallDarkRedText'></span>
+           <input type='text' class='parentResource parentResource_new' name='parentResourceName' value='' style='width:140px;' class='changeInput'  /><input type='hidden' class='parentResource parentResource_new' name='parentResourceNewID' value='' /><span id='span_error_parentResourceName' class='smallDarkRedText'></span>
            <a href='#'><input class='addParent add-button' title='<?php echo _("add Parent Resource");?>' type='button' value='<?php echo _("Add");?>'/></a><br />
           </div>
            </span>
 
-          <span id="existingParent"> 
+          <span id="existingParent">
           <?php
            $i = 1;
            foreach ($parentResourceArray as $parentResource) {
@@ -140,7 +140,7 @@ $parentResourceObj = new Resource(new NamedArguments(array('primaryKey' => $pare
              $i++;
            }
           ?>
-          </span> 
+          </span>
 					</td>
 					</tr>
 
