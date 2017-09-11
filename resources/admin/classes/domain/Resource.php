@@ -958,6 +958,13 @@ class Resource extends DatabaseObject {
 			$whereAdd[] = "R.resourceTypeID = '" . $resource->db->escapeString($search['resourceTypeID']) . "'";
 			$resourceType = new ResourceType(new NamedArguments(array('primaryKey' => $search['resourceTypeID'])));
 			$searchDisplay[] = _("Resource Type: ") . $resourceType->shortName;
+		} else {
+			//if not searching by resource type, hide archived Resources of types that have their hideArchived flags set
+			$status = new Status();
+			$archivedStatusId = $status->getIDFromName('archived');
+			if ($search['statusID'] !== $archivedStatusId) {
+				$whereAdd[] = "((RT.hideArchived=0 OR RT.hideArchived IS NULL) OR (RT.hideArchived=1 AND R.statusID != ".intval($status->getIDFromName('archived'))."))";
+			}
 		}
 
 
@@ -1064,6 +1071,7 @@ class Resource extends DatabaseObject {
 		}
 
 		$savedStatusID = intval($status->getIDFromName('saved'));
+
 		//also add to not retrieve saved records
 		$whereAdd[] = "R.statusID != " . $savedStatusID;
 
