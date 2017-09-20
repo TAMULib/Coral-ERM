@@ -785,7 +785,17 @@ class Resource extends DatabaseObject {
 		return $objects;
 	}
 
+	/*
+	*	This method 'batch' archives all resources of auto-archiveable types whose subscriptions have expired
+	*/
+/*
+	public function archiveExpiredResources() {
+		$sql = "UPDATE Resource R
+				LEFT JOIN 
 
+				SET statusID=|archived| WHERE currentEndDate>NOW() ";
+	}
+*/
 
 	public static function setSearch($search) {
 	$config = new Configuration;
