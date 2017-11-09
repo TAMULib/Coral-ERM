@@ -287,7 +287,7 @@ function submitData(){
             type:       "POST",
             url:        "ajax_processing.php?action=updateData",
             cache:      false,
-            data:       { className: $("#editClassName").val(), updateID: $("#editUpdateID").val(), shortName: $('#updateVal').val(), stats: $('#stats').attr('checked') },
+            data:       { className: $("#editClassName").val(), updateID: $("#editUpdateID").val(), shortName: $('#updateVal').val(), stats: $('#stats').attr('checked'), hideArchived: $('#hideArchived').attr('checked') },
             success:    function(html) {
                 updateTable($("#editClassName").val());
                 window.parent.tb_remove();
