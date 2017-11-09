@@ -788,14 +788,14 @@ class Resource extends DatabaseObject {
 	/*
 	*	This method 'batch' archives all resources of auto-archiveable types whose subscriptions have expired
 	*/
-/*
 	public function archiveExpiredResources() {
-		$sql = "UPDATE Resource R
-				LEFT JOIN 
-
-				SET statusID=|archived| WHERE currentEndDate>NOW() ";
+		$status = new Status();
+		$archivedStatusID = $status->getIDFromName('archived');
+		$query = "UPDATE Resource r 
+				LEFT JOIN ResourceType rt ON rt.resourceTypeID=r.resourceTypeID
+				SET r.statusID={$archivedStatusID} WHERE rt.hideArchived=1 AND r.currentEndDate < NOW() ";
+		return $this->db->processQuery($query);
 	}
-*/
 
 	public static function setSearch($search) {
 	$config = new Configuration;
