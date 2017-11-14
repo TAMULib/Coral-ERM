@@ -283,6 +283,35 @@ Flight::route('/getAdministeringSite/@id', function($id) {
     Flight::json($as->shortName);
 });
 
+Flight::route('/getResource/@id', function($id) {
+   $resource = new Resource(new NamedArguments(array('primaryKey' => $id)));
+    Flight::json($resource->attributes);
+});
+
+Flight::route('/postResourceNote/', function() {
+    $user = userExists(Flight::request()->data['user']) ? Flight::request()->data['user'] : 'API';
+    $noteText = Flight::request()->data['noteText'];
+    $resourceID = Flight::request()->data['resourceID'];
+    if ($resourceID && $noteText) {
+        try {
+            $noteType = new NoteType();
+            $noteTypeID = $noteType->getNoteTypeIDByName("Feedback");
+            $resourceNote = new ResourceNote();
+            $resourceNote->resourceNoteID   = '';
+            $resourceNote->updateLoginID    = $user;
+            $resourceNote->updateDate       = date( 'Y-m-d' );
+            $resourceNote->noteTypeID       = $noteTypeID;
+            $resourceNote->tabName          = 'Product';
+            $resourceNote->resourceID       = $resourceID;
+            $resourceNote->noteText         = $noteText;
+            $resourceNote->save();
+            Flight::json(array("resourceNoteID"=>$resourceNote->primaryKey));
+        } catch (Exception $e) {
+            Flight::json(array('error' => $e->getMessage()));
+        }
+    }
+    Flight::json(array('error' => 'Error adding note'));
+});
 
 Flight::start();
 
