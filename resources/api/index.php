@@ -313,6 +313,19 @@ Flight::route('/postResourceNote/', function() {
     Flight::json(array('error' => 'Error adding note'));
 });
 
+Flight::route('/findResourcesByTitle/', function() {
+    $searchTerm = Flight::request()->query['searchTerm'];
+    if ($searchTerm) {
+        $resourceObj = new Resource();
+        $resources = $resourceObj->findResourcesByTitle($searchTerm);
+        $matches = array();
+        foreach ($resources as $resource) {
+            $matches[] = $resource->attributes;
+        }
+        Flight::json($matches);
+    }
+});
+
 Flight::start();
 
 function isAllowed() {

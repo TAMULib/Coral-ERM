@@ -12,11 +12,12 @@ $user = $_SERVER['REMOTE_USER'] ? $_SERVER['REMOTE_USER'] : 'API';
 		crossorigin="anonymous"></script>
       <script type="text/javascript">
         var coralBase = 'http://coral.local/resources/';
-  	    var coralAPI = coralBase+'api/';
+  	    var coralAPI = coralBase+'resources/api/';
   	    function getCoralData(endpoint,parameters) {
   		  return $.ajax({
   					type: "GET",
-  					url: coralAPI+endpoint+'/'
+  					url: coralAPI+endpoint+'/',
+            data: parameters
   				});
   	    }
 
@@ -27,7 +28,7 @@ $user = $_SERVER['REMOTE_USER'] ? $_SERVER['REMOTE_USER'] : 'API';
                     data: $form.serialize()
                   }).done(function(data) {
                     if (data.resourceID) {
-                      $("#doContent").html("Your proposal has been submitted. <a href='"+coralBase+"resource.php?resourceID="+data.resourceID+"'>View Now</a>");
+                      $("#doContent").html("Your proposal has been submitted. <a href='"+coralBase+"tamu_trial_feedback.php?resourceid="+data.resourceID+"'>View Now</a>");
                     } else if (data.error) {
                       $("#doContent .error").html("There was an error submitting your proposal.");
                     }
@@ -72,10 +73,22 @@ $user = $_SERVER['REMOTE_USER'] ? $_SERVER['REMOTE_USER'] : 'API';
      		  });
   	    }
 
-  	    $(document).ready(function() {
-    		  getResourceTypesAsDropdown();
-    		  getAcquisitionTypesAsRadio();
-    		  getResourceFormatsAsDropdown();
+        $(document).ready(function() {
+          getResourceTypesAsDropdown();
+          getAcquisitionTypesAsRadio();
+          getResourceFormatsAsDropdown();
+      
+          $("#doCheckTitle").change(function() {
+            getCoralData('findResourcesByTitle',{'searchTerm':$(this).val()}).done(function(data) {
+              if (Array.isArray(data)) {
+                var matchesHtml = '<h4>Potential Matches:</h4>';
+                $.each(data,function(k,v) {
+                  matchesHtml += '<div><a target="_blank" href="'+coralBase+'tamu_trial_feedback.php?resourceid='+v.resourceID+'">'+v.titleText+'</a></div>';
+                });
+                $("#doTitleMatches").html(matchesHtml);
+              }
+            });
+          });
 
       		$("#proposeResourceForm").submit(function() {
             postCoralResource($(this));
@@ -94,7 +107,8 @@ $user = $_SERVER['REMOTE_USER'] ? $_SERVER['REMOTE_USER'] : 'API';
           <legend>Product</legend>
           <div class="field">
             <label for="titleText">Title: </label>
-            <input name="titleText" type="text" />
+            <input id="doCheckTitle" name="titleText" type="text" />
+            <div id="doTitleMatches"></div>
           </div>
           <div class="field">
             <label for="descriptionText">Description: </label>
