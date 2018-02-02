@@ -2328,5 +2328,29 @@ class Resource extends DatabaseObject {
 			}
 		}
 	}
+
+	/*
+	* TAMU Customization - returns a list of resources with similar titles to the search criteria
+	*/
+	public function findResourcesByTitle($title) {
+
+		$query = "SELECT *
+			FROM Resource
+			WHERE UPPER(titleText) LIKE '" . str_replace("'", "''", strtoupper($title)) . "%'
+			ORDER BY titleText";
+
+		$result = $this->db->processQuery($query, 'assoc');
+
+		$objects = array();
+
+		//need to do this since it could be that there's only one request and this is how the dbservice returns result
+		if (isset($result['resourceID'])) { $result = [$result]; }
+		foreach ($result as $row) {
+			$object = new Resource(new NamedArguments(array('primaryKey' => $row['resourceID'])));
+			array_push($objects, $object);
+		}
+
+		return $objects;
+	}
 }
 ?>
