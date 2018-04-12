@@ -32,8 +32,10 @@ if ($user->isAdmin()){
 	<tr><td align='left'>
 	<span class="headerText"><?php echo _("Users");?></span>&nbsp;&nbsp;<span id='span_User_response'></span>
 <?php 
-	//  Disable for Demo Sitev<br /><span id='span_newUser' class='adminAddInput'><a href='ajax_forms.php?action=getAdminUserUpdateForm&height=185&width=250&modal=true' class='thickbox' id='expression'><?php echo _("add new user"); </a></span>
-	// <br /><br /> ?>
+//	<br /><span id='span_newUser' class='adminAddInput'><a href='ajax_forms.php?action=getAdminUserUpdateForm&height=185&width=250&modal=true' class='thickbox' id='expression'><?php echo _("add new user");?></a></span>
+//	<br /><br />
+?>
+
 	
 	<div id='div_User'>
 	<img src = "images/circle.gif"><?php echo _("Loading...");?>
