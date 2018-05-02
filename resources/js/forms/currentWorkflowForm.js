@@ -330,7 +330,7 @@ function submitCurrentWorkflow() {
              type:       "POST",
              url:        "ajax_processing.php?action=submitCurrentWorkflow",
              cache:      false,
-             data:       { resourceID: $("#editRID").val(), stepNames: stepNameList, userGroups: userGroupList, priorSteps: priorStepList, stepIDs: stepIDList, actions: actionList, seqOrders: seqOrderList, mailReminderDelays: mailReminderDelayList },
+             data:       { resourceAcquisitionID: $("#editRAID").val(), stepNames: stepNameList, userGroups: userGroupList, priorSteps: priorStepList, stepIDs: stepIDList, actions: actionList, seqOrders: seqOrderList, mailReminderDelays: mailReminderDelayList },
              success:    function(html) {
                 if (html){
                     $("#span_errors").html(html);
@@ -338,7 +338,7 @@ function submitCurrentWorkflow() {
                 }else{
                     kill();
                     window.parent.tb_remove();
-                    window.parent.updateRouting();
+                    window.parent.updateWorkflow();
                     return false;
                 }
 
