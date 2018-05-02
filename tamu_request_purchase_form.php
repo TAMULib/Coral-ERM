@@ -2,150 +2,107 @@
 $user = $_SERVER['REMOTE_USER'] ? $_SERVER['REMOTE_USER'] : 'API';
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-  <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
-    <head>
-      <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf-8" />
-      <link href="https://library.tamu.edu/assets/css/tamuLib.css" rel="stylesheet" />
-      <link href="https://library.tamu.edu/assets/css/app.css" rel="stylesheet" />
-      <script src="https://code.jquery.com/jquery-3.2.1.min.js"
-		integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-		crossorigin="anonymous"></script>
-      <script type="text/javascript">
-        var coralBase = 'http://coral.local/resources/';
-  	    var coralAPI = coralBase+'resources/api/';
-  	    function getCoralData(endpoint,parameters) {
-  		  return $.ajax({
-  					type: "GET",
-  					url: coralAPI+endpoint+'/',
-            data: parameters
-  				});
-  	    }
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
+  <head>
+    <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=utf-8" />
+    <link rel="stylesheet" type="text/css" href="//helpdesk.library.tamu.edu/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="//helpdesk.library.tamu.edu/css/tamu.css">
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"
+	integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+	crossorigin="anonymous"></script>
+    <script type="text/javascript">
+      var coralBase = 'http://localhost:8090/php/Coral-ERM/';
+	    var coralAPI = coralBase+'resources/api/';
+	    function getCoralData(endpoint,parameters) {
+		  return $.ajax({
+					type: "GET",
+					url: coralAPI+endpoint+'/',
+          data: parameters
+				});
+	    }
 
-        function postCoralResource($form) {
-          return $.ajax({
-                    type: "POST",
-                    url: coralAPI+'proposeResource/',
-                    data: $form.serialize()
-                  }).done(function(data) {
-                    if (data.resourceID) {
-                      $("#doContent").html("Your proposal has been submitted. <a href='"+coralBase+"tamu_trial_feedback.php?resourceid="+data.resourceID+"'>View Now</a>");
-                    } else if (data.error) {
-                      $("#doContent .error").html("There was an error submitting your proposal.");
-                    }
-                  }).fail(function(data) {
+      function postCoralResource($form) {
+        return $.ajax({
+                  type: "POST",
+                  url: coralAPI+'proposeResource/',
+                  data: $form.serialize()
+                }).done(function(data) {
+                  if (data.resourceID) {
+                    $("#doContent").html("Your proposal has been submitted. <a href='"+coralBase+"tamu_trial_feedback.php?resourceid="+data.resourceID+"'>View Now</a>");
+                  } else if (data.error) {
                     $("#doContent .error").html("There was an error submitting your proposal.");
-                  });
-        }
-
-  	    function getResourceTypesAsDropdown() {
-  	      getCoralData('getResourceTypes').done(function(data) {
-      			if (data) {
-      				var html = '';
-      				$.each(data,function(k,resourceType) {
-      					html += ' <option value="'+resourceType.resourceTypeID+'">'+resourceType.shortName+'</option>"';
-      				});
-      				$("#resourceTypes").html(html);
-      			}
-      		});
-  	    }
-
-  	    function getAcquisitionTypesAsRadio() {
-  	      getCoralData('getAcquisitionTypes').done(function(data) {
-    		    if (data) {
-    		      var html = '';
-    			    $.each(data,function(k,acquisitionType) {
-    			      html += ' <input type="radio" name="acquisitionTypeID" value="'+acquisitionType.acquisitionTypeID+'" /> '+acquisitionType.shortName;
-    			    });
-    			    $("#acquisitionTypes").html(html);
-    		    }
-    		  });
-  	    }
-
-  	    function getResourceFormatsAsDropdown() {
-  	      getCoralData('getResourceFormats').done(function(data) {
-      			if (data) {
-      			  var html = '';
-      			  $.each(data,function(k,resourceFormat) {
-      			    html += ' <option value="'+resourceFormat.resourceFormatID+'">'+resourceFormat.shortName+'</option>"';
-      			  });
-      			  $("#resourceFormats").html(html);
-      			}
-     		  });
-  	    }
-
-        $(document).ready(function() {
-          getResourceTypesAsDropdown();
-          getAcquisitionTypesAsRadio();
-          getResourceFormatsAsDropdown();
-      
-          $("#doCheckTitle").change(function() {
-            getCoralData('findResourcesByTitle',{'searchTerm':$(this).val()}).done(function(data) {
-              if (Array.isArray(data)) {
-                var matchesHtml = '<h4>Potential Matches:</h4>';
-                $.each(data,function(k,v) {
-                  matchesHtml += '<div><a target="_blank" href="'+coralBase+'tamu_trial_feedback.php?resourceid='+v.resourceID+'">'+v.titleText+'</a></div>';
+                  }
+                }).fail(function(data) {
+                  $("#doContent .error").html("There was an error submitting your proposal.");
                 });
-                $("#doTitleMatches").html(matchesHtml);
-              }
-            });
+      }
+
+      $(document).ready(function() {
+        $("#doCheckTitle").change(function() {
+          getCoralData('findResourcesByTitle',{'searchTerm':$(this).val()}).done(function(data) {
+            if (Array.isArray(data)) {
+              var matchesHtml = '<h4>Potential Matches:</h4>';
+              $.each(data,function(k,v) {
+                matchesHtml += '<div><a target="_blank" href="'+coralBase+'tamu_trial_feedback.php?resourceid='+v.resourceID+'">'+v.titleText+'</a></div>';
+              });
+              $("#doTitleMatches").html(matchesHtml);
+            }
           });
+        });
 
-      		$("#proposeResourceForm").submit(function() {
-            postCoralResource($(this));
-      			return false;
-      		});
-  	    });
-      </script>
-    </head>
-    <body>
-      <h1>Suggest a Purchase</h1>
-      <div id="doContent">
-        <div class="error"></div>
-        <form id="proposeResourceForm" name="proposeResourceForm" action="" method="POST">
-          <input type="hidden" name="user" value="<?php echo $user; ?>">
-          <fieldset>
-          <legend>Product</legend>
-          <div class="field">
-            <label for="titleText">Title: </label>
-            <input id="doCheckTitle" name="titleText" type="text" />
-            <div id="doTitleMatches"></div>
-          </div>
-          <div class="field">
-            <label for="descriptionText">Description: </label>
-            <textarea name="descriptionText"></textarea>
-          </div>
-          <div class="field">
-            <label for="providerText">Provider: </label>
-            <input name="providerText" type="text" />
-          </div>
-          <div class="field">
-            <label for="resourceURL">URL: </label>
-            <input name="resourceURL" type="text" />
-          </div>
-
-        <fieldset>
-          <legend>Format</legend>
-          <select id="resourceFormats" name="resourceFormatID"></select>
-        </fieldset>
-
-        <fieldset>
-          <legend>Acquisition Type</legend>
-          <div id="acquisitionTypes"></div>
-        </fieldset>
-
-        <fieldset>
-          <legend>Resource Type</legend>
-          <select id="resourceTypes" name="resourceTypeID"></select>
-        </fieldset>
-
-        <fieldset>
-          <legend>Notes</legend>
-          <label for="noteText">Include any additional information</label>
-          <textarea name="noteText"></textarea>
-        </fieldset>
-
-        <input class="button" type="submit" name="submitProposeResourceForm" value="Send" />
-      </form>
+        $("#proposeResourceForm").submit(function() {
+          var noteText = "\n";
+          $(this).find(".do-note").each(function() {
+            noteText += $(this).siblings("label").text()+" "+$(this).val()+"\n\n";
+          });
+          $("#noteText").val(noteText);
+          postCoralResource($(this));
+          return false;
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <div class="container" id="doContent">
+      <div class="row">
+        <div class="col-md-12">
+          <ol class="breadcrumb">
+              <li class="active"><a href="//helpdesk.library.tamu.edu/erdesk.php">Return to Helpdesk</a></li>
+          </ol>
+          <h3>Request a Trial</h3>
+          <p>Use the form below to request a trial for a new resource.</p>
+          <div class="error"></div>
+          <form id="proposeResourceForm" name="proposeResourceForm" action="" method="POST">
+            <input type="hidden" id="noteText" name="noteText" value="" />
+            <div class="form-group">
+              <label for="titleText">Title of Resource:</label>
+              <input type="text" class="form-control" name="titleText" id="doCheckTitle" value=""  minlength="1" required>
+            </div>
+            <div class="form-group">
+              <label for="descriptionText">Description of Resource:</label>
+              <textarea type="text" class="form-control" id="descriptionText", name="descriptionText" rows="5"  minlength="1" required></textarea>
+            </div>
+            <div class="form-group">
+              <label for="requestDates">Desired Dates of Trial:</label>
+              <input type="text" class="form-control do-note" id="noteDates" value=""  minlength="1" required>
+            </div>
+            <div class="form-group">
+              <label for="note[vendor]">Vendor Contact Information (Name, Phone, Email, Date of Contact):</label>
+              <textarea type="text" class="form-control do-note" id="noteVendor" rows="5"  minlength="1" required></textarea>
+            </div>
+            <div class="form-group">
+              <label for="note[quote]">Vendor Price Quote:</label>
+              <input type="text" class="form-control do-note" id="noteQuote" value=""  minlength="1" required>
+            </div>
+            <div class="form-group">
+              <label for="note[info]">Notes/Additional Info:</label>
+              <textarea type="text" class="form-control do-note" id="note[info]" rows="5" ></textarea>
+            </div>
+            <input name="submitProposeResourceForm" type="submit" class="btn btn-primary" value="Submit Request">
+            <input id="clear" type="reset" class="btn" value="Clear Form">
+          </form>
+        </div>
+      </div>
     </div>
   </body>
 </html>
