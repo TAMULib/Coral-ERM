@@ -1,5 +1,5 @@
 <?php
-$user = $_SERVER['REMOTE_USER'] ? $_SERVER['REMOTE_USER'] : 'API';
+$user = !empty($_SERVER['REMOTE_USER']) ? $_SERVER['REMOTE_USER'] : 'API';
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
@@ -37,7 +37,23 @@ $user = $_SERVER['REMOTE_USER'] ? $_SERVER['REMOTE_USER'] : 'API';
                 });
       }
 
+      function setAcquisitionType() {
+        getCoralData('getAcquisitionTypeByName',{'name':'Trial Request'}).done(function(data) {
+          var acquisitionTypeID = null;
+          if (data && $.isNumeric(data)) {
+            $("#doAcquisitionTypeId").val(data);
+            $("#submitProposeResourceForm").removeAttr("disabled");
+          } else {
+            $("#doContent .error").html("There was an error setting up the Trial Request form.");
+          }
+        }).fail(function() {
+            $("#doContent .error").html("There was an error setting up the Trial Request form.");
+        });
+      }
+
       $(document).ready(function() {
+        setAcquisitionType();
+
         $("#doCheckTitle").change(function() {
           getCoralData('findResourcesByTitle',{'searchTerm':$(this).val()}).done(function(data) {
             if (Array.isArray(data)) {
@@ -74,6 +90,7 @@ $user = $_SERVER['REMOTE_USER'] ? $_SERVER['REMOTE_USER'] : 'API';
           <div class="error"></div>
           <form id="proposeResourceForm" name="proposeResourceForm" action="" method="POST">
             <input type="hidden" id="noteText" name="noteText" value="" />
+            <input type="hidden" name="acquisitionTypeID" id="doAcquisitionTypeId" value="0" />
             <div class="form-group">
               <label for="titleText">Title of Resource:</label>
               <input type="text" class="form-control" name="titleText" id="doCheckTitle" value=""  minlength="1" required>
@@ -98,8 +115,8 @@ $user = $_SERVER['REMOTE_USER'] ? $_SERVER['REMOTE_USER'] : 'API';
               <label for="note[info]">Notes/Additional Info:</label>
               <textarea type="text" class="form-control do-note" id="note[info]" rows="5" ></textarea>
             </div>
-            <input name="submitProposeResourceForm" type="submit" class="btn btn-primary" value="Submit Request">
-            <input id="clear" type="reset" class="btn" value="Clear Form">
+            <input id="submitProposeResourceForm" name="submitProposeResourceForm" type="submit" class="btn btn-primary" value="Submit Request" disabled />
+            <input id="clear" type="reset" class="btn" value="Clear Form" />
           </form>
         </div>
       </div>
