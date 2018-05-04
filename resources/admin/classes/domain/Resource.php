@@ -598,12 +598,18 @@ class Resource extends DatabaseObject {
 			$searchDisplay[] = _("Resource Format: ") . $resourceFormat->shortName;
 		}
 
+		//TAMU Customization - Resources can be hidden from the default search by configured Acquisition Type
+		//We have to assign the value to use it because Config properties are protected
+		$hiddenAcquisitionIds = $config->tamu->hiddenAcquisitionIds;
+
 		if ($search['acquisitionTypeID']) {
 			$whereAdd[] = "RA.acquisitionTypeID = '" . $resource->db->escapeString($search['acquisitionTypeID']) . "'";
 			$acquisitionType = new AcquisitionType(new NamedArguments(array('primaryKey' => $search['acquisitionTypeID'])));
 			$searchDisplay[] = _("Acquisition Type: ") . $acquisitionType->shortName;
-		}
 
+		} else if (!empty($hiddenAcquisitionIds)) {
+			$whereAdd[] = "(RA.acquisitionTypeID IS NULL OR RA.acquisitionTypeID NOT IN ({$hiddenAcquisitionIds}))";
+		}
 
 		if ($search['resourceNote']) {
 			$whereAdd[] = "UPPER(RN.noteText) LIKE UPPER('%" . $resource->db->escapeString($search['resourceNote']) . "%')";
