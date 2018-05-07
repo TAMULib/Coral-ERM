@@ -28,30 +28,11 @@ Flight::route('/proposeResource/', function(){
     $resource->statusID = $status->getIDFromName('progress');
     $resource->updateDate                   = '';
     $resource->updateLoginID                = '';
-    $resource->orderNumber                  = '';
-    $resource->systemNumber                 = '';
-    $resource->userLimitID                  = '';
-    $resource->authenticationUserName       = '';
-    $resource->authenticationPassword       = '';
-    $resource->storageLocationID            = '';
     $resource->registeredIPAddresses        = '';
-    $resource->coverageText                 = '';
     $resource->archiveDate                  = '';
     $resource->archiveLoginID               = '';
-    $resource->workflowRestartDate          = '';
-    $resource->workflowRestartLoginID       = '';
     $resource->currentStartDate             = '';
     $resource->currentEndDate               = '';
-    $resource->subscriptionAlertEnabledInd  = '';
-    $resource->authenticationTypeID         = '';
-    $resource->accessMethodID               = '';
-    $resource->recordSetIdentifier          = '';
-    $resource->hasOclcHoldings              = '';
-    $resource->numberRecordsAvailable       = '';
-    $resource->numberRecordsLoaded          = '';
-    $resource->bibSourceURL                 = '';
-    $resource->catalogingTypeID             = '';
-    $resource->catalogingStatusID           = '';
     $resource->mandatoryResource            = '';
     $resource->resourceID                   = null;
 
@@ -398,10 +379,10 @@ Flight::route('/postResourceNote/', function() {
             $resourceNote = new ResourceNote();
             $resourceNote->resourceNoteID   = '';
             $resourceNote->updateLoginID    = $user;
-            $resourceNote->updateDate       = date( 'Y-m-d' );
+            $resourceNote->updateDate       = date( 'Y-m-d H:i:s' );
             $resourceNote->noteTypeID       = $noteTypeID;
             $resourceNote->tabName          = 'Product';
-            $resourceNote->resourceID       = $resourceID;
+            $resourceNote->entityID         = $resourceID;
             $resourceNote->noteText         = $noteText;
             $resourceNote->save();
             Flight::json(array("resourceNoteID"=>$resourceNote->primaryKey));
@@ -409,7 +390,9 @@ Flight::route('/postResourceNote/', function() {
             Flight::json(array('error' => $e->getMessage()));
         }
     }
-    Flight::json(array('error' => 'Error adding note'));
+    else {
+        Flight::json(array('error' => 'Error adding note'));
+    }
 });
 
 //TAMU Customization

@@ -55,10 +55,11 @@ require_once('on_off_campus_check.php');
 			$linkID = mysql_connect($host, $username, $password) or themedDie("error");
 			mysql_select_db($databaseName, $linkID) or themedDie("Error Select (1).");
 
-			$query = "SELECT resourceID, metalibID, titleText, resourceURL, authenticationUserName, authenticationPassword, acquisitionTypeID FROM Resource";
+			$query = "SELECT r.resourceID, r.metalibID, r.titleText, r.resourceURL, ra.authenticationUserName, ra.authenticationPassword, ra.acquisitionTypeID FROM Resource r";
+      $query .= " INNER JOIN ResourceAcquisition ra ON r.resourceID = ra.resourceID";
 			
 				if (stripos($request, "TEX") === false) {
-					$query = $query . " Where resourceID = " . $request . "";
+					$query = $query . " Where r.resourceID = " . $request . "";
 				} else {
 					$query = $query . " Where metalibID = '" . $request . "'";
 				}
@@ -101,7 +102,7 @@ require_once('on_off_campus_check.php');
 					}
 					
 					// Check special notes
-					$query = "SELECT noteText FROM " .  $databaseName . ".ResourceNote Where resourceID = " . $request . " and noteTypeID = 11";
+					$query = "SELECT noteText FROM " .  $databaseName . ".ResourceNote Where entityID = " . $request . " and noteTypeID = 11";
 					$userNote = "";
 					
 					$rs2 = mysql_query($query, $linkID) or themedDie("Error Query:  " . mysql_errno($linkID));
