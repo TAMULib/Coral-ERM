@@ -4,9 +4,10 @@
 		if ($resourceID){
 			$resource = new Resource(new NamedArguments(array('primaryKey' => $resourceID)));
 			if ($_GET['mode'] == 'clone') {
-				$mode = $_GET['mode'];
+				$createMode = $_GET['mode'];
+				$resourceAcquisitionID = $_GET['resourceAcquisitionID'];
 			} else {
-				$mode = 'save';
+				$createMode = 'save';
 			}
 		}else{
 			$resource = new Resource();
@@ -15,7 +16,7 @@
         // get resource acquisition for this resource 
         // at this point, there are none (resource not saved yet)
         // or only one (resource saved as draft)
-        if ($resource->resourceID) {
+        if ($resource->resourceID && !isset($resourceAcquisitionID)) {
             $resourceAcquisitions = $resource->getResourceAcquisitions();
             $resourceAcquisition = $resourceAcquisitions[0];
         }
@@ -73,7 +74,7 @@
 		}
 
 		if ($resourceID) {
-			if ($mode == 'clone') {
+			if ($createMode == 'clone') {
 				$modalTitle = "Clone Resource";
 				$titleText = $resource->titleText." [clone]";
 			} else {
@@ -91,10 +92,16 @@
 
 		<input type='hidden' id='organizationID' value='<?php echo $orgID; ?>' />
 <?php
-if ($resourceID && $mode != 'clone') {
+if ($resourceID) {
 ?>
+		<input type='hidden' id='createMode' value='<?php echo $createMode; ?>' />
 		<input type='hidden' id='editResourceID' value='<?php echo $resourceID; ?>' />
 <?php
+	if ($createMode == 'clone') {
+?>
+		<input type='hidden' id='resourceAcquisitionID' value='<?php echo $resourceAcquisitionID; ?>' />
+<?php
+	}
 }
 ?>
 		<div class='formTitle' style='width:745px;'><span class='headerText'><?php echo _($modalTitle); ?></span></div>

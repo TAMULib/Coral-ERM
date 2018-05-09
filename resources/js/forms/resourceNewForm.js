@@ -282,7 +282,9 @@ function submitResource(status){
 			url:        "ajax_processing.php?action=submitNewResource",
 			cache:      false,
 			data:       {
+				createMode: $("#createMode").val(),
 				resourceID: $("#editResourceID").val(),
+				resourceAcquisitionID: $("#resourceAcquisitionID").val(),
 				resourceTypeID: $("input:radio[name='resourceTypeID']:checked").val(),
 				resourceFormatID: $("input:radio[name='resourceFormatID']:checked").val(),
 				acquisitionTypeID: $("input:radio[name='acquisitionTypeID']:checked").val(),

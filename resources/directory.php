@@ -146,4 +146,39 @@ function buildTimeForm($fieldNameBase,$defaultHour=8,$minuteIntervals=4) {
   return buildSelectableHours($fieldNameBase,$defaultHour).buildSelectableMinutes($fieldNameBase,$minuteIntervals).buildSelectableMeridian($fieldNameBase);
 }
 
+function processLicense($resourceAcquisitionID, $licenseList, $licenseStatusID=null) {
+  $resourceAcquisition = new ResourceAcquisition(new NamedArguments(array('primaryKey' => $resourceAcquisitionID)));
+
+  if ($licenseStatusID && ($licenseStatusID != $resourceAcquisition->getCurrentResourceLicenseStatus())) {
+    $resourceLicenseStatus = new ResourceLicenseStatus();
+    $resourceLicenseStatus->resourceAcquisitionID     = $resourceAcquisitionID;
+    $resourceLicenseStatus->licenseStatusID       = $licenseStatusID;
+    //TODO get $loginID
+    $resourceLicenseStatus->licenseStatusChangeLoginID  = $loginID;
+    $resourceLicenseStatus->licenseStatusChangeDate   = date( 'Y-m-d H:i:s' );
+    $resourceLicenseStatus->save();
+  }
+
+  try {
+
+    //first remove all license links, then we'll add them back
+    $resourceAcquisition->removeResourceLicenses();
+    foreach ($licenseList as $key => $value){
+      if ($value){
+        $resourceLicenseLink = new ResourceLicenseLink();
+        $resourceLicenseLink->resourceAcquisitionID = $resourceAcquisitionID;
+        $resourceLicenseLink->licenseID = $value;
+        try {
+          $resourceLicenseLink->save();
+        } catch (Exception $e) {
+          echo $e->getMessage();
+        }
+      }
+    }
+
+  } catch (Exception $e) {
+    echo $e->getMessage();
+  }
+}
+
 ?>

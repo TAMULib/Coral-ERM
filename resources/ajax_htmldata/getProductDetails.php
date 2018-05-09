@@ -1,4 +1,5 @@
 <?php
+			$resourceAcquisitionID = $_GET['resourceAcquisitionID'];
 			$resourceID = $_GET['resourceID'];
 			$resource = new Resource(new NamedArguments(array('primaryKey' => $resourceID)));
 			$resourceFormat = new ResourceFormat(new NamedArguments(array('primaryKey' => $resource->resourceFormatID)));
@@ -75,7 +76,7 @@
 								alt='<?php echo _("edit");?>'
 								title='<?php echo _("edit resource");?>' /></a>
 
-						<a href='ajax_forms.php?action=getNewResourceForm&height=700&width=730&mode=clone&resourceID=<?php echo $resource->resourceID; ?>&modal=true'
+						<a href='ajax_forms.php?action=getNewResourceForm&height=700&width=730&mode=clone&resourceID=<?php echo $resource->resourceID."&resourceAcquisitionID=".$resourceAcquisitionID;?>&modal=true'
 							class='thickbox'>
 
 							<img src='images/notes.gif'
