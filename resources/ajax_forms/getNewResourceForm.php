@@ -2,7 +2,12 @@
 
 		$resourceID = $_GET['resourceID'];
 		if ($resourceID){
-		$resource = new Resource(new NamedArguments(array('primaryKey' => $resourceID)));
+			$resource = new Resource(new NamedArguments(array('primaryKey' => $resourceID)));
+			if ($_GET['mode'] == 'clone') {
+				$mode = $_GET['mode'];
+			} else {
+				$mode = 'save';
+			}
 		}else{
 			$resource = new Resource();
 		}
@@ -66,14 +71,33 @@
 			$providerText = $resource->providerText;
 			$orgID = '';
 		}
+
+		if ($resourceID) {
+			if ($mode == 'clone') {
+				$modalTitle = "Clone Resource";
+				$titleText = $resource->titleText." [clone]";
+			} else {
+				$modalTitle = "Edit Saved Resource";
+				$titleText = $resource->titleText;
+			}
+		} else {
+			$modalTitle = "Add New Resource";
+			$titleText = "";
+		}
 ?>
 		<div id='div_resourceSubmitForm'>
 		<form id='resourcePromptForm'>
 
 
 		<input type='hidden' id='organizationID' value='<?php echo $orgID; ?>' />
+<?php
+if ($resourceID && $mode != 'clone') {
+?>
 		<input type='hidden' id='editResourceID' value='<?php echo $resourceID; ?>' />
-		<div class='formTitle' style='width:745px;'><span class='headerText'><?php if ($resourceID) { echo _("Edit Saved Resource"); }else{ echo _("Add New Resource"); } ?></span></div>
+<?php
+}
+?>
+		<div class='formTitle' style='width:745px;'><span class='headerText'><?php echo _($modalTitle); ?></span></div>
 		<div class='smallDarkRedText' style='height:14px;margin:3px 0px 0px 0px;'>&nbsp;* <?php echo _("required fields");?></div>
 
 		<table class='noBorder'>
@@ -90,7 +114,7 @@
 
 					<tr>
 					<td style='vertical-align:top;text-align:left;'><label for='titleText'><?php echo _("Name:");?>&nbsp;&nbsp;<span class='bigDarkRedText'>*</span></label></td>
-					<td><input type='text' id='titleText' style='width:220px;' class='changeInput' value="<?php echo $resource->titleText; ?>" /><span id='span_error_titleText' class='smallDarkRedText'></span></td>
+					<td><input type='text' id='titleText' style='width:220px;' class='changeInput' value="<?php echo $titleText; ?>" /><span id='span_error_titleText' class='smallDarkRedText'></span></td>
 					</tr>
 
 					<tr>
