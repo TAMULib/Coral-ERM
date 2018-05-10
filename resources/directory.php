@@ -146,7 +146,7 @@ function buildTimeForm($fieldNameBase,$defaultHour=8,$minuteIntervals=4) {
   return buildSelectableHours($fieldNameBase,$defaultHour).buildSelectableMinutes($fieldNameBase,$minuteIntervals).buildSelectableMeridian($fieldNameBase);
 }
 
-function processLicense($resourceAcquisitionID, $licenseList, $licenseStatusID=null) {
+function processLicense($resourceAcquisitionID, $licenseList, $licenseStatusID=null,$loginID=null) {
   $resourceAcquisition = new ResourceAcquisition(new NamedArguments(array('primaryKey' => $resourceAcquisitionID)));
 
   if ($licenseStatusID && ($licenseStatusID != $resourceAcquisition->getCurrentResourceLicenseStatus())) {
