@@ -29,6 +29,8 @@ switch ($_GET['action']) {
 
 		$eUser = new User(new NamedArguments(array('primaryKey' => $loginID)));
 
+		$moduleManager = new ModuleManager();
+
 		if ($eUser->isAdmin()){
 			$adminInd = 'checked';
 		}else{
@@ -66,7 +68,24 @@ switch ($_GET['action']) {
 				<input type='checkbox' id='adminInd' value='Y' <?php echo $adminInd; ?> />
 				<br />
 			</div>
+		</td>
+		<td>
+			<h4>Access Information</h4>
+			<label for="request[modules][]">Select Modules</label>
+<?php
 
+	foreach ($moduleManager->getModulePrivileges() as $name=>$privileges) {
+		echo "			<div class=\"moduleDetails\">
+							<input class=\"jqModule\" type=\"checkbox\" name=\"request[modules][]\" id=\"module_{$name}\" value=\"{$name}\"".(($_POST['request']['modules'] && in_array($name,$_POST['request']['modules'])) ? ' checked="checked"':'')." /> <span class=\"capitalize\">{$name}</span>
+							<ul>";
+		foreach ($privileges as $privilege) {
+			echo "				<li class=\"capitalize\"><input class=\"jqPrivileges\" disabled=\"disabled\" type=\"radio\" name=\"request[modulePrivilege][{$name}]\" id=\"moduleprops_{$name}\" value=\"{$privilege['privilegeID']}\"".(($_POST['request']['modulePrivilege'][$name] == $privilege['privilegeID']) ? ' checked="checked"':'')." /> {$privilege['shortName']}</li>";
+		}
+		echo '				</ul>
+						</div>';
+	}
+
+?>
 		</td>
 		</tr>
 		</table>
