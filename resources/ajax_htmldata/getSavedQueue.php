@@ -44,6 +44,7 @@
 					<td <?php echo $classAdd; ?>><?php echo $status->shortName; ?></td>
 					<td <?php echo $classAdd; ?> style='text-align:right; width:40px;'>
 					<a href='ajax_forms.php?action=getNewResourceForm&height=483&width=775&resourceID=<?php echo $resource['resourceID']; ?>&modal=true' class='thickbox'><img src='images/edit.gif' alt='<?php echo _("edit");?>' title='<?php echo _("edit request");?>'></a>&nbsp;
+          <a href='ajax_forms.php?action=getNewResourceForm&height=483&width=775&resourceID=<?php echo $resource['resourceID']; ?>&modal=true&mode=clone' class='thickbox'><img src='images/notes.gif' alt='<?php echo _("clone");?>' title='<?php echo _("clone request");?>'></a>&nbsp;
 					<a href='javascript:void(0);' class='deleteRequest' id='<?php echo $resource['resourceID']; ?>'><img src='images/cross.gif' alt='<?php echo _("remove request");?>' title='<?php echo _("remove request");?>'></a>
 					</td>
 				</tr>
