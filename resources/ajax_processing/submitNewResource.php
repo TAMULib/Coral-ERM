@@ -78,7 +78,7 @@
 				foreach ($oldResourceAcquisition->getLicenseArray() as $license) {
 					$licenseIds[] = $license['licenseID'];
 				}
-				processLicense($resourceAcquisition->primaryKey, $licenseIds);
+				$resourceAcquisition->processLicense($licenseIds);
 			}
 
 			//get the provider ID in case we insert what was entered in the provider text box as an organization link
