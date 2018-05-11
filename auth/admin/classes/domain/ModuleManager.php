@@ -112,7 +112,6 @@ class ModuleManager {
 		$sql = "SELECT {$meta['fields']}
 					FROM {$meta['tables']}
 					WHERE '".$this->db->escapeString($loginID)."' IN ({$meta['params']}) LIMIT 0,1";
-		$result = mysql_query($sql);
 		$result = $this->db->processQuery($sql);
 		if (is_array($result) && count($result) > 0) {
 			return true;
