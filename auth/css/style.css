@@ -442,3 +442,35 @@ p.fontText {
     border: solid 1px #306d9c;
     padding: 20px;
 }
+
+#userAuthorizations {
+    min-width: 400px;
+}
+
+#userAuthorizations input, #userAuthorizations label {
+    float: none;
+}
+
+#userAuthorizations label {
+    display: block;
+    width: 100%;
+    margin-left: 0;
+    text-align: center;
+}
+
+#userAuthorizations .moduleDetails {
+    display: inline-block;
+    width: 30%;
+    vertical-align: top;
+    margin: 8px 0;
+}
+
+#userAuthorizations .moduleDetails span.name {
+    font-weight: bold;
+}
+
+#userAuthorizations .moduleDetails li {
+    list-style: none;
+    margin-left: 8px;
+    padding-left: 4px;
+}

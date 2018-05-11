@@ -56,7 +56,7 @@ switch ($_GET['action']) {
 			<div style='width:260px; margin:10px;'>
 
 				<label for='submitLoginID' class='formLabel' <?php if ($loginID) { ?>style='margin-bottom:8px;'<?php } ?>><b><?php echo _("Login ID");?></b></label>&nbsp;
-				<?php if (!$loginID) { ?><input type='text' id='textLoginID' value='' style='width:110px;'/> <?php } else { echo $loginID; } ?>
+				<?php if (!$loginID) { ?><input type='text' id='textLoginID' data-valid="0" value='' style='width:110px;'/> <?php } else { echo $loginID; } ?>
 				<?php if ($loginID) { ?><div class='smallDarkRedText' style="clear:left;margin-left:5px;margin-bottom:3px;"><?php echo _("Enter password for changes only")?></div> <?php }else{ echo "<br />"; } ?>
 				<label for='password' class='formLabel'><b><?php if ($loginID) { echo _("New "); } echo _("Password");?></b></label>&nbsp;
 				<input type='password' id='password' value="" style='width:110px;' />
@@ -70,22 +70,23 @@ switch ($_GET['action']) {
 			</div>
 		</td>
 		<td>
-			<h4>Access Information</h4>
-			<label for="request[modules][]">Select Modules</label>
+			<div id="userAuthorizations">
+				<label for="request[modules][]">Module Access</label>
 <?php
 
 	foreach ($moduleManager->getModulePrivileges() as $name=>$privileges) {
-		echo "			<div class=\"moduleDetails\">
-							<input class=\"jqModule\" type=\"checkbox\" name=\"request[modules][]\" id=\"module_{$name}\" value=\"{$name}\"".(($_POST['request']['modules'] && in_array($name,$_POST['request']['modules'])) ? ' checked="checked"':'')." /> <span class=\"capitalize\">{$name}</span>
-							<ul>";
+		echo "	<div class=\"moduleDetails\">
+					<input class=\"jqModule\" type=\"checkbox\" name=\"request[modules][]\" id=\"module_{$name}\" value=\"{$name}\"".(($_POST['request']['modules'] && in_array($name,$_POST['request']['modules'])) ? ' checked="checked"':'')." /> <span class=\"name capitalize\">{$name}</span>
+					<ul>";
 		foreach ($privileges as $privilege) {
-			echo "				<li class=\"capitalize\"><input class=\"jqPrivileges\" disabled=\"disabled\" type=\"radio\" name=\"request[modulePrivilege][{$name}]\" id=\"moduleprops_{$name}\" value=\"{$privilege['privilegeID']}\"".(($_POST['request']['modulePrivilege'][$name] == $privilege['privilegeID']) ? ' checked="checked"':'')." /> {$privilege['shortName']}</li>";
+			echo "		<li class=\"capitalize\"><input class=\"jqPrivileges\" disabled=\"disabled\" type=\"radio\" name=\"request[modulePrivilege][{$name}]\" id=\"moduleprops_{$name}\" value=\"{$privilege['privilegeID']}\"".(($_POST['request']['modulePrivilege'][$name] == $privilege['privilegeID']) ? ' checked="checked"':'')." /> {$privilege['shortName']}</li>";
 		}
-		echo '				</ul>
-						</div>';
+		echo '		</ul>
+				</div>';
 	}
 
 ?>
+			</div>
 		</td>
 		</tr>
 		</table>

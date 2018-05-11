@@ -23,7 +23,14 @@ include_once 'directory.php';
 
 switch ($_GET['action']) {
 
-
+	case 'checkLoginID':
+		$moduleManager = new ModuleManager();
+		if (!$moduleManager->userExists($_GET['loginID'])) {
+			echo json_encode(array("result"=>1));
+		} else {
+			echo json_encode(array("result"=>0));
+		}
+	break;
 	case 'getUsers':
 		$userObj = new User();
 		$usersArray = $userObj->allAsArray();
@@ -57,11 +64,11 @@ switch ($_GET['action']) {
 
 				?>
 			</table>
-			<a href='ajax_forms.php?action=getAdminUserUpdateForm&loginID=&height=215&width=315&modal=true' class='thickbox' id='addUser'><?php echo _("add new user")?></a>
+			<a href='ajax_forms.php?action=getAdminUserUpdateForm&loginID=&height=600&width=800&modal=true' class='thickbox' id='addUser'><?php echo _("add new user")?></a>
 			<?php
 
 		}else{
-			echo "(none found)<br /><a href='ajax_forms.php?action=getUserUpdateForm&loginID=&height=275&width=315&modal=true' class='thickbox' id='addUser'>"._("add new user")."</a>";
+			echo "(none found)<br /><a href='ajax_forms.php?action=getUserUpdateForm&loginID=&height=600&width=800&modal=true' class='thickbox' id='addUser'>"._("add new user")."</a>";
 		}
 
 		break;
