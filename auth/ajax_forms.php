@@ -25,11 +25,15 @@ switch ($_GET['action']) {
 
 
 	case 'getAdminUserUpdateForm':
-		if (isset($_GET['loginID'])) $loginID = $_GET['loginID']; else $loginID = '';
+    $moduleManager = new ModuleManager();
+
+    $loginID = '';
+    if (isset($_GET['loginID'])) {
+      $loginID = $_GET['loginID'];
+      $userPrivileges = $moduleManager->getUserPrivileges($loginID);
+    }
 
 		$eUser = new User(new NamedArguments(array('primaryKey' => $loginID)));
-
-		$moduleManager = new ModuleManager();
 
 		if ($eUser->isAdmin()){
 			$adminInd = 'checked';
@@ -76,10 +80,10 @@ switch ($_GET['action']) {
 
 	foreach ($moduleManager->getModulePrivileges() as $name=>$privileges) {
 		echo "	<div class=\"moduleDetails\">
-					<input class=\"jqModule\" type=\"checkbox\" name=\"request[modules][]\" id=\"module_{$name}\" value=\"{$name}\"".(($_POST['request']['modules'] && in_array($name,$_POST['request']['modules'])) ? ' checked="checked"':'')." /> <span class=\"name capitalize\">{$name}</span>
+					<input class=\"jqModule\" type=\"checkbox\" name=\"request[modules][]\" id=\"module_{$name}\" value=\"{$name}\"".((isset($userPrivileges[$name])) ? ' checked':'')." /> <span class=\"name capitalize\">{$name}</span>
 					<ul>";
 		foreach ($privileges as $privilege) {
-			echo "		<li class=\"capitalize\"><input class=\"jqPrivileges\" disabled=\"disabled\" type=\"radio\" name=\"request[modulePrivilege][{$name}]\" id=\"moduleprops_{$name}\" value=\"{$privilege['privilegeID']}\"".(($_POST['request']['modulePrivilege'][$name] == $privilege['privilegeID']) ? ' checked="checked"':'')." /> {$privilege['shortName']}</li>";
+			echo "		<li class=\"capitalize\"><input class=\"jqPrivileges\" disabled=\"disabled\" type=\"radio\" name=\"request[modulePrivilege][{$name}]\" id=\"moduleprops_{$name}\" value=\"{$privilege['privilegeID']}\"".((isset($userPrivileges[$name]) && $userPrivileges[$name] == $privilege['privilegeID']) ? ' checked':'')." /> {$privilege['shortName']}</li>";
 		}
 		echo '		</ul>
 				</div>';

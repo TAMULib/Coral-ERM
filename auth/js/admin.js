@@ -21,11 +21,15 @@ function _(msgid) {
 }
 
 function checkModules($module) {
+    var $listUnordered = $module.siblings("ul")
+    var $listItem = $listUnordered.children("li");
     if ($module.is(":checked")) {
-        $module.siblings("ul").children("li:last-child").children(".jqPrivileges").attr("checked","checked");
-        $module.siblings("ul").children("li").children(".jqPrivileges").removeAttr("disabled");
+        if ($listItem.children(".jqPrivileges:checked").length == 0) {
+          $listUnordered.children("li:last-child").children(".jqPrivileges").attr("checked","checked");
+        }
+        $listItem.children(".jqPrivileges").removeAttr("disabled");
     } else {
-        $module.siblings("ul").children("li").children(".jqPrivileges").attr("disabled","disabled");
+        $listItem.children(".jqPrivileges").attr("disabled","disabled");
     }
 }
 
@@ -90,7 +94,7 @@ function updateUsers() {
 function submitUserForm(){
   if (validateForm() === true) {
     var modulePrivileges = {};
-    $(".jqPrivileges:checked").each(function() {
+    $(".jqPrivileges:checked:not(:disabled)").each(function() {
         modulePrivileges[$(this).parents(".moduleDetails").find(".jqModule").val()] = $(this).val();
     });
 

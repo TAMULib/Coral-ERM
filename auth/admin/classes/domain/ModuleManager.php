@@ -66,33 +66,53 @@ class ModuleManager {
 		return $this->modulePrivileges;
 	}
 
-	//add new user to each requested module
-	public function processRequest($data) {
-		//loop through module names
-		foreach ($data['modules'] as $module) {
-			if (in_array($module,$this->moduleNames)) {
-				//insert into user table for the current module
-				$sql = "INSERT INTO `{$this->moduleDBs[$module]}`.`User` SET ";
-				foreach ($data['userdata'] as $field=>$val) {
-					$sql .= "`{$field}`='".mysql_real_escape_string($val)."',";
-				}
-				$sql = rtrim($sql,',');
-				if ($data['modulePrivilege'][$module]) {
-					$sql .= ",`privilegeID`=".mysql_real_escape_string($data['modulePrivilege'][$module]);
-				}
-				if ($module == 'resources') {
-					$sql .= ",`emailAddress`='".mysql_real_escape_string($data['extras']['email'])."'";
-				}
-				if (!mysql_query($sql)) {
-					$error[] = $module;
-				}
-			}
-		}
-		if (!$error) {
-			return true;
-		}
-		return false;
-	}
+  //add new user to each requested module
+  public function processRequest($data) {
+    $success = false;
+
+    $existingPrivileges = array();
+    if (isset($data['userData']['loginID']) && strlen($data['userData']['loginID'])) {
+      $existingPrivileges = $this->getUserPrivileges($data['userData']['loginID']);
+    }
+
+    foreach ($existingPrivileges as $moduleName => $modulePrivilege) {
+      if (isset($existingPrivileges[$moduleName]) && !isset($data['modulePrivileges'][$moduleName])) {
+        $sql = "DELETE FROM `{$this->moduleDBs[$moduleName]}`.`User` WHERE ";
+        $sql .= "`loginID`='".$this->db->escapeString($data['userData']['loginID']) . "'";
+
+        $result = $this->db->processQuery($sql);
+      }
+    }
+
+    foreach ($data['modulePrivileges'] as $moduleName => $modulePrivilege) {
+      if (in_array($moduleName, $this->moduleNames)) {
+        //insert into user table for the current module
+        $sqlSet = "";
+        $sql = "INSERT INTO `{$this->moduleDBs[$moduleName]}`.`User` SET ";
+        foreach ($data['userData'] as $field=>$val) {
+          $sqlSet .= "`{$field}`='".$this->db->escapeString($val)."',";
+        }
+
+        if ($modulePrivilege) {
+          $sqlSet .= "`privilegeID`=".$this->db->escapeString($modulePrivilege) . ",";
+        }
+
+        $sqlSet = rtrim($sqlSet,',');
+        $sql .= "$sqlSet ON DUPLICATE KEY UPDATE {$sqlSet}";
+
+        try {
+          $result = $this->db->processQuery($sql);
+          $success = true;
+        }
+        catch (Exception $e) {
+          $success = false;
+          break;
+        }
+      }
+    }
+
+    return $success;
+  }
 
 	//boolean check for username availability
 	function userExists($loginID) {

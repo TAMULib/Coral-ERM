@@ -58,6 +58,16 @@ if (($user->isAdmin) && ($user->getOpenSession())){
 				$sUser->adminInd 		= "N";
 			}
 
+      $processData = array(
+        'userData' => array(
+          'loginID' => $sUser->loginID,
+        ),
+        'modulePrivileges' => $_POST['modulePrivileges'],
+      );
+
+      $moduleManager = new ModuleManager();
+      $moduleManager->processRequest($processData);
+
 			try {
 				$sUser->save();
 			} catch (Exception $e) {
