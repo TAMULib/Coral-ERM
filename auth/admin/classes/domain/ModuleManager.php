@@ -118,4 +118,16 @@ class ModuleManager {
 		}
 		return false;
 	}
+
+	public function getUserPrivileges($loginID) {
+		$privileges = array();
+		foreach ($this->getModuleNames() as $moduleName) {
+			$sql = "SELECT privilegeID
+				FROM `{$this->moduleDBs[$moduleName]}`.`User`
+				WHERE loginID='".$this->db->escapeString($loginID)."'";
+			$result = $this->db->processQuery($sql,'assoc');
+			$privileges[$moduleName] = $result['privilegeID'];
+		}
+		return $privileges;
+	}
 }
