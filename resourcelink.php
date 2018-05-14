@@ -196,12 +196,12 @@ function printHeader($redirect = FALSE) {
     <!--<link rel="stylesheet" type="text/css" href="css/survey.css">	-->
     <style type="text/css" media="all">
         #wrap {
-            color: #ffffff;
+          color: #ffffff;
         }
 
         #doContent .breadcrumb a,
         #doContent .breadcrumb a:visited {
-            color: #2f6fa7;
+          color: #2f6fa7;
         }
 
         #doContent .content {
@@ -210,11 +210,11 @@ function printHeader($redirect = FALSE) {
     </style>
     <style type="text/css" media="print">
         .no-print {
-            display: none;
+          display: none;
         }
 
         #banner {
-            height: auto;
+          height: auto;
         }
 
         #footer {

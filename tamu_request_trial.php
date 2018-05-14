@@ -37,14 +37,14 @@
 
         #doContent .breadcrumb a,
         #doContent .breadcrumb a:visited {
-            color: #2f6fa7;
+          color: #2f6fa7;
         }
 
         #doContent .required-asterisk {
-            color: #a80000;
-            font-weight: bold;
+          color: #a80000;
+          font-weight: bold;
 
-            padding-left: 5px;
+          padding-left: 5px;
         }
 
         #doContent .errors .error {
@@ -54,14 +54,22 @@
           border: 1px solid red;
           background-color: #f7d9d9;
         }
+
+        .questions-form .questions-buttons .btn {
+          margin-right: 15px;
+        }
+
+        .questions-form .questions-buttons .btn:last-of-type {
+          margin-right: 0px;
+        }
     </style>
     <style type="text/css" media="print">
         .no-print {
-            display: none;
+          display: none;
         }
 
         #banner {
-            height: auto;
+          height: auto;
         }
 
         #footer {

@@ -77,33 +77,52 @@
     <link rel="stylesheet" type="text/css" href="<?php print($helpdeskPath); ?>/css/tamu.css" media="all">
     <style type="text/css">
         #wrap {
-            color: #ffffff;
+          color: #ffffff;
         }
 
         #doContent .required-asterisk {
-            color: #a80000;
-            font-weight: bold;
+          color: #a80000;
+          font-weight: bold;
 
-            padding-left: 5px;
+          padding-left: 5px;
         }
 
         #doContent .breadcrumb a,
         #doContent .breadcrumb a:visited {
-            color: #2f6fa7;
+          color: #2f6fa7;
         }
 
         .questions-form .questions-radios .questions-legend,
         .questions-form .questions-textarea .questions-label {
-            font-size: 14px;
-            font-weight: bold;
+          font-size: 14px;
+          font-weight: bold;
+
+          margin-bottom: 10px;
+        }
+
+        .questions-form .questions-radios,
+        .questions-form .questions-textarea {
+          margin-bottom: 20px;
+        }
+
+        .questions-form .questions-radios > .form-group {
+          margin-bottom: 0px;
         }
 
         .questions-form .questions-radios .questions-radio {
-            display: inline-block;
+          display: inline-block;
         }
 
         .questions-form .questions-radios .questions-label {
-            min-width: 55px;
+          min-width: 55px;
+        }
+
+        .questions-form .questions-buttons .btn {
+          margin-right: 15px;
+        }
+
+        .questions-form .questions-buttons .btn:last-of-type {
+          margin-right: 0px;
         }
 
         #doContent .errors .error {
@@ -124,7 +143,7 @@
         }
 
         #footer {
-          display: none;
+            display: none;
         }
     </style>
 
