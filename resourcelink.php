@@ -10,10 +10,9 @@ require_once('on_off_campus_check.php');
   $host = $global_config['database']['host'];
   $username = $global_config['database']['username'];
   $password = $global_config['database']['password'];
-  $databaseName = $resources_config['settings']['resourcesDatabaseName'];;
+  $databaseName = $resources_config['settings']['resourcesDatabaseName'];
 
 	$authenticated = FALSE;
-	$htmlText = "";
 	
 	$on_campus=TRUE;
 	
@@ -80,23 +79,21 @@ require_once('on_off_campus_check.php');
 					
 					if (($row["authenticationUserName"]) || ($row["authenticationPassword"])) {					
 						debugout("I have a username or password ");
-						$userText = "<font color='red'>This resource requires authentication:</font><br><br>";
+						$userText = "<div class=\"authentication-required attention\">This resource requires authentication:</div>";
 							if ($row["authenticationUserName"]) {
-								$userText = $userText . "<font color='red'>User Name:</font> <label for='User Name'>" . $row["authenticationUserName"] . '</label>';
-								$userText = $userText . "<br>";					
+								$userText .= "<div class=\"authentication-name\"><div class=\"authentication-label attention\">User Name:</div><div title='User Name' class=\"authentication-value\">" . $row["authenticationUserName"] . '</div></div>';
 							}
 							
 							if ($row["authenticationPassword"]) {
-								$userText = $userText . "<font color='red'>Password:</font> <label for='Password'>" . $row["authenticationPassword"] . '</label>';
-								$userText = $userText . "<br>";				
+								$userText .= "<div class=\"authentication-password\"><div class=\"authentication-label attention\">Password:</div><div title='Password' class=\"authentication-value\">" . $row["authenticationPassword"] . '</div></div>';
 							}	
 						
 						if ( strlen($resourceURL) > 0 ) {
-							$userText = $userText . "After you have recorded the authentication information, <a href='" . $resourceURL . "' class='button'>Connect to database's own interface</a>.";
-							$userText = $userText . "<br><br>You are about to leave the Texas A&M University Libraries' website. The site may not comply with accessibility standards.";							
+							$userText .= "<div class=\"notes-user-authentication\">After you have recorded the authentication information, <a href='" . $resourceURL . "' class='button'>Connect to database's own interface</a>.</div>";
+							$userText .= "<div class=\"notes-user-leave\">You are about to leave the Texas A&M University Libraries' website. The site may not comply with accessibility standards.</div>";
 						}
 						
-						$userText = $userText . "</font>";
+						$userText .= "</span>";
 						
 						
 					}
@@ -108,9 +105,8 @@ require_once('on_off_campus_check.php');
 					$rs2 = mysql_query($query, $linkID) or themedDie("Error Query:  " . mysql_errno($linkID));
 						if ($row2 = mysql_fetch_assoc($rs2)) {
 							debugout("I have a special notes");
-							$userNote = "<font>This resource has special access instructions:</font><br><br>";
-							$userNote = $userNote . "<font><label for='Special Access Notes'>" . $row2["noteText"] . '</label>';
-							$userNote = $userNote . "<br></font>";		
+							$userNote = "<div class=\"notes-note-special_instructions\">This resource has special access instructions:</div>";
+							$userNote .= "<div class=\"notes-note-special_notes\" title='Special Access Notes'>" . $row2["noteText"] . '</div>';
 						}
 
 				}
@@ -130,13 +126,16 @@ if ($row["acquisitionTypeID"] == 2) {
 
   printHeader($redirect);
   if (is_string($redirect)) {
-      print("<font>You are about to leave the Texas A&M University Libraries' website. The site may not comply with accessibility standards.");
-      print("<br><br>If the page does not redirect to the databases's own interface press the <a href='" . $resourceURL . "' class='button'>Connect to database's own interface</a>.</font>");
+      print('<div class="redirect">');
+      print("<div class=\"redirect-leave\">You are about to leave the Texas A&M University Libraries' website. The site may not comply with accessibility standards.</div>");
+      print("<div class=\"redirect-address\">If the page does not redirect to the databases's own interface press the <a href='" . $resourceURL . "' class='button'>Connect to database's own interface</a>.</div>");
+      print('</div>');
   }
   else {
-    print($userText);
-    print($userNote);
-    print($htmlText);
+    print('<div class="notes">');
+    print('<div class="notes-user">' . $userText . '</div>');
+    print('<div class="notes-note">' . $userNote . '</div>');
+    print('</div>');
   }
   printFooter();
 
@@ -199,6 +198,10 @@ function printHeader($redirect = FALSE) {
           color: #ffffff;
         }
 
+        #doContent {
+          margin-top: 20px;
+        }
+
         #doContent .breadcrumb a,
         #doContent .breadcrumb a:visited {
           color: #2f6fa7;
@@ -206,6 +209,33 @@ function printHeader($redirect = FALSE) {
 
         #doContent .content {
           text-align: center;
+        }
+
+        #doContent .content .attention {
+          color: #cc0000;
+        }
+
+        #doContent .content .authentication-required,
+        #doContent .content .authentication-name,
+        #doContent .content .authentication-password {
+          font-weight: bold;
+        }
+
+        #doContent .content .notes .notes-note .notes-note-special_instructions {
+          font-weight: bold;
+        }
+
+        #doContent .content .notes .notes-user .button {
+          color: #285f8f;
+        }
+
+        #doContent .content .notes .authentication-name,
+        #doContent .content .notes .authentication-password,
+        #doContent .content .notes .notes-note,
+        #doContent .content .notes .notes-user .notes-user-authentication,
+        #doContent .content .notes .notes-user .notes-user-leave,
+        #doContent .content .notes .notes-note .notes-note-special_notes {
+          margin-top: 12px;
         }
     </style>
     <style type="text/css" media="print">
@@ -254,13 +284,13 @@ function printHeader($redirect = FALSE) {
         </div>
       </div>
     </header>
-    <section class="container well">
+    <section id="doContent" class="container well">
       <div class="row">
         <div class="span">
-          <p class="content"><?php
+          <div class="content"><?php
 }
 
-function printFooter() { ?></p>
+function printFooter() { ?></div>
         </div>
       </div>
     </section>
