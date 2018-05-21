@@ -188,7 +188,6 @@
             getResource(queryObject.resourceid).done(function(data) {
               if (data.resourceID) {
                 $("#resourceID").val(data.resourceID);
-                $("#addFeedbackForm").append(data.titleText);
                 $("#trialFeedback .do-title").text(data.titleText);
                 $("#submitFeedback").prop("disabled", false);
               }
