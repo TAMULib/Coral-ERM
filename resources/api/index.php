@@ -426,6 +426,13 @@ Flight::route('/findResourcesByTitle/', function() {
     }
 });
 
+//TAMU Customization
+Flight::route('/getAcquisitionTypeByName/', function() {
+    $name = Flight::request()->query->name;
+    $acquisitionTypeObj = new AcquisitionType();
+    Flight::json($acquisitionTypeObj->getAcquisitionTypeIDByName($name));
+});
+
 Flight::start();
 
 function isAllowed() {
