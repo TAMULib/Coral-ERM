@@ -20,9 +20,54 @@ function _(msgid) {
     return gt.gettext(msgid);
 }
 
+function checkModules($module) {
+    var $listUnordered = $module.siblings("ul")
+    var $listItem = $listUnordered.children("li");
+    if ($module.is(":checked")) {
+        if ($listItem.children(".jqPrivileges:checked").length == 0) {
+          $listUnordered.children("li:last-child").children(".jqPrivileges").attr("checked","checked");
+        }
+        $listItem.children(".jqPrivileges").removeAttr("disabled");
+    } else {
+        $listItem.children(".jqPrivileges").attr("disabled","disabled");
+    }
+}
+
 $(document).ready(function(){
 
 	updateUsers();
+
+    //at initial load/error load, check to see if we need to do set any module privileges up
+    $(".jqModule").each(function() {
+        checkModules($(this));
+    });
+
+    $(".jqModule").change(function() {
+        checkModules($(this));
+    });
+
+    $("#textLoginID").change(function() {
+        var $loginInput = $(this);
+        $.ajax({
+            type:       "GET",
+            url:        "ajax_htmldata.php",
+            cache:      false,
+            data:       "action=checkLoginID&loginID="+$(this).val(),
+            success:    function(data) {
+                var response = JSON.parse(data);
+                if (response.result) {
+                    $("#span_errors").html("");
+                    $loginInput.data("valid",1);
+                } else {
+                    $("#span_errors").html(_("loginID is already in use"));
+                    $loginInput.data("valid",0);
+                }
+            },
+            error: function(data) {
+                $loginInput.data("valid",0);
+            }
+        });
+    });
 
 });
 
@@ -48,8 +93,13 @@ function updateUsers() {
 
 function submitUserForm(){
   if (validateForm() === true) {
+    var modulePrivileges = {};
+    $(".jqPrivileges:checked:not(:disabled)").each(function() {
+        modulePrivileges[$(this).parents(".moduleDetails").find(".jqModule").val()] = $(this).val();
+    });
+
 	// ajax call to add/update
-	$.post("ajax_processing.php?action=submitUser", { loginID: $("#textLoginID").val(), editLoginID: $("#editLoginID").val(), password: $("#password").val(), adminInd: getCheckboxValue('adminInd')  } ,
+	$.post("ajax_processing.php?action=submitUser", { loginID: $("#textLoginID").val(), editLoginID: $("#editLoginID").val(), password: $("#password").val(), adminInd: getCheckboxValue('adminInd'), modulePrivileges: modulePrivileges } ,
 		function(data){
 			tb_remove();
 			updateUsers();
@@ -59,10 +109,12 @@ function submitUserForm(){
 	return false;
 
   }
+  return false;
 }
 
 function validateForm (){
     var control=true;
+
     if (($("#password").val() != '') && ($("#password").val() != $("#passwordReenter").val())){
         $("#span_errors").html(_("Passwords do not match"));
         $("#passwordReenter").focus();
@@ -79,6 +131,7 @@ function validateForm (){
         $("#textLoginID").focus();
         control = false;
     }
+
     return control;
 }
 
