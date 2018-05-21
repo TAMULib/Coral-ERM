@@ -401,7 +401,7 @@ Flight::route('/postResourceNote/', function() {
             $resourceNote->updateDate       = date( 'Y-m-d' );
             $resourceNote->noteTypeID       = $noteTypeID;
             $resourceNote->tabName          = 'Product';
-            $resourceNote->resourceID       = $resourceID;
+            $resourceNote->entityID         = $resourceID;
             $resourceNote->noteText         = $noteText;
             $resourceNote->save();
             Flight::json(array("resourceNoteID"=>$resourceNote->primaryKey));
@@ -409,7 +409,9 @@ Flight::route('/postResourceNote/', function() {
             Flight::json(array('error' => $e->getMessage()));
         }
     }
-    Flight::json(array('error' => 'Error adding note'));
+    else {
+        Flight::json(array('error' => 'Error adding note'));
+    }
 });
 
 //TAMU Customization
