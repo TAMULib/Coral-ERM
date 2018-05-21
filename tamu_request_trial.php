@@ -55,6 +55,28 @@
           background-color: #f7d9d9;
         }
 
+        #doTitleMatches .potential-matches-list {
+          margin: 4px;
+          padding: 4px;
+          border: 1px dashed #e9ba00;
+          background-color: #feffdb;
+        }
+
+        #doTitleMatches .potential-matches-title {
+          font-size: 1.6rem;
+          margin: 0px 0px 4px 0px;
+        }
+
+        #doTitleMatches .potential-matches-item {
+          list-style-type: disc;
+          margin-left: 20px;
+          padding-left: 4px;
+        }
+
+        #doTitleMatches .potential-matches-item a {
+          color: #265a87;
+        }
+
         .questions-form .questions-buttons .btn {
           margin-right: 15px;
         }
@@ -131,12 +153,15 @@
 
         $("#titleText").change(function() {
           getCoralData('findResourcesByTitle',{'searchTerm':$(this).val()}).done(function(data) {
-            if (Array.isArray(data)) {
-              var matchesHtml = '<h4>Potential Matches:</h4>';
+            if (Array.isArray(data) && data.length > 0) {
+              var matchesHtml = '<h4 class="potential-matches-title">Potential Matches:</h4>';
               $.each(data,function(k,v) {
-                matchesHtml += '<div><a target="_blank" href="tamu_trial_feedback.php?resourceid=' + v.resourceID + '">' + v.titleText + '</a></div>';
+                matchesHtml += '<li class="potential-matches-item"><a target="_blank" href="tamu_trial_feedback.php?resourceid=' + v.resourceID + '">' + v.titleText + '</a></li>';
               });
-              $("#doTitleMatches").html(matchesHtml);
+              $("#doTitleMatches").html("<ul class=\"potential-matches-list\">" + matchesHtml + "</ul>");
+            }
+            else {
+              $("#doTitleMatches").html("");
             }
           });
         });
@@ -199,6 +224,7 @@
               <div class="form-group">
                 <label for="titleText"><span class="label-text">Title of Resource</span>:<span class="required-asterisk" aria-hidden="true">*</span></label>
                 <input type="text" class="form-control" id="titleText" name="titleText" value="" minlength="1" required>
+                <div id="doTitleMatches"></div>
               </div>
               <div class="form-group">
                 <label for="descriptionText"><span class="label-text">Description of Resource</span>:<span class="required-asterisk" aria-hidden="true">*</span></label>

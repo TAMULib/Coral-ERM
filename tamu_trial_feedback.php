@@ -188,7 +188,7 @@
             getResource(queryObject.resourceid).done(function(data) {
               if (data.resourceID) {
                 $("#resourceID").val(data.resourceID);
-                $("#addFeedbackForm .do-title").append(data.titleText);
+                $("#trialFeedback .do-title").text(data.titleText);
                 $("#submitFeedback").prop("disabled", false);
               }
             });
@@ -294,7 +294,7 @@
       </nav>
       <div id="banner">
         <div class="container" role="heading">
-          <h1>Trial Resource Feedback for <span class="do-title"></span></h1>
+          <h1 id="trialFeedback">Trial Resource Feedback for <span class="do-title"></span></h1>
         </div>
       </div>
     </header>
