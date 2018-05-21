@@ -1,4 +1,5 @@
 <?php
+			$resourceAcquisitionID = $_GET['resourceAcquisitionID'];
 			$resourceID = $_GET['resourceID'];
 			$resource = new Resource(new NamedArguments(array('primaryKey' => $resourceID)));
 			$resourceFormat = new ResourceFormat(new NamedArguments(array('primaryKey' => $resource->resourceFormatID)));
@@ -74,6 +75,13 @@
 							<img src='images/edit.gif'
 								alt='<?php echo _("edit");?>'
 								title='<?php echo _("edit resource");?>' /></a>
+
+						<a href='ajax_forms.php?action=getNewResourceForm&height=700&width=730&mode=clone&resourceID=<?php echo $resource->resourceID."&resourceAcquisitionID=".$resourceAcquisitionID;?>&modal=true'
+							class='thickbox'>
+
+							<img src='images/notes.gif'
+								alt='<?php echo _("clone");?>'
+								title='<?php echo _("clone resource");?>' /></a>
 					<?php } ?>
 					<?php if ($user->isAdmin) { ?>
 						<a href='javascript:void(0);'
