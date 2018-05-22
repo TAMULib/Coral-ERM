@@ -380,6 +380,61 @@ Flight::route('GET /organizations/@id', function($id) {
     }
 });
 
+// TAMU Customization - This may now be a duplicate of 'Flight::route('GET /resources/@id', function($id) {' above ^
+Flight::route('/getResource/@id', function($id) {
+   $resource = new Resource(new NamedArguments(array('primaryKey' => $id)));
+    Flight::json($resource->attributes);
+});
+
+//TAMU Customization
+Flight::route('/postResourceNote/', function() {
+    $user = userExists(Flight::request()->data['user']) ? Flight::request()->data['user'] : 'API';
+    $noteText = Flight::request()->data['noteText'];
+    $resourceID = Flight::request()->data['resourceID'];
+    if ($resourceID && $noteText) {
+        try {
+            $noteType = new NoteType();
+            $noteTypeID = $noteType->getNoteTypeIDByName("Feedback");
+            $resourceNote = new ResourceNote();
+            $resourceNote->resourceNoteID   = '';
+            $resourceNote->updateLoginID    = $user;
+            $resourceNote->updateDate       = date( 'Y-m-d' );
+            $resourceNote->noteTypeID       = $noteTypeID;
+            $resourceNote->tabName          = 'Product';
+            $resourceNote->entityID         = $resourceID;
+            $resourceNote->noteText         = $noteText;
+            $resourceNote->save();
+            Flight::json(array("resourceNoteID"=>$resourceNote->primaryKey));
+        } catch (Exception $e) {
+            Flight::json(array('error' => $e->getMessage()));
+        }
+    }
+    else {
+        Flight::json(array('error' => 'Error adding note'));
+    }
+});
+
+//TAMU Customization
+Flight::route('/findResourcesByTitle/', function() {
+    $searchTerm = Flight::request()->query['searchTerm'];
+    if ($searchTerm) {
+        $resourceObj = new Resource();
+        $resources = $resourceObj->findResourcesByTitle($searchTerm);
+        $matches = array();
+        foreach ($resources as $resource) {
+            $matches[] = $resource->attributes;
+        }
+        Flight::json($matches);
+    }
+});
+
+//TAMU Customization
+Flight::route('/getAcquisitionTypeByName/', function() {
+    $name = Flight::request()->query->name;
+    $acquisitionTypeObj = new AcquisitionType();
+    Flight::json($acquisitionTypeObj->getAcquisitionTypeIDByName($name));
+});
+
 Flight::start();
 
 function isAllowed() {

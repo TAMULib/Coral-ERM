@@ -3,6 +3,8 @@
 $config = new Configuration();
 
 $resourceID = $_POST['resourceID'];
+$resourceAcquisitionID = $_POST['resourceAcquisitionID'];
+$createMode = $_POST['createMode'];
 
 /*
 if $externalId is defined and an ExternalResource implementation is configured, we will:
@@ -17,7 +19,7 @@ $forceDuplicate = !empty($_POST['forceDuplicate']) ? $_POST['forceDuplicate']:nu
 $fromExternal = ($externalId && class_exists($config->settings->externalResourceRepoClass));
 $outputJson = $fromExternal ? true:false;
 
-if ($resourceID){
+if ($resourceID && $createMode != 'clone') {
 	//get this resource
 	$resource = new Resource(new NamedArguments(array('primaryKey' => $resourceID)));
 } else {
@@ -27,6 +29,11 @@ if ($resourceID){
 	$resource->createDate			= date( 'Y-m-d' );
 	$resource->updateLoginID 		= '';
 	$resource->updateDate			= '';
+
+	//get the Resource Object we'll use for cloning data from later
+	if ($resourceID && $createMode == 'clone') {
+		$oldResourceAcquisition = new ResourceAcquisition(new NamedArguments(array('primaryKey' => $resourceAcquisitionID)));
+	}	
 }
 
 if (!$fromExternal) {
@@ -168,6 +175,18 @@ try {
     $resourceAcquisition->subscriptionEndDate = date("Y-m-d");
     $resourceAcquisition->save();
 
+			if ($createMode == 'clone' && $oldResourceAcquisition) {
+				$licenseIds = array();
+				foreach ($oldResourceAcquisition->getLicenseArray() as $license) {
+					$licenseIds[] = $license['licenseID'];
+				}
+				$resourceAcquisition->processLicense($licenseIds);
+			}
+
+			//get the provider ID in case we insert what was entered in the provider text box as an organization link
+			$organizationRole = new OrganizationRole();
+			$organizationRoleID = $organizationRole->getProviderID();
+
 			//add notes
 			if (($_POST['noteText']) || (($_POST['providerText']) && (!$_POST['organizationID']))){
 				//first, remove existing notes in case this was saved before
@@ -253,8 +272,8 @@ try {
 				}
 			}
 		}
-	}
 */
+	}
 
 	//next if the resource was submitted, enter into workflow
 	if ($statusID == $status->getIDFromName('progress')){

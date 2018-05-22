@@ -18,6 +18,8 @@
 
 
 class Configuration extends DynamicObject {
+	protected $enabledModules = null;
+	protected $moduleConfigurations = null;
 
 	public function init(NamedArguments $arguments) {
 		$global_config = parse_ini_file(BASE_DIR . "../common/configuration.ini", true);
@@ -32,8 +34,11 @@ class Configuration extends DynamicObject {
 
 		// Save config array content as Configuration properties
 		foreach ($config as $section => $entries) {
-      $this->$section = (new Utility())->objectFromArray($entries);
+			$this->$section = (new Utility())->objectFromArray($entries);
 		}
+
+		$this->generateModuleConfigurations();
+
 	}
 
 
@@ -60,6 +65,31 @@ class Configuration extends DynamicObject {
 
 		if(isset($config["settings"]["resourcesDatabaseName"])) {
 			$config["settings"]["resourcesDatabaseName"] = "coral_resources_test";
+		}
+	}
+
+	public function getEnabledModules() {
+		if (!isset($this->enabledModules)) {
+			$allProperties = get_object_vars($this);
+			$exclusions = array("settings","database","ldap","installation_details");
+
+			$enabledModules = array();
+			foreach ($allProperties['properties'] as $key=>$value) {
+				if (!array_key_exists($key,$exclusions) && $value->enabled=="Y") {
+					$this->enabledModules[] = $key;
+				}
+			}
+		}
+		return $this->enabledModules;
+	}
+
+	public function getModuleConfigurations() {
+		return $this->moduleConfigurations;
+	}
+
+	protected function generateModuleConfigurations() {
+		foreach ($this->getEnabledModules() as $moduleName) {
+			$this->moduleConfigurations[$moduleName] = parse_ini_file("../{$moduleName}/admin/configuration.ini", true);
 		}
 	}
 }

@@ -17,11 +17,18 @@
 **************************************************************************************************************************
 */
 
-
-include_once 'user.php';
-
 $util = new Utility();
 $config = new Configuration();
+
+// tamu specific
+// use cas for authentication
+if($config->tamu->enableCAS == 'Y') {
+    session_start();
+    require_once "../".$config->tamu->customLibPath.'cas.php';
+    getCAS($config->tamu->host_cas, $config->tamu->ip_cas);
+}
+
+include_once 'user.php';
 
 //get the current page to determine which menu button should be depressed
 $currentPage = $_SERVER["SCRIPT_NAME"];
@@ -42,12 +49,19 @@ $coralURL = $util->getCORALURL();
 <title>Resources Module - <?php echo $pageTitle; ?></title>
 <link rel="stylesheet" href="css/style.css" type="text/css" media="screen" />
 <link rel="stylesheet" href="css/thickbox.css" type="text/css" media="screen" />
+<link rel="stylesheet" href="css/datePicker.css" type="text/css" media="screen" />
+<link rel="stylesheet" href="css/jquery.autocomplete.css" type="text/css" media="screen" />
 <link rel="stylesheet" href="../css/datePicker.css" type="text/css" media="screen" />
 <link rel="stylesheet" href="../css/jquery.autocomplete.css" type="text/css" media="screen" />
 <link rel="stylesheet" href="css/jquery.tooltip.css" type="text/css" media="screen" />
 <link rel="SHORTCUT ICON" href="images/favicon.ico" />
 <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
 <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>
+<script type="text/javascript" src="js/plugins/jquery.js"></script>
+<script type="text/javascript" src="js/plugins/ajaxupload.3.5.js"></script>
+<script type="text/javascript" src="js/plugins/thickbox.js"></script>
+<script type="text/javascript" src="js/plugins/jquery.autocomplete.js"></script>
+<script type="text/javascript" src="js/plugins/Gettext.js"></script>
 <script type="text/javascript" src="../js/plugins/jquery-1.4.4.js"></script>
 <script type="text/javascript" src="../js/plugins/ajaxupload.3.5.js"></script>
 <script type="text/javascript" src="js/plugins/thickbox.js"></script>
@@ -90,6 +104,7 @@ $coralURL = $util->getCORALURL();
 
     <tr style='vertical-align:top;'>
         <td style='height:53px;' colspan='3'>
+
                 
             <div id="main-title">
                 <img src="images/title-icon-resources.png" />

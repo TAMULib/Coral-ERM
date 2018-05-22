@@ -322,7 +322,7 @@ function updateProduct(){
 	 type:       "GET",
 	 url:        "ajax_htmldata.php",
 	 cache:      false,
-	 data:       "action=getProductDetails&resourceID=" + $("#resourceID").val(),
+	 data:       "action=getProductDetails&resourceID=" + $("#resourceID").val() + "&resourceAcquisitionID=" + $("#resourceAcquisitionSelect").val(),
 	 success:    function(html) {
 		$("#div_product .div_mainContent").html(html);
 		bind_removes();
