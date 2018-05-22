@@ -19,11 +19,12 @@
 
 include_once 'directory.php';
 
-$pageTitle=_('Administration');
-include 'templates/header.php';
 
 //set referring page
-CoralSession::set('ref_script', $currentPage);
+CoralSession::set('ref_script', $currentPage = '');
+
+$pageTitle=_('Administration');
+include 'templates/header.php';
 
 $config = new Configuration;
 
@@ -68,6 +69,7 @@ if ($user->isAdmin()){
 				<?php } ?>
 				<tr><td><div class='adminMenuLink'><a href='javascript:void(0);' class='CurrencyLink'><?php echo _("Currency");?></div></td></tr>
 				<tr><td><div class='adminMenuLink'><a href='javascript:void(0);' class='AdminLink' id="DowntimeType"><?php echo _("Downtime Type");?></div></td></tr>
+                <tr><td><div class='adminMenuLink'><a href='javascript:void(0);' class='EbscoKbConfigLink'><?php echo _("EBSCO Kb Config");?></div></td></tr>
 				<tr><td><div class='adminMenuLink'><a href='javascript:void(0);' id='ExternalLoginType' class='AdminLink'><?php echo _("External Login Type");?></div></td></tr>
 				<tr><td><div class='adminMenuLink'><a href='javascript:void(0);' class='FundLink'><?php echo _("Funds");?></div></td></tr>
 				<tr><td><div class='adminMenuLink'><a href='javascript:void(0);' class='ImportConfigLink'><?php echo _("Import Configuration");?></div></td></tr>
@@ -89,7 +91,7 @@ if ($user->isAdmin()){
 				<tr><td><div class='adminMenuLink'><a href='javascript:void(0);' id='ResourceFormat' class='AdminLink'><?php echo _("Resource Format");?></div></td></tr>
 				<tr><td><div class='adminMenuLink'><a href='javascript:void(0);' id='ResourceType' class='AdminLink'><?php echo _("Resource Type");?></div></td></tr>
 				<tr><td><div class='adminMenuLink'><a href='javascript:void(0);' id='StorageLocation' class='AdminLink'><?php echo _("Storage Location");?></div></td></tr>
-				<tr><td><div class='adminMenuLink'><a href='javascript:void(0);' class='SubjectsAdminLink'><?php echo _("Subjects");?></div></td></tr>				
+				<tr><td><div class='adminMenuLink'><a href='javascript:void(0);' class='SubjectsAdminLink'><?php echo _("Subjects");?></div></td></tr>
 				<tr><td><div class='adminMenuLink'><a href='javascript:void(0);' id='UserLimit' class='AdminLink'><?php echo _("User Limit");?></div></td></tr>
 			</table>
 		</td>

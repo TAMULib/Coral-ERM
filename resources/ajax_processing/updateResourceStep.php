@@ -1,19 +1,22 @@
 <?php
 $resourceStepID = $_POST['resourceStepID'];
 $userGroupID = $_POST['userGroupID'];
+$note = $_POST['note'];
 $applyToAll = ($_POST['applyToAll'] == "true")? true:false;
+$userGroupIDChanged = $_POST['userGroupIDChanged'];
 $newStepStartDate = date("Y-m-d",strtotime($_POST['newStepStartDate']));
 
 if($resourceStepID != ''){
     $step = new ResourceStep(new NamedArguments(array('primaryKey' => $resourceStepID)));
 
     //business logic
+    $step->note = $note;
+    $step->save();
 
-    if ($userGroupID !=  $step->userGroupID) {
+    // If the step has been reassigned
+    if ($userGroupIDChanged) {
         $step->userGroupID = $userGroupID;
-
         //if apply to all selected, we need to cycle through later steps.
-
         try {
             $step->restartReassignedStep();
 

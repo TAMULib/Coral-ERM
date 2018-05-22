@@ -15,30 +15,70 @@
 **************************************************************************************************************************
 */
 
- $(function(){
+$(function(){
 
-	//check this name to make sure it isn't already being used
-	$("#organizationName").keyup(function() {
-		  $.ajax({
-			 type:       "GET",
-			 url:        "ajax_processing.php",
-			 cache:      false,
-			 async:	     true,
-			 data:       "action=getExistingOrganizationName&name=" + $("#organizationName").val() + "&organizationID=" + $("#editOrganizationID").val(),
-			 success:    function(exists) {
-				if (exists == 0){
-					$("#span_errors").html("");
-					$("#submitOrganizationChanges").removeAttr("disabled");
-				}else{
-				  $("#span_errors").html("<br />"+_("This organization already exists!"));
-				  $("#submitOrganizationChanges").attr("disabled","disabled");
+    $("#retrieveVendor").click(function() {
+        $.ajax({
+             type:       "GET",
+             url:        "ajax_processing.php",
+             cache:      false,
+             async:      true,
+             data:       "action=getILSVendorInfos&name=" + $("#organizationName").val(),
+             success:    function(vendorString) {
+                vendor = $.parseJSON(vendorString);
+                if (vendor == null) return false;
+                $("#accountDetailText").text(vendor['accountnumber']);
+                $('#accountDetailText').attr("disabled", "disabled");
+                $("#noteText").text(vendor['notes']);
+                $('#noteText').attr("disabled", "disabled");
+                $("#companyURL").val(vendor['url']);
+                $('#companyURL').attr("disabled", "disabled");
+                $('#organizationName').attr("disabled", "disabled");
+                $('.ils_role').attr('checked', true);
+            }
+         });
+    });
 
-				}
-			 }
-		  });
+    //check this name to make sure it isn't already being used
 
+    $("#organizationName").keyup(function() {
+          $.ajax({
+             type:       "GET",
+             url:        "ajax_processing.php",
+             cache:      false,
+             async:      true,
+             data:       "action=getExistingOrganization&name=" + $("#organizationName").val() + "&organizationID=" + $("#editOrganizationID").val(),
+             success:    function(exists) {
+                if (exists == 0){
+                    $("#span_errors").html("");
+                    $("#submitOrganizationChanges").removeAttr("disabled");
+                }else{
+                    $("#span_errors").html("<br />"+_("This organization already exists!"));
+                    $("#submitOrganizationChanges").attr("disabled","disabled");
+                }
+             }
+          });
+    });
 
-    	});
+    $("#checkVendorInILS").click(function() {
+           $.ajax({
+             type:       "GET",
+             url:        "ajax_processing.php",
+             cache:      false,
+             async:      true,
+             data:       "action=getExistingVendor&name=" + $("#organizationName").val() + "&organizationID=" + $("#editOrganizationID").val(),
+             success:    function(exists) {
+                if (exists == 0){
+                    $("#ils_span").html(_("This vendor does not exist in the ILS."));
+                    $("#retrieveVendor").hide();
+                    $("#submitOrganizationChanges").removeAttr("disabled");
+                }else{
+                    $("#ils_span").html(_("This vendor exists in the ILS."));
+                    $("#retrieveVendor").show();
+                }
+             }
+          });
+    });
 
 
 	 $("#openOrganizationURL").click(function () {
@@ -66,22 +106,22 @@
 		formatResult: function(row) {
 			return row[0].replace(/(<.+?>)/gi, '');
 		}
-	
+
 	  });
 
-	
+
 	//once something has been selected, change the hidden input value
 	$("#parentOrganization").result(function(event, data, formatted) {
 		$("#parentOrganizationID").val(data[1]);
 	});
-	  
+
 
 	//do submit if enter is hit
 	$('#organizationName').keyup(function(e) {
 	      if(e.keyCode == 13) {
 		submitOrganization();
 	      }
-	}); 
+	});
 
 
 	//do submit if enter is hit
@@ -89,33 +129,33 @@
 	      if(e.keyCode == 13) {
 		submitOrganization();
 	      }
-	}); 
+	});
 
 	//do submit if enter is hit
 	$('#companyURL').keyup(function(e) {
 	      if(e.keyCode == 13) {
 		submitOrganization();
 	      }
-	}); 	
+	});
 
-	  	 
+
  });
- 
 
 
- 
+
+
  function validateForm (){
  	myReturn=0;
  	if (!validateRequired('organizationName',"<br />"+_("Name must be entered to continue."))) myReturn=1;
- 	
- 
+
+
  	if (myReturn == 1){
-		return false; 	
+		return false;
  	}else{
  		return true;
  	}
 }
- 
+
 
 
 
@@ -123,10 +163,10 @@ function submitOrganization(){
 	organizationRolesList ='';
 	$(".check_roles:checked").each(function(id) {
 	      organizationRolesList += $(this).val() + ",";
-	}); 
+	});
 
 	if (validateForm() === true) {
-		$('#submitOrganizationChanges').attr("disabled", "disabled"); 
+		$('#submitOrganizationChanges').attr("disabled", "disabled");
 		  $.ajax({
 			 type:       "POST",
 			 url:        "ajax_processing.php?action=submitOrganization",
@@ -137,7 +177,7 @@ function submitOrganization(){
 				if ($("#editOrganizationID").val()==null || $("#editOrganizationID").val()=="") {
 					window.parent.location=("orgDetail.php?ref=new&organizationID=" + html);
 					tb_remove();
-					return false;	
+					return false;
 				//if this was an edit for an existing organization
 				}else{
 					if (html.length > 1){
@@ -147,7 +187,7 @@ function submitOrganization(){
 						window.parent.tb_remove();
 						window.parent.updateOrganization();
 						return false;
-					}			
+					}
 				}
 			 }
 

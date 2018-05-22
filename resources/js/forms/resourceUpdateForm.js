@@ -31,34 +31,34 @@ $(function(){
         if(e.keyCode == 13) {
             submitProductForm();
         }
-    }); 
+    });
 
     //do submit if enter is hit
     $('#parentResourceName').keyup(function(e) {
         if(e.keyCode == 13) {
             submitProductForm();
         }
-    }); 
+    });
 
 
     $('#isbnOrISSN').keyup(function(e) {
         if(e.keyCode == 13) {
             submitProductForm();
         }
-    }); 
+    });
 
 
     $('#resourceFormatID').keyup(function(e) {
         if(e.keyCode == 13) {
             submitProductForm();
         }
-    }); 	
+    });
 
     $('#resourceTypeID').keyup(function(e) {
         if(e.keyCode == 13) {
             submitProductForm();
         }
-    }); 
+    });
 
 
 
@@ -127,7 +127,7 @@ $(function(){
     $('.changeDefault').live('blur', function() {
         if(this.value == ''){
             this.value = this.defaultValue;
-        }		
+        }
     });
 
 
@@ -174,7 +174,7 @@ $(function(){
     $('.changeAutocomplete').live('blur', function() {
         if(this.value == ''){
             this.value = this.defaultValue;
-        }	
+        }
     });
 
 
@@ -191,7 +191,7 @@ $(function(){
 
 
     $(".removeParent").live('click', function () {
-        $(this).parent().fadeTo(400, 0, function () { 
+        $(this).parent().fadeTo(400, 0, function () {
             $(this).parent().remove();
         });
         return false;
@@ -206,7 +206,7 @@ $(function(){
 
 
     $(".remove").live('click', function () {
-        $(this).parent().parent().parent().fadeTo(400, 0, function () { 
+        $(this).parent().parent().parent().fadeTo(400, 0, function () {
             $(this).remove();
         });
         return false;
@@ -271,7 +271,7 @@ $(function(){
 
 $(".addParent").live('click', function() {
 
-    var parentID = $("#newParent .oneParent input[name='parentResourceID']'").val();
+    var parentID = $("#newParent .oneParent input[name='parentResourceNewID']'").val();
     var parentName = $("#newParent .oneParent input[name='parentResourceName']'").val();
 
     if (parentName == '') {
@@ -284,6 +284,7 @@ $(".addParent").live('click', function() {
     }
 
     var newParentValue = $('.parentResource_new').clone();
+    newParentValue.filter("input[name='parentResourceNewID']").attr("name","parentResourceID");
     newParentValue.removeClass('parentResource_new').css({"width": "180px"});
     newParentValue.attr('disabled', 'disabled');
     var newParentStr = "<div class='oneParent'></div>";
@@ -396,7 +397,7 @@ function validateForm (){
 
         myReturn="1";
 
-    }	
+    }
 
     //check aliases
     if (((aName == '') || (aName == null) || (typeID == '') || (typeID == null)) && ((aName != '') || (typeID != ''))){
@@ -405,7 +406,7 @@ function validateForm (){
 
     }
     if (myReturn == "1"){
-        return false; 	
+        return false;
     }else{
         return true;
     }
@@ -421,23 +422,23 @@ function submitProductForm(){
     aliasTypeList ='';
     $(".aliasTypeID").each(function(id) {
         aliasTypeList += $(this).val() + ":::";
-    }); 
+    });
 
     aliasNameList ='';
     $(".aliasName").each(function(id) {
         aliasNameList += $(this).val() + ":::";
-    }); 
+    });
 
 
     organizationList ='';
     $(".organizationID").each(function(id) {
         organizationList += $(this).val() + ":::";
-    }); 
+    });
 
     organizationRoleList ='';
     $(".organizationRoleID").each(function(id) {
         organizationRoleList += $(this).val() + ":::";
-    }); 
+    });
 
 
 
@@ -458,7 +459,7 @@ function submitProductForm(){
         });
 
 
-        $('#submitProductChanges').attr("disabled", "disabled"); 
+        $('#submitProductChanges').attr("disabled", "disabled");
         $.ajax({
             type:       "POST",
             url:        "ajax_processing.php?action=submitProductUpdate",
@@ -474,9 +475,9 @@ function submitProductForm(){
                     window.parent.tb_remove();
                     window.parent.updateProduct();
                     window.parent.updateRightPanel();
-                    window.parent.updateTitle();			
+                    window.parent.updateTitle();
                     return false;
-                }					
+                }
 
             }
 
@@ -492,7 +493,7 @@ function submitProductForm(){
 //kill all binds done by jquery live
 function kill(){
 
-    $('.addAlias').die('click'); 
+    $('.addAlias').die('click');
     $('.addOrganization').die('click');
     $(".addParent").die('click');
     $(".addIsbn").die('click');

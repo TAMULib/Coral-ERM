@@ -1,8 +1,10 @@
 <?php
 $resourceID = $_GET['resourceID'];
+$resourceAcquisitionID = $_GET['resourceAcquisitionID'];
 $archivedFlag = (!empty($_GET['archived']) && $_GET['archived'] == 1) ? true:false;
 
 $resource = new Resource(new NamedArguments(array('primaryKey' => $resourceID)));
+$resourceAcquisition = new ResourceAcquisition(new NamedArguments(array('primaryKey' => $resourceAcquisitionID)));
 $util = new Utility();
 
 
@@ -21,17 +23,17 @@ function generateIssueHTML($issue,$associatedEntities=null) {
 	}
 	$html .= "
 	  	<dl>
-	  		<dt>" . _("Date reported:") . "</dt> 
+	  		<dt>" . _("Date reported:") . "</dt>
 	  		<dd>{$issue->dateCreated}</dd>";
 	if ($issue->dateClosed) {
-	  	
+
 		$html .= "<dt>" . _("Date closed:") . "</dt>
 	  		<dd>{$issue->dateClosed}</dd>
 	  		<dt>Resolution</dt>
 	  		<dd>{$issue->resolutionText}</dd>";
 	  	}
-	  		
-	$html .= "<dt>" . _("Contact(s):") . "</dt> 
+
+	$html .= "<dt>" . _("Contact(s):") . "</dt>
 	  		<dd>";
 	$contacts = $issue->getContacts();
 	if ($contacts) {
@@ -55,13 +57,12 @@ function generateIssueHTML($issue,$associatedEntities=null) {
 	}
 
 	$html .= "</dd>
-	  		<dt>" . _("Subject:") . "</dt> 
-	  		<dd>{$issue->subjectText}</dd> 
-	  		
-	  		<dt class=\"block\">" . _("Body:") . "</dt> 
-	  		<dd>{$issue->bodyText}</dd>
-	  	</dl>
-	</div>";
+        <dt>" . _("Subject:") . "</dt>
+        <dd>{$issue->subjectText}</dd>
+        <dt class=\"block\">" . _("Body:") . "</dt>
+        <dd>{$issue->bodyText}</dd>
+        </dl>
+    </div>";
 	return $html;
 }
 
@@ -93,7 +94,7 @@ if (count($organizationArray) > 0) {
 }
 
 //display any resource level issues for the resource (shows any other resources associated with the issue, too)
-$resourceIssues = $resource->getIssues($archivedFlag);
+$resourceIssues = $resourceAcquisition->getIssues($archivedFlag);
 echo '<h3 class="text-center">' . _("Resources") . '</h3>';
 if(count($resourceIssues) > 0) {
 	foreach ($resourceIssues as $issue) {
@@ -102,10 +103,10 @@ if(count($resourceIssues) > 0) {
 			foreach ($associatedResources as $resource) {
 				$associatedEntities[] = array("name"=>$resource->titleText,"id"=>$resource->resourceID,"entityType"=>2);
 			}
-		} 
+		}
 		echo generateIssueHTML($issue,$associatedEntities);
 	}
 } else {
-	echo "<br><p>" . _("There are no resource level issues.") . "</p><br>";
+	echo "<br><p>" . _("There are no order level issues.") . "</p><br>";
 }
 ?>

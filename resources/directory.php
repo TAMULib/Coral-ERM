@@ -17,55 +17,10 @@
 **************************************************************************************************************************
 */
 
-
-// Useful directory constants, ending with |/|.
-define('ADMIN_DIR', dirname(__FILE__) . '/admin/');
+// Define the MODULE base directory, ending with |/|.
 define('BASE_DIR', dirname(__FILE__) . '/');
-define('CLASSES_DIR', ADMIN_DIR . 'classes/');
-define('INTERFACES_DIR', ADMIN_DIR . 'interfaces/');
 
-// Automatically load undefined classes and interfaces from subdirectories of |CLASSES_DIR| or |INTERFACES_DIR|.
-function __autoload( $className ) {
-  $directories = array(CLASSES_DIR,INTERFACES_DIR);
-  foreach ($directories as $currentDirectory) {
-  	if (file_exists($currentDirectory) && is_readable($currentDirectory) && is_dir($currentDirectory)) {
-  		$directory = dir($currentDirectory);
-
-  		// Iterate over the files and directories in |CLASSES_DIR|.
-  		while (false !== ($entry = $directory->read())) {
-  			$path = $currentDirectory . $entry;
-
-  			// Look only at subdirectories
-  			if (is_dir($path)) {
-  				$filename = $path . '/' . $className . '.php';
-  				if (file_exists($filename) && is_readable($filename) && is_file($filename)) {
-  					// Could probably safely use |require()| here, since |__autoload()| is only called when a class isn't loaded.
-  					require_once($filename);
-            $directory->close();
-            break;
-  				}
-  			}
-  		}
-    }
-	}
-}
-
-// Add lcfirst() for PHP < 5.3.0
-if (false === function_exists('lcfirst')) {
-	function lcfirst($string) {
-		return strtolower(substr($string, 0, 1)) . substr($string, 1);
-	}
-}
-
-
-//fix default timezone for PHP > 5.3
-if(function_exists("date_default_timezone_set") and function_exists("date_default_timezone_get")){
-	@date_default_timezone_set(@date_default_timezone_get());
-}
-
-
-
-
+require_once BASE_DIR . "../common/common_directory.php";
 
 //commonly used to convert price into integer for insert into database
 function cost_to_integer($price) {
@@ -100,24 +55,6 @@ function integer_to_cost($price) {
     }
 }
 
-
-function format_date($mysqlDate) {
-
-	//see http://php.net/manual/en/function.date.php for options
-
-	//there is a dependence on strtotime recognizing date format for date inputs
-	//thus, european format (d-m-Y) must use dashes rather than slashes
-
-	//upper case Y = four digit year
-	//lower case y = two digit year
-	//make sure digit years matches for both directory.php and common.js
-
-	//SUGGESTED: "m/d/Y" or "d-m-Y"
-
-	return date("m/d/Y", strtotime($mysqlDate));
-
-}
-
 function normalize_date($date) {
     if (($date == "0000-00-00") || ($date == "")){
         return "";
@@ -147,36 +84,30 @@ function watchString($string) {
 function resource_sidemenu($selected_link = '') {
   global $user;
   $links = array(
-    'product' => 'butterflyfishicon',
-    'acquisitions' => 'acquisitions',
-    'access' => 'key',
-    'cataloging' => 'cataloging',
-    'contacts' => 'contacts',
-    'accounts' => 'lock',
-    'issues' => 'help',
-    'attachments' => 'attachment',
-    'routing' => 'routing',
+    'product',
+    'orders',
+    'acquisitions',
+    'access',
+    'cataloging',
+    'contacts',
+    'accounts',
+    'issues',
+    'attachments',
+    'workflow',
   );
-  
-  foreach ($links as $key => $icon) {
+
+  foreach ($links as $key) {
     $name = ucfirst($key);
     if ($selected_link == $key) {
       $class = 'sidemenuselected';
-      $image = "images/".$icon;
       $icon_id = "icon_$key";
     } else {
       $class = 'sidemenuunselected';
-      $image = "images/".$icon."_bw";
       $icon_id = "";
-    }
-    if ($key == 'product' && $class == 'sidemenuselected') {
-      $image .= '.jpg';
-    } else {
-      $image .= '.gif';
     }
     if ($key != 'accounts' || $user->accountTabIndicator == '1') {
     ?>
-    <div class="<?php echo $class; ?>" style='position: relative; width: 105px'><span class='icon' id='<?php echo $icon_id; ?>'><img src='<?php echo $image; ?>' alt=""></span><span class='link'><a href='javascript:void(0)' class='show<?php echo $name; ?>' title="<?php echo $name; ?>"><?php echo _($key); ?></a></span>
+    <div class="<?php echo $class; ?>" style='position: relative; width: 105px'><span class='link'><a href='javascript:void(0)' class='show<?php echo $name; ?>' title="<?php echo $name; ?>"><?php echo _($key); ?></a></span>
       <?php if ($key == 'attachments') { ?>
         <span class='span_AttachmentNumber smallGreyText' style='clear:right; margin-left:18px;'></span>
       <?php } ?>
@@ -214,28 +145,5 @@ function buildSelectableMeridian($fieldNameBase) {
 function buildTimeForm($fieldNameBase,$defaultHour=8,$minuteIntervals=4) {
   return buildSelectableHours($fieldNameBase,$defaultHour).buildSelectableMinutes($fieldNameBase,$minuteIntervals).buildSelectableMeridian($fieldNameBase);
 }
-
-function debug($value) {
-  echo '<pre>'.print_r($value, true).'</pre>';
-}
-
-// Include file of language codes
-include_once 'LangCodes.php';
-$lang_name = new LangCodes();
-
-// Verify the language of the browser
-global $http_lang;
-if(isset($_COOKIE["lang"])){
-    $http_lang = $_COOKIE["lang"];
-}else{        
-    $codeL = str_replace("-","_",substr($_SERVER["HTTP_ACCEPT_LANGUAGE"],0,5));
-    $http_lang = $lang_name->getLanguage($codeL);
-    if($http_lang == "")
-      $http_lang = "en_US";
-}
-putenv("LC_ALL=$http_lang");
-setlocale(LC_ALL, $http_lang.".utf8");
-bindtextdomain("messages", dirname(__FILE__) . "/locale");
-textdomain("messages");
 
 ?>

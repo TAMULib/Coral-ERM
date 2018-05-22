@@ -54,12 +54,14 @@ class Utility {
 
 	//returns file path up to /coral/
 	public function getCORALPath(){
-		$pagePath = $_SERVER["DOCUMENT_ROOT"];
+		$pagePath = rtrim($_SERVER['DOCUMENT_ROOT'],'/\\').'/';
 
 		$currentFile = $_SERVER["SCRIPT_NAME"];
 		$parts = Explode('/', $currentFile);
 		for($i=0; $i<count($parts) - 2; $i++){
-			$pagePath .= $parts[$i] . '/';
+			if ($parts[$i] != '' && $parts[$i] !='resources'){
+				$pagePath .= $parts[$i] . '/';
+			}
 		}
 
 		return $pagePath;
@@ -79,7 +81,9 @@ class Utility {
 		$currentFile = $_SERVER["PHP_SELF"];
 		$parts = Explode('/', $currentFile);
 		for($i=0; $i<count($parts) - 2; $i++){
-			$pageURL .= $parts[$i] . '/';
+			if ($parts[$i] != 'resources') {
+				$pageURL .= $parts[$i] . '/';
+			}
 		}
 
 		return $pageURL;
@@ -105,7 +109,7 @@ class Utility {
 
 
 
-	public function createMessageFromTemplate($messageType, $resourceID, $resourceTitle, $stepName, $systemNumber, $creator){
+	public function createMessageFromTemplate($messageType, $resourceID, $resourceTitle, $stepName, $systemNumber, $creator, $note = null){
 		$config = new Configuration();
 
 		$templateFile = $this->getCORALPath() . "resources/admin/emails/" . $messageType . ".txt";
@@ -113,7 +117,7 @@ class Utility {
 		if (file_exists($templateFile)){
 
 			$fh = @fopen($templateFile, 'r');
-
+			$defaultMessage = "";
 			while (($buffer = fgets($fh, 4096)) !== false) {
 				$defaultMessage .= $buffer;
 			}
@@ -141,6 +145,7 @@ class Utility {
 			$defaultMessage = str_replace('<StepName>', $stepName, $defaultMessage);
 			$defaultMessage = str_replace('<SystemNumber>', $systemNumber, $defaultMessage);
 			$defaultMessage = str_replace('<Creator>', $creator, $defaultMessage);
+			$defaultMessage = str_replace('<Note>', $note, $defaultMessage);
 
 			return $defaultMessage;
 

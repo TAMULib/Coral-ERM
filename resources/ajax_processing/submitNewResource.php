@@ -36,11 +36,9 @@ if (!$fromExternal) {
 
 	$resource->resourceTypeID 		= $_POST['resourceTypeID'];
 	$resource->resourceFormatID 	= $_POST['resourceFormatID'];
-	$resource->acquisitionTypeID 	= $_POST['acquisitionTypeID'];
-
 	$resource->titleText 			= $_POST['titleText'];
 	$resource->descriptionText 		= $_POST['descriptionText'];
-	$resource->isbnOrISSN	 		= '';
+	$resource->isbnOrISSN	 		= [];
 	$resource->statusID		 		= $statusID;
 	$resource->orderNumber	 		= '';
 	$resource->systemNumber 		= '';
@@ -159,31 +157,42 @@ try {
 
 	$resourceID=$resource->primaryKey;
 
-	//add notes
-	if (($_POST['noteText']) || (($_POST['providerText']) && (!$_POST['organizationID']))){
-		//first, remove existing notes in case this was saved before
-		$resource->removeResourceNotes();
+    // Create the default order
+    //first, remove existing order in case this was saved before
+    $resource->removeResourceAcquisitions();
 
-		//this is just to figure out what the creator entered note type ID is
-		$noteType = new NoteType();
+    $resourceAcquisition = new ResourceAcquisition();
+    $resourceAcquisition->resourceID = $resourceID;
+	$resourceAcquisition->acquisitionTypeID = $_POST['acquisitionTypeID'];
+	$resourceAcquisition->subscriptionStartDate = date("Y-m-d");
+    $resourceAcquisition->subscriptionEndDate = date("Y-m-d");
+    $resourceAcquisition->save();
 
-		$resourceNote = new ResourceNote();
-		$resourceNote->resourceNoteID 	= '';
-		$resourceNote->updateLoginID 	= $loginID;
-		$resourceNote->updateDate		= date( 'Y-m-d' );
-		$resourceNote->noteTypeID 		= $noteType->getInitialNoteTypeID();
-		$resourceNote->tabName 			= 'Product';
-		$resourceNote->resourceID 		= $resourceID;
+			//add notes
+			if (($_POST['noteText']) || (($_POST['providerText']) && (!$_POST['organizationID']))){
+				//first, remove existing notes in case this was saved before
+				$resource->removeResourceNotes();
 
-		//only insert provider as note if it's been submitted
-		if (($_POST['providerText']) && (!$_POST['organizationID']) && ($_POST['resourceStatus'] == 'progress')){
-			$resourceNote->noteText 	= "Provider:  " . $_POST['providerText'] . "\n\n" . $_POST['noteText'];
-		}else{
-			$resourceNote->noteText 	= $_POST['noteText'];
-		}
+				//this is just to figure out what the creator entered note type ID is
+				$noteType = new NoteType();
 
-		$resourceNote->save();
-	}
+				$resourceNote = new ResourceNote();
+				$resourceNote->resourceNoteID 	= '';
+				$resourceNote->updateLoginID 	= $loginID;
+				$resourceNote->updateDate		= date( 'Y-m-d' );
+				$resourceNote->noteTypeID 		= $noteType->getInitialNoteTypeID();
+				$resourceNote->tabName 			= 'Product';
+				$resourceNote->entityID 		= $resourceID;
+
+				//only insert provider as note if it's been submitted
+				if (($_POST['providerText']) && (!$_POST['organizationID']) && ($_POST['resourceStatus'] == 'progress')){
+					$resourceNote->noteText 	= "Provider:  " . $_POST['providerText'] . "\n\n" . $_POST['noteText'];
+				}else{
+					$resourceNote->noteText 	= $_POST['noteText'];
+				}
+
+				$resourceNote->save();
+			}
 
 	if ($organizationID) {
 		if ($fromExternal) {
@@ -218,6 +227,8 @@ try {
 		$costNoteArray      = array();  $costNoteArray      = explode(':::',$_POST['costNotes']);
 		$invoiceArray       = array();  $invoiceArray       = explode(':::',$_POST['invoices']);
 
+            // Is this really needed ?
+/*
 		//first remove all payment records, then we'll add them back
 		$resource->removeResourcePayments();
 
@@ -243,6 +254,7 @@ try {
 			}
 		}
 	}
+*/
 
 	//next if the resource was submitted, enter into workflow
 	if ($statusID == $status->getIDFromName('progress')){
@@ -252,5 +264,6 @@ try {
 } catch (Exception $e) {
 	echo $e->getMessage();
 }
+
 
 ?>

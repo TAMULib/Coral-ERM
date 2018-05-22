@@ -123,13 +123,16 @@ class Utility {
 			$fc = file_get_contents($fileName);
 		}else{
 			$fc = iconv('windows-1250', 'utf-8', file_get_contents($fileName));
+            if(empty($fc)){
+                $fc = mb_convert_encoding(file_get_contents($fileName),'utf-8');
+            }
 		}
 
     	$handle=fopen("php://memory", "rw");
     	fwrite($handle, $fc);
     	fseek($handle, 0);
     	return $handle;
-	} 
+	}
 
 }
 

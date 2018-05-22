@@ -18,6 +18,7 @@
 $(document).ready(function(){
 
 
+
     $("#submitResourceStepForm").click(function () {
         updateResourceStep();
 
@@ -96,30 +97,22 @@ $(document).ready(function(){
 
 });
 
-function validateStep (){
-    //don't submit the form if nothing has changed.
-    if (($("#userGroupID").val() == $("#currentGroupID").val()) && ($("#currentStepStartDate").val() == $("#newStepStartDate").val())){
-        return false;
-    };
-
-    return true;
-}
-
 function updateResourceStep(){
-
-    if (validateStep() === true) {
+        var reassigned = $("#userGroupID").val() == $("#currentGroupID").val() ? 0 : 1;
         $('#submitResourceStepForm').attr("disabled", "disabled");
+        //TAMU Customization - newStepStartDate
         $.ajax({
             type:       "POST",
             url:        "ajax_processing.php?action=updateResourceStep",
             cache:      false,
-            data:       { resourceStepID: $("#editRSID").val(), userGroupID: $("#userGroupID").val(), applyToAll: $('#applyToAll').is(':checked'), orderNum: $('#orderNum').val(),newStepStartDate: $("#newStepStartDate").val()},
+            data:       { resourceStepID: $("#editRSID").val(), userGroupID: $("#userGroupID").val(), applyToAll: $('#applyToAll').is(':checked'), orderNum: $('#orderNum').val(), note: $('#note').val(), userGroupIDChanged: reassigned,newStepStartDate: $("#newStepStartDate").val() },
             success:    function(html) {
                 if (html){
                     $("#span_errors").html(html);
                 }else{
                     tb_remove();
-                    var updateFunctions = ['updateRouting','updateOutstandingTasks'];
+                    //TAMU Customization - check for existence of and potentially execute more functions
+                    var updateFunctions = ['updateWorkflow','updateOutstandingTasks'];
                     $.each(updateFunctions,function(i,functionName) {
                         //if a function exists, call it, and break out of the loop
                         if (typeof window.parent[functionName] == 'function') {
@@ -134,11 +127,6 @@ function updateResourceStep(){
 
 
         });
-
-    }else{
-        tb_remove();
-        return true;
-    }
 
 }
 

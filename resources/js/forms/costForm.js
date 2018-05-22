@@ -35,12 +35,12 @@ $(function(){
 	 $('.changeDefault').live('blur', function() {
 		if(this.value == ''){
 			this.value = this.defaultValue;
-		}		
+		}
 	 });
 
-	
+
     	$('.changeInput').addClass("idleField");
-    	
+
 	$('.changeInput').live('focus', function() {
 
 
@@ -76,7 +76,7 @@ $(function(){
 	$('textarea').focus(function() {
 		$(this).removeClass("idleField").addClass("focusField");
 	});
-	    
+
 	$('textarea').blur(function() {
 		$(this).removeClass("focusField").addClass("idleField");
 	});
@@ -118,19 +118,19 @@ $(function(){
 		var fName     = $('.newPaymentTable').find('.fundName').val();
 		var pte       = $('.newPaymentTable').find('.priceTaxExcluded').val();
 		var tr        = $('.newPaymentTable').find('.taxRate').val();
-		var pti 	  = $('.newPaymentTable').find('.priceTaxIncluded').val();
+		var pti       = $('.newPaymentTable').find('.priceTaxIncluded').val();
 		var typeID    = $('.newPaymentTable').find('.orderTypeID').val();
 		var detailsID = $('.newPaymentTable').find('.costDetailsID').val();
 		var pAmount   = $('.newPaymentTable').find('.paymentAmount').val();
 		var cNote     = $('.newPaymentTable').find('.costNote').val();
-		
+
 		if(validateTable($('.newPaymentTable tbody tr')))
 		{
 			//we're going to strip out the $ of the payment amount
 			pAmount = pAmount.replace('$','');
-		
+
 			$('#div_errorPayment').html('');
-			
+
 			var newPaymentTR = $('.newPaymentTR')
 			var duplicateTR = newPaymentTR.clone(); //copy the payment being added
 			var selectedOptions=newPaymentTR.find('select'); //get selected options
@@ -151,7 +151,6 @@ $(function(){
 			$('.newPaymentTable').find('.subscriptionStartDate').val('');
 			$('.newPaymentTable').find('.subscriptionEndDate').val('');
 			$('.newPaymentTable').find('.fundID').val('');
-			$('.newPaymentTable').find('.fundSpecial').val('');
 			$('.newPaymentTable').find('.priceTaxExcluded').val('');
 			$('.newPaymentTable').find('.taxRate').val('');
 			$('.newPaymentTable').find('.priceTaxIncluded').val('');
@@ -160,9 +159,13 @@ $(function(){
 			$('.newPaymentTable').find('.costDetailsID').val('');
 			$('.newPaymentTable').find('.costNote').val('');
 			$('.newPaymentTable').find('.invoiceNum').val('');
+
+			//TAMU Customization - additional cost fields
 			$('.newPaymentTable').find('.purchaseOrder').val('');
 			$('.newPaymentTable').find('.systemID').val('');
 			$('.newPaymentTable').find('.vendorCode').val('');
+			$('.newPaymentTable').find('.fundSpecial').val('');
+
 			var tableDiv=$('.paymentTableDiv')[0];
 			tableDiv.scrollTop=tableDiv.scrollHeight;
 			return true;
@@ -202,78 +205,75 @@ function submitCostForm()
 		purchaseSitesList ='';
 		$(".paymentTable").find(".check_purchaseSite:checked").each(function(id) {
 		      purchaseSitesList += $(this).val() + ":::";
-		}); 
-		
+		});
+
 		yearList ='';
 		$(".paymentTable").find(".year").each(function(id) {
 		      yearList += $(this).val() + ":::";
-		}); 
+		});
 
 		subStartList ='';
 		$(".paymentTable").find(".subscriptionStartDate").each(function(id) {
 		      subStartList += $(this).val() + ":::";
-		}); 
+		});
 
 		subEndList ='';
 		$(".paymentTable").find(".subscriptionEndDate").each(function(id) {
 		      subEndList += $(this).val() + ":::";
-		}); 
+		});
 
 		fundNameList ='';
 		$(".paymentTable").find(".fundID").each(function(id) {
 		      fundNameList += $(this).val() + ":::";
 		});
 
-		fundSpecialList ='';
-		$(".paymentTable").find(".fundSpecial").each(function(id) {
-		      fundSpecialList += $(this).val() + ":::";
-		});
 
 		priceTaxExcludedList ='';
 		$(".paymentTable").find(".priceTaxExcluded").each(function(id) {
 			priceTaxExcludedList += $(this).val() + ":::";
-		}); 
+		});
 
 		taxRateList ='';
 		$(".paymentTable").find(".taxRate").each(function(id) {
 			taxRateList += $(this).val() + ":::";
-		}); 
+		});
 
 		priceTaxIncludedList ='';
 		$(".paymentTable").find(".priceTaxIncluded").each(function(id) {
 			priceTaxIncludedList += $(this).val() + ":::";
-		}); 
+		});
 
 		paymentAmountList ='';
 		$(".paymentTable").find(".paymentAmount").each(function(id) {
 			paymentAmountList += $(this).val() + ":::";
-		}); 
+		});
 
 		currencyCodeList ='';
 		$(".paymentTable").find(".currencyCode").each(function(id) {
 		      currencyCodeList += $(this).val() + ":::";
-		}); 
-		
+		});
+
 		orderTypeList ='';
 		$(".paymentTable").find(".orderTypeID").each(function(id) {
 		      orderTypeList += $(this).val() + ":::";
-		}); 
+		});
 
 		detailsList ='';
 		$(".paymentTable").find(".costDetailsID").each(function(id) {
 		      detailsList += $(this).val() + ":::";
-		}); 
+		});
 
 		costNoteList ='';
 		$(".paymentTable").find(".costNote").each(function(id) {
 		      costNoteList += $(this).val() + ":::";
-		}); 
+		});
 
 		invoiceList ='';
 		$(".paymentTable").find(".invoiceNum").each(function(id) {
 		      invoiceList += $(this).val() + ":::";
 		});
 
+		//TAMU Customization - Additional cost fields
 		purchaseOrderList ='';
 		$(".paymentTable").find(".purchaseOrder").each(function(id) {
 		      purchaseOrderList += $(this).val() + ":::";
@@ -289,19 +289,25 @@ function submitCostForm()
 		      vendorCodeList += $(this).val() + ":::";
 		});
 
-		$('#submitCost').attr("disabled", "disabled"); 
+		fundSpecialList ='';
+		$(".paymentTable").find(".fundSpecial").each(function(id) {
+		      fundSpecialList += $(this).val() + ":::";
+		});
 
+		$('#submitCost').attr("disabled", "disabled");
+
+		//TAMU Customization - Additional cost fields
 		$.ajax({
 			type:  "POST",
 			url:   "ajax_processing.php?action=submitCost",
 			cache: false,
 			data: {
 				resourceID: $("#editResourceID").val(),
+				resourceAcquisitionID: $("#editResourceAcquisitionID").val(),
 				years: yearList,
 				subStarts: subStartList,
 				subEnds: subEndList,
 				fundIDs: fundNameList,
-				fundSpecials: fundSpecialList,
 				pricesTaxExcluded: priceTaxExcludedList,
 				taxRates: taxRateList,
 				pricesTaxIncluded: priceTaxIncludedList,
@@ -313,7 +319,8 @@ function submitCostForm()
 				invoices: invoiceList,
 				purchaseOrders: purchaseOrderList,
 				systemIDs: systemIDList,
-				vendorCodes: vendorCodeList
+				vendorCodes: vendorCodeList,
+				fundSpecials: fundSpecialList
 			},
 			success:   function(html) {
 				if (html){
@@ -324,7 +331,7 @@ function submitCostForm()
 					window.parent.tb_remove();
 					window.parent.updateAcquisitions();
 					return false;
-				}					
+				}
 
 			}
 		});
@@ -340,7 +347,7 @@ function validateTable(objRows)
 {
 	//var currentRow = 0;
 	var hasNoErrors = true;
- 	
+
  	$(objRows).find('.div_errorPayment').each(function() {$(this).html('');}); //clear existing errors
  	//while(typeof objRows[currentRow] !== "undefined")
         for (var currentRow = 0; currentRow < objRows.length; currentRow += 2)
@@ -352,8 +359,8 @@ function validateTable(objRows)
 		var pAmount    = $(objRows[currentRow]).find('.paymentAmount').val();
 		var typeID     = $(objRows[currentRow]).find('.orderTypeID').val();
 		var detailsID  = $(objRows[currentRow]).find('.costDetailsID').val();
-		var pte 	   = $(objRows[currentRow]).find('.priceTaxIncluded').val();
-		var pti 	   = $(objRows[currentRow]).find('.priceTaxExcluded').val();
+		var pte        = $(objRows[currentRow]).find('.priceTaxIncluded').val();
+		var pti        = $(objRows[currentRow]).find('.priceTaxExcluded').val();
 		var cNote      = $(objRows[currentRow]).find('.costNote').val();
 		var invoiceNum = $(objRows[currentRow]).find('.invoiceNum').val();
 
@@ -383,11 +390,11 @@ function validateTable(objRows)
  	}
  	return hasNoErrors;
 }
- 
+
 //kill all binds done by jquery live
 function kill()
 {
-	$('.addPayment').die('click'); 
+	$('.addPayment').die('click');
 	$('.changeDefault').die('blur');
 	$('.changeDefault').die('focus');
 	$('.changeInput').die('blur');

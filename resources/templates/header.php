@@ -42,17 +42,17 @@ $coralURL = $util->getCORALURL();
 <title>Resources Module - <?php echo $pageTitle; ?></title>
 <link rel="stylesheet" href="css/style.css" type="text/css" media="screen" />
 <link rel="stylesheet" href="css/thickbox.css" type="text/css" media="screen" />
-<link rel="stylesheet" href="css/datePicker.css" type="text/css" media="screen" />
-<link rel="stylesheet" href="css/jquery.autocomplete.css" type="text/css" media="screen" />
+<link rel="stylesheet" href="../css/datePicker.css" type="text/css" media="screen" />
+<link rel="stylesheet" href="../css/jquery.autocomplete.css" type="text/css" media="screen" />
 <link rel="stylesheet" href="css/jquery.tooltip.css" type="text/css" media="screen" />
 <link rel="SHORTCUT ICON" href="images/favicon.ico" />
 <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
 <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>
-<script type="text/javascript" src="js/plugins/jquery.js"></script>
-<script type="text/javascript" src="js/plugins/ajaxupload.3.5.js"></script>
+<script type="text/javascript" src="../js/plugins/jquery-1.4.4.js"></script>
+<script type="text/javascript" src="../js/plugins/ajaxupload.3.5.js"></script>
 <script type="text/javascript" src="js/plugins/thickbox.js"></script>
-<script type="text/javascript" src="js/plugins/jquery.autocomplete.js"></script>
-<script type="text/javascript" src="js/plugins/Gettext.js"></script>
+<script type="text/javascript" src="../js/plugins/jquery.autocomplete.js"></script>
+<script type="text/javascript" src="../js/plugins/Gettext.js"></script>
 <?php
     // Add translation for the JavaScript files
     global $http_lang;
@@ -67,9 +67,9 @@ $coralURL = $util->getCORALURL();
             echo "<link rel='gettext' type='application/x-po' href='./locale/".$http_lang."/LC_MESSAGES/messages.po' />";
     }
 ?>
-<script type="text/javascript" src="js/plugins/translate.js"></script>
-<script type="text/javascript" src="js/plugins/date.js"></script>
-<script type="text/javascript" src="js/plugins/jquery.datePicker.js"></script>
+<script type="text/javascript" src="../js/plugins/translate.js"></script>
+<script type="text/javascript" src="../js/plugins/datejs-patched-for-i18n.js"></script>
+<script type="text/javascript" src="../js/plugins/jquery.datePicker-patched-for-i18n.js"></script>
 <script type="text/javascript" src="js/common.js"></script>
 </head>
 <body>
@@ -110,7 +110,7 @@ $coralURL = $util->getCORALURL();
                 ?>
                 </span><br />
 
-            <?php if($config->settings->authModule == 'Y'){ echo "<a href='" . $coralURL . "auth/?logout' id='logout' title='" . _("logout") . "'>" . _("logout") . "</a><span id='divider'> | </span><a href='https://js-erm-helps.bc.sirsidynix.net' id='help' target='_blank'>" . _("Help") . "</a><span id='divider'> | </span>"; } ?>
+            <?php if($config->settings->authModule == 'Y'){ echo "<a href='" . $coralURL . "auth/?logout' id='logout' title='" . _("logout") . "'>" . _("logout") . "</a><span id='divider'> | </span><a href='http://docs.coral-erm.org/' id='help' target='_blank'>" . _("Help") . "</a><span id='divider'> | </span>"; } ?>
 
                 <span id="setLanguage">
                     <select name="lang" id="lang" class="dropDownLang">
@@ -131,7 +131,7 @@ $coralURL = $util->getCORALURL();
                             echo "<br>"._("Invalid translation route!"); 
                         }
                         // Get language of navigator
-                        $defLang = substr($_SERVER["HTTP_ACCEPT_LANGUAGE"],0,5);
+                        $defLang = $lang_name->getBrowserLanguage();
                         
                         // Show an ordered list
                         sort($lang); 
@@ -194,7 +194,25 @@ $coralURL = $util->getCORALURL();
             <img src="images/menu/icon-import.png" />
             <span><?php echo _("File Import");?></span>
         </div>
-    </a> 
+    </a>
+    <?php if ($config->settings->ebscoKbEnabled == 'Y'): ?>
+        <a href='ebsco_kb.php' title="<?php echo _("EBSCO Kb");?>">
+            <div class="main-menu-link <?php if ($currentPage == 'ebsco_kb.php') { echo "active"; } ?>">
+                <img src="images/menu/icon-ebsco.png" />
+                <span><?php echo _("EBSCO Kb");?></span>
+            </div>
+        </a>
+    <?php endif; ?>
+
+
+<?php if ($config->settings->enhancedCostHistory == "Y") { ?>
+    <a href='dashboard_menu.php' title="<?php echo _("Dashboards");?>">
+        <div class="main-menu-link <?php if (substr($currentPage, 0, 9) === 'dashboard') { echo "active"; } ?>">
+            <img src="images/menu/icon-dashboards.png" />
+            <span><?php echo _("Dashboards");?></span>
+        </div>
+    </a>
+<?php } ?>
 
 	<?php if ($user->isAdmin()) { ?>
     <a href='admin.php' title="<?php echo _("Admin");?>">

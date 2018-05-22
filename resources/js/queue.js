@@ -29,6 +29,7 @@
 		updatePage($(this).attr("id"),"getSavedQueue");
 	});
 
+	//TAMU Customization - Extra tab
 	$("#CompletedRequests").click(function () {
 		updatePage($(this).attr("id"),"getCompletedQueue");
 	});
@@ -41,6 +42,7 @@
 	//load the initial tab on page load
 	$("#OutstandingTasks").click();
 
+	//TAMU Customization - Sorting
 	$('#outstandingTasks th.sortable').live('click',function(){
 	    var table = $(this).parents('table').eq(0);
 	    var rows = table.find('tr:gt(0)').toArray().sort(comparer($(this).index()));
@@ -63,11 +65,13 @@
 	function getCellValue(row, index) {
 		return $(row).children('td').eq(index).text();
 	}
-      
+
+	//TAMU Customization - Delete Requests
  	$('.deleteRequest').live('click', function () {
  		deleteRequest($(this).attr("id"));
  	});
 
+ 	//TAMU Customization - Mark complete/reviewed
  	$(".mark-complete").live("click", function(e) {
 		e.preventDefault();
 		$.ajax({
@@ -96,7 +100,7 @@
 
 });
 
-//this wrapper function allows us to refresh the tasks view from other contexts. Currently used by resourceStepForm.js
+//TAMU Customization - this wrapper function allows us to refresh the tasks view from other contexts. Currently used by resourceStepForm.js
 function updateOutstandingTasks() {
 	$("#OutstandingTasks").click();
 }
@@ -110,7 +114,7 @@ function updatePage(activeTab,requestAction) {
 	  url:        "ajax_htmldata.php",
 	  cache:      false,
 	  data:       "action="+requestAction,
-	  success:    function(html) { 
+	  success:    function(html) {
 		$('#div_QueueContent').html(html);
 		tb_reinit();
 		completeTabUpdate();
@@ -119,11 +123,11 @@ function updatePage(activeTab,requestAction) {
 }
 
 function updateTaskNumbers(classSuffix,requestAction) {
+	//TAMU Customization - CompletedRequests
 	taskData = [{"classSuffix":"OutstandingTasksNumber","requestAction":"getOutstandingTasksNumber"},
 				{"classSuffix":"SavedRequestsNumber","requestAction":"getSavedRequestsNumber"},
 				{"classSuffix":"SubmittedRequestsNumber","requestAction":"getSubmittedRequestsNumber"},
 				{"classSuffix":"CompletedRequestsNumber","requestAction":"getCompletedRequestsNumber"}];
-
 	$.each(taskData,function(i,task) {
 	   $.ajax({
 	 	 type:       "GET",
@@ -145,7 +149,7 @@ function updateTaskNumbers(classSuffix,requestAction) {
 function completeTabUpdate() {
    //make sure error is empty
    $('#div_error').html("");
-   
+
    //also reset feedback div
    $('#div_feedback').html("&nbsp;");
 	updateTaskNumbers();
@@ -160,17 +164,17 @@ function completeTabUpdate() {
 		  url:        "ajax_processing.php",
 		  cache:      false,
 		  data:       "action=deleteResource&resourceID=" + deleteID,
-		  success:    function(html) { 
-  			  	
-			showError(html);  
+		  success:    function(html) {
+
+			showError(html);
 
 			// close the div in 3 secs
-			setTimeout("emptyError();",3000); 
+			setTimeout("emptyError();",3000);
 
 			$("#SavedRequests").click();
 
-			return false;	
-			
+			return false;
+
 		  }
 		});
 
@@ -178,15 +182,15 @@ function completeTabUpdate() {
 		$('#div_feedback').html("&nbsp;");
 	}
 }
- 
+
 function showError(html){
-	$('#div_error').fadeTo(0, 5000, function () { 
+	$('#div_error').fadeTo(0, 5000, function () {
 		$('#div_error').html(html);
 	});
 }
 
 function emptyError(){
-	$('#div_error').fadeTo(500, 0, function () { 
+	$('#div_error').fadeTo(500, 0, function () {
 		$('#div_error').html("");
 	});
 }

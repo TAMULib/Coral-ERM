@@ -111,7 +111,7 @@ class User extends DatabaseObject {
 		$status = new Status();
 		$statusID = $status->getIDFromName($statusName);
 
-		$query = "SELECT resourceID, date_format(createDate, '%c/%e/%Y') createDate, acquisitionTypeID, titleText, statusID
+		$query = "SELECT resourceID, date_format(createDate, '%c/%e/%Y') createDate, titleText, statusID
 			FROM Resource
 			WHERE statusID = '" . $statusID . "'
 			AND createLoginID = '" . $this->loginID . "'
@@ -189,9 +189,13 @@ class User extends DatabaseObject {
 			break;
 		}
 
-		$query = "SELECT DISTINCT R.resourceID, date_format(createDate, '%c/%e/%Y') createDate, acquisitionTypeID, titleText, statusID
-			FROM Resource R, ResourceStep RS, UserGroupLink UGL
-			WHERE R.resourceID = RS.resourceID
+		$query = "SELECT DISTINCT R.resourceID, date_format(createDate, '%c/%e/%Y') createDate, titleText, statusID, 
+            RA.resourceAcquisitionID, RA.acquisitionTypeID,
+            date_format(subscriptionStartDate, '%c/%e/%Y') subscriptionStartDate,
+            date_format(subscriptionEndDate, '%c/%e/%Y') subscriptionEndDate, RS.reviewDate
+			FROM Resource R, ResourceAcquisition RA, ResourceStep RS, UserGroupLink UGL
+			WHERE R.resourceID = RA.resourceID
+            AND RA.resourceAcquisitionID = RS.resourceAcquisitionID
 			AND RS.userGroupID = UGL.userGroupID
 			AND UGL.loginID = '" . $this->loginID . "'
 			AND (RS.stepEndDate IS NULL OR RS.stepEndDate = '0000-00-00')
@@ -247,10 +251,12 @@ class User extends DatabaseObject {
 			$whereAdd = "";
 		}
 
-		$query = "SELECT DISTINCT RS.resourceStepID, RS.stepName, RS.userGroupID, RS.stepStartDate, date_format(stepStartDate, '%c/%e/%Y') startDate,RS.reviewDate, RS.reviewLoginID,
-					(SELECT IF(RP.fundSpecial IS NOT NULL,CONCAT(F.fundCode,RP.fundSpecial),F.fundCode) FROM ResourcePayment RP LEFT JOIN Fund F ON F.fundID=RP.fundID WHERE RP.resourceID=R.resourceID ORDER BY RP.resourcePaymentID DESC LIMIT 1) AS fundCode
-			FROM Resource R, ResourceStep RS, UserGroupLink UGL
-			WHERE R.resourceID = RS.resourceID
+		//TAMU Customization - fundCode alias
+		$query = "SELECT DISTINCT RS.stepName, date_format(stepStartDate, '%c/%e/%Y') startDate
+				(SELECT IF(RP.fundSpecial IS NOT NULL,CONCAT(F.fundCode,RP.fundSpecial),F.fundCode) FROM ResourcePayment RP LEFT JOIN Fund F ON F.fundID=RP.fundID WHERE RP.resourceID=R.resourceID ORDER BY RP.resourcePaymentID DESC LIMIT 1) AS fundCode
+			FROM Resource R, ResourceAcquisition RA, ResourceStep RS, UserGroupLink UGL
+			WHERE R.resourceID = RA.resourceID
+            AND RA.resourceAcquisitionID = RS.resourceAcquisitionID
 			AND RS.userGroupID = UGL.userGroupID
 			AND UGL.loginID = '" . $this->loginID . "'
 			AND R.resourceID = '" . $outstandingResourceID . "'
