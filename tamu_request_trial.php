@@ -118,7 +118,7 @@
                   data: $form.serialize()
                 }).done(function(data) {
                   if (data.resourceID) {
-                    $("#doContent").html("Your proposal has been submitted. <a href='tamu_trial_feedback.php?resourceid=" + data.resourceID + "'>View Now</a>");
+                    $("#doContent").html("Your proposal has been submitted.");
                   } else if (data.error) {
                     $("#doContent .errors").empty();
                     $("#doContent .errors").append("<div class=\"error\" role=\"alert\">There was an error submitting your proposal.</div>");
