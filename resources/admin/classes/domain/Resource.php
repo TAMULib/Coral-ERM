@@ -17,7 +17,7 @@
 **************************************************************************************************************************
 */
 
-class Resource extends DatabaseObject {
+class Resource extends DatabaseObject implements ResourceInterface {
 
 	protected function defineRelationships() {}
 
@@ -25,31 +25,132 @@ class Resource extends DatabaseObject {
 
 	protected function overridePrimaryKeyName() {}
 
+	public function getTitleText() {
+		return $this->attributes['titleText'];
+	}
 
+	public function getDescriptionText() {
+		return $this->attributes['descriptionText'];
+	}
+
+	public function getOrderNumber() {
+		return $this->attributes['orderNumber'];
+	}
+
+	public function getSystemNumber() {
+		return $this->attributes['systemNumber'];
+	}
+
+	public function getProviderText() {
+		return $this->attributes['providerText'];
+	}
+
+	public function getCoverageText() {
+		return $this->attributes['coverageText'];
+	}
+
+    public function asArray() {
+		$rarray = array();
+		foreach (array_keys($this->attributeNames) as $attributeName) {
+			if ($this->$attributeName != null) {
+				$rarray[$attributeName] = $this->$attributeName;
+			}
+		}
+
+        $status = new Status(new NamedArguments(array('primaryKey' => $this->statusID)));
+        $rarray['status'] = $status->shortName;
+
+        if ($this->resourceTypeID) {
+            $resourceType = new ResourceType(new NamedArguments(array('primaryKey' => $this->resourceTypeID)));
+            $rarray['resourceType'] = $resourceType->shortName;
+        }
+
+        if ($this->resourceFormatID) {
+            $resourceFormat = new ResourceFormat(new NamedArguments(array('primaryKey' => $this->resourceFormatID)));
+            $rarray['resourceFormat'] = $resourceFormat->shortName;
+        }
+
+        if ($this->acquisitionTypeID) {
+            $acquisitionType = new AcquisitionType(new NamedArguments(array('primaryKey' => $this->acquisitionTypeID)));
+            $rarray['acquisitionType'] = $acquisitionType->shortName;
+        }
+
+		$identifiers = $this->getIsbnOrIssn();
+		$rarray['isbnOrIssn'] = array();
+		foreach ($identifiers as $identifier) {
+				array_push($rarray['isbnOrIssn'], $identifier->isbnOrIssn);
+		}
+
+        $aliases = $this->getAliases();
+        $rarray['aliases'] = array();
+		foreach ($aliases as $alias) {
+				array_push($rarray['aliases'], $alias->shortName);
+		}
+
+		return $rarray;
+		
+  
+    }
 
 	//returns resource objects by title
-	public function getResourceByTitle($title) {
+    public function getResourceByTitle($title) {
 
-		$query = "SELECT *
+        $query = "SELECT *
 			FROM Resource
 			WHERE UPPER(titleText) = '" . str_replace("'", "''", strtoupper($title)) . "'
 			ORDER BY 1";
 
-		$result = $this->db->processQuery($query, 'assoc');
+        $result = $this->db->processQuery($query, 'assoc');
 
-		$objects = array();
+        $objects = array();
+
+        //need to do this since it could be that there's only one request and this is how the dbservice returns result
+        if (isset($result['resourceID'])) { $result = [$result]; }
+        foreach ($result as $row) {
+            $object = new Resource(new NamedArguments(array('primaryKey' => $row['resourceID'])));
+            array_push($objects, $object);
+        }
+
+        return $objects;
+    }
+
+    //returns resource object by ebscoKbId
+    public function getResourceByEbscoKbId($ebscoKbId) {
+
+        $query = "SELECT *
+			FROM Resource
+			WHERE ebscoKbID = $ebscoKbId
+			LIMIT 0,1";
+
+        $result = $this->db->processQuery($query, 'assoc');
+
+        if (isset($result['resourceID'])) {
+        	return new Resource(new NamedArguments(['primaryKey' => $result['resourceID']]));
+		} else {
+        	return false;
+		}
+    }
+
+    public function getResourceAcquisitions() {
+        $query = "SELECT * from ResourceAcquisition WHERE resourceID = " . $this->resourceID;
+		$result = $this->db->processQuery($query, 'assoc');
+        $objects = array();
 
 		//need to do this since it could be that there's only one request and this is how the dbservice returns result
-		if (isset($result['resourceID'])) { $result = [$result]; }
+		if (isset($result['resourceAcquisitionID'])) { $result = [$result]; }
 		foreach ($result as $row) {
-			$object = new Resource(new NamedArguments(array('primaryKey' => $row['resourceID'])));
+			$object = new ResourceAcquisition(new NamedArguments(array('primaryKey' => $row['resourceAcquisitionID'])));
 			array_push($objects, $object);
 		}
-
 		return $objects;
-	}
 
+    }
 
+    public function countResourceAcquisitions() {
+        $query = "SELECT COUNT(*) AS count FROM ResourceAcquisition WHERE resourceID = " . $this->resourceID;
+		$result = $this->db->processQuery($query, 'assoc');
+        return ($result) ? $result['count'] : 0;
+    }
 
 	//returns resource objects by title
 	public function getResourceByIsbnOrISSN($isbnOrISSN) {
@@ -59,6 +160,7 @@ class Resource extends DatabaseObject {
 		$i = 0;
 
 		if (!is_array($isbnOrISSN)) {
+			if ($isbnOrISSN === null) return;
 			$value = $isbnOrISSN;
 			$isbnOrISSN = array($value);
 		}
@@ -123,213 +225,34 @@ class Resource extends DatabaseObject {
 
 
 
-  // return array of related resource objects
-  private function getRelatedResources($key) {
-
-		$query = "SELECT *
-			FROM ResourceRelationship
-			WHERE $key = '" . $this->resourceID . "'
+    // return array of related resource objects
+    private function getRelatedResources($key) {
+        $query = "SELECT rr.resourceRelationshipID
+			FROM ResourceRelationship rr
+            JOIN Resource r on rr.resourceID = r.resourceID
+			WHERE rr.$key = '" . $this->resourceID . "'
 			AND relationshipTypeID = '1'
-			ORDER BY 1";
+			ORDER BY r.titleText";
 
-		$result = $this->db->processQuery($query, 'assoc');
+        $result = $this->db->processQuery($query, 'assoc');
 
-		$objects = array();
+        $objects = array();
 
 		//need to do this since it could be that there's only one request and this is how the dbservice returns result
-		if (isset($result[$key])) {
+		if (isset($result['resourceRelationshipID'])) {
 			$object = new ResourceRelationship(new NamedArguments(array('primaryKey' => $result['resourceRelationshipID'])));
 			array_push($objects, $object);
 		}else{
-			$db = new DBService;
+			$db = DBService::getInstance();
 			foreach ($result as $row) {
 				$object = new ResourceRelationship(new NamedArguments(array('primaryKey' => $row['resourceRelationshipID'],'db'=>$db)));
 				array_push($objects, $object);
 			}
 		}
 
-		return $objects;
+        return $objects;
 
-	}
-
-
-
-	//returns array of purchase site objects
-	public function getResourcePurchaseSites() {
-
-		$query = "SELECT PurchaseSite.* FROM PurchaseSite, ResourcePurchaseSiteLink RPSL where RPSL.purchaseSiteID = PurchaseSite.purchaseSiteID AND resourceID = '" . $this->resourceID . "'";
-
-		$result = $this->db->processQuery($query, 'assoc');
-
-		$objects = array();
-
-		//need to do this since it could be that there's only one request and this is how the dbservice returns result
-		if (isset($result['purchaseSiteID'])) { $result = [$result]; }
-		foreach ($result as $row) {
-			$object = new PurchaseSite(new NamedArguments(array('primaryKey' => $row['purchaseSiteID'])));
-			array_push($objects, $object);
-		}
-
-		return $objects;
-	}
-
-
-
-	//returns array of ResourcePayment objects
-	public function getResourcePayments() {
-
-		$query = "SELECT * FROM ResourcePayment WHERE resourceID = '" . $this->resourceID . "' ORDER BY year DESC, subscriptionStartDate DESC";
-
-		$result = $this->db->processQuery($query, 'assoc');
-
-		$objects = array();
-
-		//need to do this since it could be that there's only one request and this is how the dbservice returns result
-		if (isset($result['resourcePaymentID'])) { $result = [$result]; }
-		foreach ($result as $row) {
-			$object = new ResourcePayment(new NamedArguments(array('primaryKey' => $row['resourcePaymentID'])));
-			array_push($objects, $object);
-		}
-
-		return $objects;
-	}
-
-
-
-	//returns array of associated licenses
-	public function getLicenseArray() {
-		$config = new Configuration;
-
-		//if the lic module is installed get the lic name from lic database
-		if ($config->settings->licensingModule == 'Y') {
-			$dbName = $config->settings->licensingDatabaseName;
-
-			$resourceLicenseArray = array();
-
-			$query = "SELECT * FROM ResourceLicenseLink WHERE resourceID = '" . $this->resourceID . "'";
-
-			$result = $this->db->processQuery($query, 'assoc');
-
-			$objects = array();
-
-			//need to do this since it could be that there's only one request and this is how the dbservice returns result
-			if (isset($result['licenseID'])) {
-				$licArray = array();
-
-				//first, get the license name
-				$query = "SELECT shortName FROM " . $dbName . ".License WHERE licenseID = " . $result['licenseID'];
-
-				if ($licResult = $this->db->query($query)) {
-					while ($licRow = $licResult->fetch_assoc()) {
-						$licArray['license'] = $licRow['shortName'];
-						$licArray['licenseID'] = $result['licenseID'];
-					}
-				}
-
-				array_push($resourceLicenseArray, $licArray);
-			}else{
-				foreach ($result as $row) {
-					$licArray = array();
-
-					//first, get the license name
-					$query = "SELECT shortName FROM " . $dbName . ".License WHERE licenseID = " . $row['licenseID'];
-
-					if ($licResult = $this->db->query($query)) {
-						while ($licRow = $licResult->fetch_assoc()) {
-							$licArray['license'] = $licRow['shortName'];
-							$licArray['licenseID'] = $row['licenseID'];
-						}
-					}
-
-					array_push($resourceLicenseArray, $licArray);
-
-				}
-
-			}
-
-			return $resourceLicenseArray;
-		}
-	}
-
-
-
-	//returns array of resource license status objects
-	public function getResourceLicenseStatuses() {
-
-		$query = "SELECT * FROM ResourceLicenseStatus WHERE resourceID = '" . $this->resourceID . "' ORDER BY licenseStatusChangeDate desc;";
-
-		$result = $this->db->processQuery($query, 'assoc');
-
-		$objects = array();
-
-		//need to do this since it could be that there's only one request and this is how the dbservice returns result
-		if (isset($result['resourceLicenseStatusID'])) { $result = [$result]; }
-		foreach ($result as $row) {
-			$object = new ResourceLicenseStatus(new NamedArguments(array('primaryKey' => $row['resourceLicenseStatusID'])));
-			array_push($objects, $object);
-		}
-
-		return $objects;
-	}
-
-
-
-	//returns LicenseStatusID of the most recent resource license status
-	public function getCurrentResourceLicenseStatus() {
-
-		$query = "SELECT licenseStatusID FROM ResourceLicenseStatus RLS WHERE resourceID = '" . $this->resourceID . "' AND licenseStatusChangeDate = (SELECT MAX(licenseStatusChangeDate) FROM ResourceLicenseStatus WHERE ResourceLicenseStatus.resourceID = '" . $this->resourceID . "') LIMIT 0,1;";
-
-		$result = $this->db->processQuery($query, 'assoc');
-
-		//need to do this since it could be that there's only one request and this is how the dbservice returns result
-		if (isset($result['licenseStatusID'])) {
-			return $result['licenseStatusID'];
-		}
-
-	}
-
-
-
-	//returns array of authorized site objects
-	public function getResourceAuthorizedSites() {
-
-		$query = "SELECT AuthorizedSite.* FROM AuthorizedSite, ResourceAuthorizedSiteLink RPSL where RPSL.authorizedSiteID = AuthorizedSite.authorizedSiteID AND resourceID = '" . $this->resourceID . "'";
-
-		$result = $this->db->processQuery($query, 'assoc');
-
-		$objects = array();
-
-		//need to do this since it could be that there's only one request and this is how the dbservice returns result
-		if (isset($result['authorizedSiteID'])) { $result = [$result]; }
-		foreach ($result as $row) {
-			$object = new AuthorizedSite(new NamedArguments(array('primaryKey' => $row['authorizedSiteID'])));
-			array_push($objects, $object);
-		}
-
-		return $objects;
-	}
-
-
-
-	//returns array of administering site objects
-	public function getResourceAdministeringSites() {
-
-		$query = "SELECT AdministeringSite.* FROM AdministeringSite, ResourceAdministeringSiteLink RPSL where RPSL.administeringSiteID = AdministeringSite.administeringSiteID AND resourceID = '" . $this->resourceID . "'";
-
-		$result = $this->db->processQuery($query, 'assoc');
-
-		$objects = array();
-
-		//need to do this since it could be that there's only one request and this is how the dbservice returns result
-		if (isset($result['administeringSiteID'])) { $result = [$result]; }
-		foreach ($result as $row) {
-			$object = new AdministeringSite(new NamedArguments(array('primaryKey' => $row['administeringSiteID'])));
-			array_push($objects, $object);
-		}
-
-		return $objects;
-	}
-
+    }
 
 
 	//deletes all parent resources associated with this resource
@@ -360,120 +283,6 @@ class Resource extends DatabaseObject {
 
 		return $objects;
 	}
-
-
-
-	//returns array of contact objects
-	public function getUnarchivedContacts($moduleFilter=false) {
-		$config = new Configuration;
-		$contactsArray = array();
-
-		if (!$moduleFilter || $moduleFilter == 'resources') {
-			//get resource specific contacts first
-			$query = "SELECT C.*, GROUP_CONCAT(CR.shortName SEPARATOR '<br /> ') contactRoles
-				FROM Contact C, ContactRole CR, ContactRoleProfile CRP
-				WHERE (archiveDate = '0000-00-00' OR archiveDate is null)
-				AND C.contactID = CRP.contactID
-				AND CRP.contactRoleID = CR.contactRoleID
-				AND resourceID = '" . $this->resourceID . "'
-				GROUP BY C.contactID
-				ORDER BY C.name";
-
-			$result = $this->db->processQuery($query, 'assoc');
-
-			//need to do this since it could be that there's only one request and this is how the dbservice returns result
-			if (isset($result['contactID'])) { $result = [$result]; }
-			foreach ($result as $row) {
-				array_push($contactsArray, $row);
-			}
-		}
-
-
-		//if the org module is installed also get the org contacts from org database
-		if ($config->settings->organizationsModule == 'Y' && (!$moduleFilter || $moduleFilter == 'organizations')) {
-			$dbName = $config->settings->organizationsDatabaseName;
-
-			$query = "SELECT distinct OC.*, O.name organizationName, GROUP_CONCAT(DISTINCT CR.shortName SEPARATOR '<br /> ') contactRoles
-					FROM " . $dbName . ".Contact OC, " . $dbName . ".ContactRole CR, " . $dbName . ".ContactRoleProfile CRP, " . $dbName . ".Organization O, Resource R, ResourceOrganizationLink ROL
-					WHERE (OC.archiveDate = '0000-00-00' OR OC.archiveDate is null)
-					AND R.resourceID = ROL.resourceID
-					AND ROL.organizationID = OC.organizationID
-					AND CRP.contactID = OC.contactID
-					AND CRP.contactRoleID = CR.contactRoleID
-					AND O.organizationID = OC.organizationID
-					AND R.resourceID = '" . $this->resourceID . "'
-					GROUP BY OC.contactID, O.name
-					ORDER BY OC.name";
-
-			$result = $this->db->processQuery($query, 'assoc');
-
-			//need to do this since it could be that there's only one request and this is how the dbservice returns result
-			if (isset($result['contactID'])) { $result = [$result]; }
-			foreach ($result as $row) {
-				array_push($contactsArray, $row);
-			}
-
-		}
-		return $contactsArray;
-	}
-
-
-
-	//returns array of contact objects
-	public function getArchivedContacts() {
-
-		$config = new Configuration;
-		$contactsArray = array();
-
-		//get resource specific contacts
-		$query = "SELECT C.*, GROUP_CONCAT(CR.shortName SEPARATOR '<br /> ') contactRoles
-			FROM Contact C, ContactRole CR, ContactRoleProfile CRP
-			WHERE (archiveDate != '0000-00-00' && archiveDate != '')
-			AND C.contactID = CRP.contactID
-			AND CRP.contactRoleID = CR.contactRoleID
-			AND resourceID = '" . $this->resourceID . "'
-			GROUP BY C.contactID
-			ORDER BY C.name";
-
-		$result = $this->db->processQuery($query, 'assoc');
-
-
-		//need to do this since it could be that there's only one request and this is how the dbservice returns result
-		if (isset($result['contactID'])) { $result = [$result]; }
-		foreach ($result as $row) {
-			array_push($contactsArray, $row);
-		}
-
-		//if the org module is installed also get the org contacts from org database
-		if ($config->settings->organizationsModule == 'Y') {
-			$dbName = $config->settings->organizationsDatabaseName;
-
-			$query = "SELECT DISTINCT OC.*, O.name organizationName, GROUP_CONCAT(DISTINCT CR.shortName SEPARATOR '<br /> ') contactRoles
-					FROM " . $dbName . ".Contact OC, " . $dbName . ".ContactRole CR, " . $dbName . ".ContactRoleProfile CRP, " . $dbName . ".Organization O, Resource R, ResourceOrganizationLink ROL
-					WHERE (OC.archiveDate != '0000-00-00' && OC.archiveDate is not null)
-					AND R.resourceID = ROL.resourceID
-					AND ROL.organizationID = OC.organizationID
-					AND CRP.contactID = OC.contactID
-					AND CRP.contactRoleID = CR.contactRoleID
-					AND O.organizationID = OC.organizationID
-					AND R.resourceID = '" . $this->resourceID . "'
-					GROUP BY OC.contactID, O.name
-					ORDER BY OC.name";
-
-
-			$result = $this->db->processQuery($query, 'assoc');
-
-
-			//need to do this since it could be that there's only one request and this is how the dbservice returns result
-			if (isset($result['contactID'])) { $result = [$result]; }
-			foreach ($result as $row) {
-				array_push($contactsArray, $row);
-			}
-
-		}
-		return $contactsArray;
-	}
-
 
 
 	//returns array of contact objects
@@ -554,14 +363,14 @@ class Resource extends DatabaseObject {
 
 		if ($tabName) {
 			$query = "SELECT * FROM ResourceNote RN
-						WHERE resourceID = '" . $this->resourceID . "'
+						WHERE entityID = '" . $this->resourceID . "'
 						AND UPPER(tabName) = UPPER('" . $tabName . "')
 						ORDER BY updateDate desc";
 		}else{
 			$query = "SELECT RN.*
 						FROM ResourceNote RN
 						LEFT JOIN NoteType NT ON NT.noteTypeID = RN.noteTypeID
-						WHERE resourceID = '" . $this->resourceID . "'
+						WHERE entityID = '" . $this->resourceID . "'
 						ORDER BY updateDate desc, NT.shortName";
 		}
 
@@ -586,8 +395,8 @@ class Resource extends DatabaseObject {
 		$noteType = new NoteType();
 
 		$query = "SELECT * FROM ResourceNote RN
-					WHERE resourceID = '" . $this->resourceID . "'
-					AND noteTypeID = " . $noteType->getInitialNoteTypeID . "
+					WHERE entityID = '" . $this->resourceID . "'
+					AND noteTypeID = '" . $noteType->getInitialNoteTypeID() . "'
 					ORDER BY noteTypeID desc LIMIT 0,1";
 
 
@@ -599,33 +408,6 @@ class Resource extends DatabaseObject {
 		} else{
 			return new ResourceNote();
 		}
-	}
-
-
-
-	public function getIssues($archivedOnly=false) {
-		$query = "SELECT i.*
-					FROM Issue i
-					LEFT JOIN IssueRelationship ir ON ir.issueID=i.issueID
-					WHERE ir.entityID='$this->resourceID' AND ir.entityTypeID=2";
-		if ($archivedOnly) {
-			$query .= " AND i.dateClosed IS NOT NULL";
-		} else {
-			$query .= " AND i.dateClosed IS NULL";
-		}
-		$query .= "	ORDER BY i.dateCreated DESC";
-
-		$result = $this->db->processQuery($query, 'assoc');
-
-		$objects = array();
-
-		//need to do this since it could be that there's only one request and this is how the dbservice returns result
-		if (isset($result['issueID'])){ $result = [$result]; }
-		foreach ($result as $row) {
-			$object = new Issue(new NamedArguments(array('primaryKey' => $row['issueID'])));
-			array_push($objects, $object);
-		}
-		return $objects;
 	}
 
 
@@ -672,36 +454,6 @@ class Resource extends DatabaseObject {
 
 
 
-	private function getDownTimeResults($archivedOnly=false) {
-		$query = "SELECT d.*
-					FROM Downtime d
-					WHERE d.entityID='{$this->resourceID}' AND d.entityTypeID=2";
-		if ($archivedOnly) {
-			$query .= " AND d.endDate < CURDATE()";
-		} else {
-			$query .= " AND (d.endDate >= CURDATE() OR d.endDate IS NULL)";
-		}
-		$query .= "	ORDER BY d.dateCreated DESC";
-
-		return $this->db->processQuery($query, 'assoc');
-	}
-
-
-
-	public function getDowntime($archivedOnly=false) {
-		$result = $this->getDownTimeResults($archivedOnly);
-
-		$objects = array();
-
-		//need to do this since it could be that there's only one request and this is how the dbservice returns result
-		if (isset($result['downtimeID'])) { $result = [$result]; }
-		foreach ($result as $row) {
-			$object = new Downtime(new NamedArguments(array('primaryKey' => $row['downtimeID'])));
-			array_push($objects, $object);
-		}
-		return $objects;
-	}
-
 
 
 	public function getExportableDowntimes($archivedOnly=false){
@@ -716,53 +468,6 @@ class Resource extends DatabaseObject {
 			return $result;
 		}
 	}
-
-
-
-	//returns array of attachments objects
-	public function getAttachments() {
-
-		$query = "SELECT * FROM Attachment A, AttachmentType AT
-					WHERE AT.attachmentTypeID = A.attachmentTypeID
-					AND resourceID = '" . $this->resourceID . "'
-					ORDER BY AT.shortName";
-
-		$result = $this->db->processQuery($query, 'assoc');
-
-		$objects = array();
-
-		//need to do this since it could be that there's only one request and this is how the dbservice returns result
-		if (isset($result['attachmentID'])) { $result = [$result]; }
-		foreach ($result as $row) {
-			$object = new Attachment(new NamedArguments(array('primaryKey' => $row['attachmentID'])));
-			array_push($objects, $object);
-		}
-
-		return $objects;
-	}
-
-
-
-	//returns array of contact objects
-	public function getContacts() {
-
-		$query = "SELECT * FROM Contact
-					WHERE resourceID = '" . $this->resourceID . "'";
-
-		$result = $this->db->processQuery($query, 'assoc');
-
-		$objects = array();
-
-		//need to do this since it could be that there's only one request and this is how the dbservice returns result
-		if (isset($result['contactID'])) { $result = [$result]; }
-		foreach ($result as $row) {
-			$object = new Contact(new NamedArguments(array('primaryKey' => $row['contactID'])));
-			array_push($objects, $object);
-		}
-
-		return $objects;
-	}
-
 
 
 	//returns array of externalLogin objects
@@ -785,7 +490,17 @@ class Resource extends DatabaseObject {
 		return $objects;
 	}
 
-
+	/*
+	*	This method 'batch' archives all resources of auto-archiveable types whose subscriptions have expired
+	*/
+	public function archiveExpiredResources() {
+		$status = new Status();
+		$archivedStatusID = $status->getIDFromName('archived');
+		$query = "UPDATE Resource r 
+				LEFT JOIN ResourceType rt ON rt.resourceTypeID=r.resourceTypeID
+				SET r.statusID={$archivedStatusID} WHERE rt.hideArchived=1 AND r.currentEndDate < NOW() ";
+		return $this->db->processQuery($query);
+	}
 
 	public static function setSearch($search) {
 	$config = new Configuration;
@@ -802,7 +517,7 @@ class Resource extends DatabaseObject {
 		"recordsPerPage" => 25,
 		);
 		foreach ($defaultSearchParameters as $key => $value) {
-			if (!$search[$key]) {
+			if (!isset($search[$key])) {
 				$search[$key] = $value;
 			}
 		}
@@ -849,11 +564,11 @@ class Resource extends DatabaseObject {
 			if ($config->settings->organizationsModule == 'Y') {
 				$dbName = $config->settings->organizationsDatabaseName;
 
-				$whereAdd[] = "((UPPER(R.titleText) LIKE " . $nameQueryString . ") OR (UPPER(A.shortName) LIKE " . $nameQueryString . ") OR (UPPER(O.name) LIKE " . $nameQueryString . ") OR (UPPER(OA.name) LIKE " . $nameQueryString . ") OR (UPPER(RP.titleText) LIKE " . $nameQueryString . ") OR (UPPER(RC.titleText) LIKE " . $nameQueryString . ") OR (UPPER(R.recordSetIdentifier) LIKE " . $nameQueryString . "))";
+				$whereAdd[] = "((UPPER(R.titleText) LIKE " . $nameQueryString . ") OR (UPPER(A.shortName) LIKE " . $nameQueryString . ") OR (UPPER(O.name) LIKE " . $nameQueryString . ") OR (UPPER(OA.name) LIKE " . $nameQueryString . ") OR (UPPER(RP.titleText) LIKE " . $nameQueryString . ") OR (UPPER(RC.titleText) LIKE " . $nameQueryString . ") OR (UPPER(RA.recordSetIdentifier) LIKE " . $nameQueryString . "))";
 
 			}else{
 
-				$whereAdd[] = "((UPPER(R.titleText) LIKE " . $nameQueryString . ") OR (UPPER(A.shortName) LIKE " . $nameQueryString . ") OR (UPPER(O.shortName) LIKE " . $nameQueryString . ") OR (UPPER(RP.titleText) LIKE " . $nameQueryString . ") OR (UPPER(RC.titleText) LIKE " . $nameQueryString . ") OR (UPPER(R.recordSetIdentifier) LIKE " . $nameQueryString . "))";
+				$whereAdd[] = "((UPPER(R.titleText) LIKE " . $nameQueryString . ") OR (UPPER(A.shortName) LIKE " . $nameQueryString . ") OR (UPPER(O.shortName) LIKE " . $nameQueryString . ") OR (UPPER(RP.titleText) LIKE " . $nameQueryString . ") OR (UPPER(RC.titleText) LIKE " . $nameQueryString . ") OR (UPPER(RA.recordSetIdentifier) LIKE " . $nameQueryString . "))";
 
 			}
 
@@ -871,7 +586,7 @@ class Resource extends DatabaseObject {
 			$status = new Status();
 			$completedStatusID = $status->getIDFromName('complete');
 			$whereAdd[] = "(R.statusID != $completedStatusID AND RS.stepName = '" . $resource->db->escapeString($search['stepName']) . "' AND RS.stepStartDate IS NOT NULL AND RS.stepEndDate IS NULL)";
-			$searchDisplay[] = _("Routing Step: ") . $search['stepName'];
+			$searchDisplay[] = _("Workflow Step: ") . $search['stepName'];
 		}
 
 
@@ -907,12 +622,18 @@ class Resource extends DatabaseObject {
 			$searchDisplay[] = _("Resource Format: ") . $resourceFormat->shortName;
 		}
 
+		//TAMU Customization - Resources can be hidden from the default search by configured Acquisition Type
+		//We have to assign the value to use it because Config properties are protected
+		$hiddenAcquisitionIds = $config->tamu->hiddenAcquisitionIds;
+
 		if ($search['acquisitionTypeID']) {
-			$whereAdd[] = "R.acquisitionTypeID = '" . $resource->db->escapeString($search['acquisitionTypeID']) . "'";
+			$whereAdd[] = "RA.acquisitionTypeID = '" . $resource->db->escapeString($search['acquisitionTypeID']) . "'";
 			$acquisitionType = new AcquisitionType(new NamedArguments(array('primaryKey' => $search['acquisitionTypeID'])));
 			$searchDisplay[] = _("Acquisition Type: ") . $acquisitionType->shortName;
-		}
 
+		} else if (!empty($hiddenAcquisitionIds)) {
+			$whereAdd[] = "(RA.acquisitionTypeID IS NULL OR RA.acquisitionTypeID NOT IN ({$hiddenAcquisitionIds}))";
+		}
 
 		if ($search['resourceNote']) {
 			$whereAdd[] = "UPPER(RN.noteText) LIKE UPPER('%" . $resource->db->escapeString($search['resourceNote']) . "%')";
@@ -956,6 +677,13 @@ class Resource extends DatabaseObject {
 			$whereAdd[] = "R.resourceTypeID = '" . $resource->db->escapeString($search['resourceTypeID']) . "'";
 			$resourceType = new ResourceType(new NamedArguments(array('primaryKey' => $search['resourceTypeID'])));
 			$searchDisplay[] = _("Resource Type: ") . $resourceType->shortName;
+		} else {
+			//if not searching by resource type, hide archived Resources of types that have their hideArchived flags set
+			$status = new Status();
+			$archivedStatusId = $status->getIDFromName('archived');
+			if ($search['statusID'] !== $archivedStatusId) {
+				$whereAdd[] = "((RT.hideArchived=0 OR RT.hideArchived IS NULL) OR (RT.hideArchived=1 AND R.statusID != ".intval($status->getIDFromName('archived'))."))";
+			}
 		}
 
 
@@ -1035,7 +763,44 @@ class Resource extends DatabaseObject {
 			$searchDisplay[] = _("Cataloging Status: ") . $catalogingStatus->shortName;
 		}
 
+		if ($search['publisher']) {
+			$nameQueryString = $resource->db->escapeString(strtoupper($search['publisher']));
+			$nameQueryString = preg_replace("/ +/", "%", $nameQueryString);
+		  	$nameQueryString = "'%" . $nameQueryString . "%'";
+			if ($config->settings->organizationsModule == 'Y'){
+				$dbName = $config->settings->organizationsDatabaseName;
+				$whereAdd[] = "ROL.organizationRoleID=5 AND ((UPPER(O.name) LIKE " . $nameQueryString . ") OR (UPPER(OA.name) LIKE " . $nameQueryString . "))";
+			}else{
+				$whereAdd[] = "ROL.organizationRoleID=5 AND (UPPER(O.shortName) LIKE " . $nameQueryString . ")";
+			}
+			$searchDisplay[] = _("Publisher name contains: ") . $search['publisher'];
+		}
 
+		if ($search['platform']) {
+			$nameQueryString = $resource->db->escapeString(strtoupper($search['platform']));
+			$nameQueryString = preg_replace("/ +/", "%", $nameQueryString);
+			$nameQueryString = "'%" . $nameQueryString . "%'";
+			if ($config->settings->organizationsModule == 'Y'){
+				$dbName = $config->settings->organizationsDatabaseName;
+				$whereAdd[] = "ROL.organizationRoleID=3 AND ((UPPER(O.name) LIKE " . $nameQueryString . ") OR (UPPER(OA.name) LIKE " . $nameQueryString . "))";
+ 			}else{
+ 				$whereAdd[] = "ROL.organizationRoleID=3 AND (UPPER(O.shortName) LIKE " . $nameQueryString . ")";
+ 			}
+ 			$searchDisplay[] = _("Platform name contains: ") . $search['publisher'];
+ 		}
+
+ 		if ($search['provider']) {
+ 			$nameQueryString = $resource->db->escapeString(strtoupper($search['provider']));
+ 			$nameQueryString = preg_replace("/ +/", "%", $nameQueryString);
+ 			$nameQueryString = "'%" . $nameQueryString . "%'";
+ 			if ($config->settings->organizationsModule == 'Y'){
+ 				$dbName = $config->settings->organizationsDatabaseName;
+ 				$whereAdd[] = "ROL.organizationRoleID=4 AND ((UPPER(O.name) LIKE " . $nameQueryString . ") OR (UPPER(OA.name) LIKE " . $nameQueryString . "))";
+ 			}else{
+ 				$whereAdd[] = "ROL.organizationRoleID=4 AND (UPPER(O.shortName) LIKE " . $nameQueryString . ")";
+ 			}
+			$searchDisplay[] = _("Provider name contains: ") . $search['publisher'];
+		}
 
 		$orderBy = $search['orderBy'];
 
@@ -1062,6 +827,7 @@ class Resource extends DatabaseObject {
 		}
 
 		$savedStatusID = intval($status->getIDFromName('saved'));
+
 		//also add to not retrieve saved records
 		$whereAdd[] = "R.statusID != " . $savedStatusID;
 
@@ -1075,7 +841,7 @@ class Resource extends DatabaseObject {
 			$select = "SELECT COUNT(DISTINCT R.resourceID) count";
 			$groupBy = "";
 		} else {
-			$select = "SELECT R.resourceID, R.titleText, AT.shortName acquisitionType, R.createLoginID, CU.firstName, CU.lastName, R.createDate, S.shortName status,
+			$select = "SELECT R.resourceID, R.titleText, GROUP_CONCAT(DISTINCT AT.shortName SEPARATOR ' / ') as acquisitionType, R.createLoginID, CU.firstName, CU.lastName, R.createDate, S.shortName status,
 						GROUP_CONCAT(DISTINCT A.shortName, I.isbnOrIssn ORDER BY A.shortName DESC SEPARATOR '<br />') aliases";
 			$groupBy = "GROUP BY R.resourceID";
 		}
@@ -1094,7 +860,7 @@ class Resource extends DatabaseObject {
 		// These join statements will only be included in the query if the alias is referenced by the select and/or where.
 		$conditional_joins = explode("\n", "LEFT JOIN ResourceFormat RF ON R.resourceFormatID = RF.resourceFormatID
 									LEFT JOIN ResourceType RT ON R.resourceTypeID = RT.resourceTypeID
-									LEFT JOIN AcquisitionType AT ON R.acquisitionTypeID = AT.acquisitionTypeID
+									LEFT JOIN AcquisitionType AT ON RA.acquisitionTypeID = AT.acquisitionTypeID
 									LEFT JOIN Status S ON R.statusID = S.statusID
 									LEFT JOIN User CU ON R.createLoginID = CU.loginID
 									LEFT JOIN ResourcePurchaseSiteLink RPSL ON R.resourceID = RPSL.resourceID
@@ -1122,6 +888,7 @@ class Resource extends DatabaseObject {
 
 		$query = $select . "
 								FROM Resource R
+                                    LEFT JOIN ResourceAcquisition RA ON R.resourceID = RA.resourceID
 									LEFT JOIN Alias A ON R.resourceID = A.resourceID
 									LEFT JOIN ResourceOrganizationLink ROL ON R.resourceID = ROL.resourceID
 									" . $orgJoinAdd . "
@@ -1228,9 +995,9 @@ class Resource extends DatabaseObject {
 		if ($config->settings->licensingModule == 'Y') {
 			$dbName = $config->settings->licensingDatabaseName;
 
-			$licJoinAdd = " LEFT JOIN ResourceLicenseLink RLL ON RLL.resourceID = R.resourceID
+			$licJoinAdd = " LEFT JOIN ResourceLicenseLink RLL ON RLL.resourceAcquisitionID = RA.resourceAcquisitionID
 							LEFT JOIN " . $dbName . ".License L ON RLL.licenseID = L.licenseID
-							LEFT JOIN ResourceLicenseStatus RLS ON RLS.resourceID = R.resourceID
+							LEFT JOIN ResourceLicenseStatus RLS ON RLS.resourceAcquisitionID = RA.resourceAcquisitionID
 							LEFT JOIN LicenseStatus LS ON LS.licenseStatusID = RLS.licenseStatusID";
 
 			$licSelectAdd = "GROUP_CONCAT(DISTINCT L.shortName ORDER BY L.shortName DESC SEPARATOR '; ') licenseNames,
@@ -1255,11 +1022,18 @@ class Resource extends DatabaseObject {
 		$query = "SELECT R.resourceID, R.titleText, AT.shortName acquisitionType, CONCAT_WS(' ', CU.firstName, CU.lastName) createName,
 						R.createDate createDate, CONCAT_WS(' ', UU.firstName, UU.lastName) updateName,
 						R.updateDate updateDate, S.shortName status,
-						RT.shortName resourceType, RF.shortName resourceFormat, R.orderNumber, R.systemNumber, R.resourceURL, R.resourceAltURL,
-						R.currentStartDate, R.currentEndDate, R.subscriptionAlertEnabledInd, AUT.shortName authenticationType,
-						AM.shortName accessMethod, SL.shortName storageLocation, UL.shortName userLimit, R.authenticationUserName,
-						R.authenticationPassword, R.coverageText, CT.shortName catalogingType, CS.shortName catalogingStatus, R.recordSetIdentifier, R.bibSourceURL,
-						R.numberRecordsAvailable, R.numberRecordsLoaded, R.hasOclcHoldings, I.isbnOrIssn,
+						RT.shortName resourceType, RF.shortName resourceFormat, RA.orderNumber, RA.systemNumber, R.resourceURL, R.resourceAltURL,
+						R.currentStartDate, R.currentEndDate, RA.subscriptionAlertEnabledInd, AUT.shortName authenticationType,
+						AM.shortName accessMethod, SL.shortName storageLocation, UL.shortName userLimit, RA.authenticationUserName,
+						RA.authenticationPassword, RA.coverageText, CT.shortName catalogingType, CS.shortName catalogingStatus, RA.recordSetIdentifier, RA.bibSourceURL,
+						RA.numberRecordsAvailable, RA.numberRecordsLoaded, RA.hasOclcHoldings, GROUP_CONCAT(DISTINCT I.isbnOrIssn ORDER BY isbnOrIssnID SEPARATOR '; ') AS isbnOrIssn,
+                        RPAY.year,
+                        F.shortName as fundName, F.fundCode, 
+                        ROUND(COALESCE(RPAY.priceTaxExcluded, 0) / 100, 2) as priceTaxExcluded, 
+                        ROUND(COALESCE(RPAY.taxRate, 0) / 100, 2) as taxRate, 
+                        ROUND(COALESCE(RPAY.priceTaxIncluded, 0) / 100, 2) as priceTaxIncluded, 
+                        ROUND(COALESCE(RPAY.paymentAmount, 0) / 100, 2) as paymentAmount, 
+                        RPAY.currencyCode, CD.shortName as costDetails, OT.shortName as orderType, RPAY.costNote, RPAY.invoiceNum, 
 						" . $orgSelectAdd . ",
 						" . $licSelectAdd . "
 						GROUP_CONCAT(DISTINCT A.shortName ORDER BY A.shortName DESC SEPARATOR '; ') aliases,
@@ -1267,9 +1041,10 @@ class Resource extends DatabaseObject {
 						GROUP_CONCAT(DISTINCT AUS.shortName ORDER BY AUS.shortName DESC SEPARATOR '; ') authorizedSites,
 						GROUP_CONCAT(DISTINCT ADS.shortName ORDER BY ADS.shortName DESC SEPARATOR '; ') administeringSites,
 						GROUP_CONCAT(DISTINCT RP.titleText ORDER BY RP.titleText DESC SEPARATOR '; ') parentResources,
-						GROUP_CONCAT(DISTINCT RC.titleText ORDER BY RC.titleText DESC SEPARATOR '; ') childResources,
-						GROUP_CONCAT(DISTINCT F.shortName, ' [', F.fundCode, ']: ', ROUND(COALESCE(RPAY.paymentAmount, 0) / 100, 2), ' ', RPAY.currencyCode, ' ', OT.shortName ORDER BY RPAY.paymentAmount ASC SEPARATOR '; ') payments
+						GROUP_CONCAT(DISTINCT RC.titleText ORDER BY RC.titleText DESC SEPARATOR '; ') childResources
 								FROM Resource R
+                                    LEFT JOIN ResourceAcquisition RA ON RA.resourceID = R.resourceID
+									LEFT JOIN ResourcePayment RPAY ON RA.resourceAcquisitionID = RPAY.resourceAcquisitionID
 									LEFT JOIN Alias A ON R.resourceID = A.resourceID
 									LEFT JOIN ResourceOrganizationLink ROL ON R.resourceID = ROL.resourceID
 									" . $orgJoinAdd . "
@@ -1281,34 +1056,53 @@ class Resource extends DatabaseObject {
 									LEFT JOIN GeneralDetailSubjectLink GDLINK ON RSUB.generalDetailSubjectLinkID = GDLINK.generalDetailSubjectLinkID
 									LEFT JOIN ResourceFormat RF ON R.resourceFormatID = RF.resourceFormatID
 									LEFT JOIN ResourceType RT ON R.resourceTypeID = RT.resourceTypeID
-									LEFT JOIN AcquisitionType AT ON R.acquisitionTypeID = AT.acquisitionTypeID
-									LEFT JOIN ResourceStep RS ON R.resourceID = RS.resourceID
-									LEFT JOIN ResourcePayment RPAY ON R.resourceID = RPAY.resourceID
+									LEFT JOIN AcquisitionType AT ON RA.acquisitionTypeID = AT.acquisitionTypeID
+									LEFT JOIN ResourceStep RS ON RA.resourceAcquisitionID = RS.resourceAcquisitionID
 									LEFT JOIN Fund F ON RPAY.fundID = F.fundID
 									LEFT JOIN OrderType OT ON RPAY.orderTypeID = OT.orderTypeID
+									LEFT JOIN CostDetails CD ON RPAY.costDetailsID = CD.costDetailsID
 									LEFT JOIN Status S ON R.statusID = S.statusID
-									LEFT JOIN ResourceNote RN ON R.resourceID = RN.resourceID
+									LEFT JOIN ResourceNote RN ON R.resourceID = RN.entityID
 									LEFT JOIN NoteType NT ON RN.noteTypeID = NT.noteTypeID
 									LEFT JOIN User CU ON R.createLoginID = CU.loginID
 									LEFT JOIN User UU ON R.updateLoginID = UU.loginID
-									LEFT JOIN CatalogingStatus CS ON R.catalogingStatusID = CS.catalogingStatusID
-									LEFT JOIN CatalogingType CT ON R.catalogingTypeID = CT.catalogingTypeID
-									LEFT JOIN ResourcePurchaseSiteLink RPSL ON R.resourceID = RPSL.resourceID
+									LEFT JOIN CatalogingStatus CS ON RA.CatalogingStatusID = CS.catalogingStatusID
+									LEFT JOIN CatalogingType CT ON RA.catalogingTypeID = CT.catalogingTypeID
+									LEFT JOIN ResourcePurchaseSiteLink RPSL ON RA.resourceAcquisitionID = RPSL.resourceAcquisitionID
 									LEFT JOIN PurchaseSite PS ON RPSL.purchaseSiteID = PS.purchaseSiteID
-									LEFT JOIN ResourceAuthorizedSiteLink RAUSL ON R.resourceID = RAUSL.resourceID
+									LEFT JOIN ResourceAuthorizedSiteLink RAUSL ON RA.resourceAcquisitionID = RAUSL.resourceAcquisitionID
 									LEFT JOIN AuthorizedSite AUS ON RAUSL.authorizedSiteID = AUS.authorizedSiteID
-									LEFT JOIN ResourceAdministeringSiteLink RADSL ON R.resourceID = RADSL.resourceID
+									LEFT JOIN ResourceAdministeringSiteLink RADSL ON RA.resourceAcquisitionID = RADSL.resourceAcquisitionID
 									LEFT JOIN AdministeringSite ADS ON RADSL.administeringSiteID = ADS.administeringSiteID
-									LEFT JOIN AuthenticationType AUT ON AUT.authenticationTypeID = R.authenticationTypeID
-									LEFT JOIN AccessMethod AM ON AM.accessMethodID = R.accessMethodID
-									LEFT JOIN StorageLocation SL ON SL.storageLocationID = R.storageLocationID
-									LEFT JOIN UserLimit UL ON UL.userLimitID = R.userLimitID
+									LEFT JOIN AuthenticationType AUT ON AUT.authenticationTypeID = RA.authenticationTypeID
+									LEFT JOIN AccessMethod AM ON AM.accessMethodID = RA.accessMethodID
+									LEFT JOIN StorageLocation SL ON SL.storageLocationID = RA.storageLocationID
+									LEFT JOIN UserLimit UL ON UL.userLimitID = RA.userLimitID
 									LEFT JOIN IsbnOrIssn I ON I.resourceID = R.resourceID
 									" . $licJoinAdd . "
 								" . $whereStatement . "
-								GROUP BY R.resourceID
+                GROUP BY
+                  RPAY.resourcePaymentID,
+                  R.resourceID,
+                  AT.shortName,
+                  RA.orderNumber,
+                  RA.systemNumber,
+                  RA.subscriptionAlertEnabledInd,
+                  AUT.shortName,
+                  AM.shortName,
+                  SL.shortName,
+                  UL.shortName,
+                  RA.authenticationUserName,
+                  RA.authenticationPassword,
+                  RA.coverageText,
+                  CT.shortName,
+                  CS.shortName,
+                  RA.recordSetIdentifier,
+                  RA.bibSourceURL,
+                  RA.numberRecordsAvailable,
+                  RA.numberRecordsLoaded,
+                  RA.hasOclcHoldings
 								ORDER BY " . $orderBy;
-
 		$result = $this->db->processQuery(stripslashes($query), 'assoc');
 
 		$searchArray = array();
@@ -1523,7 +1317,7 @@ class Resource extends DatabaseObject {
 
 			$result = $this->db->processQuery($query, 'assoc');
 
-			if($result["resourceID"]) {
+			if (isset($result["resourceID"])) {
 				return array($result);
 			}
 
@@ -1649,13 +1443,6 @@ class Resource extends DatabaseObject {
 	}
 
 
-
-	public function hasCatalogingInformation() {
-		return ($this->recordSetIdentifier || $this->recordSetIdentifier || $this->bibSourceURL || $this->catalogingTypeID || $this->catalogingStatusID || $this->numberRecordsAvailable || $this->numberRecordsLoaded || $this->hasOclcHoldings);
-	}
-
-
-
 	//removes this resource and its children
 	public function removeResourceAndChildren() {
 
@@ -1683,29 +1470,24 @@ class Resource extends DatabaseObject {
 		$this->removeResource();
 	}
 
+    // Removes all resource acquisitions from this resource
+    public function removeResourceAcquisitions() {
+        $instance = new ResourceAcquisition();
+        foreach($this->getResourceAcquisitions() as $instance) {
+            $instance->removeResourceAcquisition();
+        }
+
+    }
 
 
 	//removes this resource
 	public function removeResource() {
 		//delete data from child linked tables
 		$this->removeResourceRelationships();
-		$this->removePurchaseSites();
-		$this->removeAuthorizedSites();
-		$this->removeAdministeringSites();
-		$this->removeResourceLicenses();
-		$this->removeResourceLicenseStatuses();
 		$this->removeResourceOrganizations();
-		$this->removeResourcePayments();
 		$this->removeAllSubjects();
 		$this->removeAllIsbnOrIssn();
-
-
-		$instance = new Contact();
-		foreach ($this->getContacts() as $instance) {
-			$instance->removeContactRoles();
-			$instance->delete();
-		}
-
+        $this->removeResourceAcquisitions();
 		$instance = new ExternalLogin();
 		foreach ($this->getExternalLogins() as $instance) {
 			$instance->delete();
@@ -1713,11 +1495,6 @@ class Resource extends DatabaseObject {
 
 		$instance = new ResourceNote();
 		foreach ($this->getNotes() as $instance) {
-			$instance->delete();
-		}
-
-		$instance = new Attachment();
-		foreach ($this->getAttachments() as $instance) {
 			$instance->delete();
 		}
 
@@ -1743,79 +1520,6 @@ class Resource extends DatabaseObject {
 	}
 
 
-
-	//removes resource purchase sites
-	public function removePurchaseSites() {
-
-		$query = "DELETE
-			FROM ResourcePurchaseSiteLink
-			WHERE resourceID = '" . $this->resourceID . "'";
-
-		$result = $this->db->processQuery($query);
-	}
-
-
-
-	//removes resource authorized sites
-	public function removeAuthorizedSites() {
-
-		$query = "DELETE
-			FROM ResourceAuthorizedSiteLink
-			WHERE resourceID = '" . $this->resourceID . "'";
-
-		$result = $this->db->processQuery($query);
-	}
-
-
-
-	//removes resource administering sites
-	public function removeAdministeringSites() {
-
-		$query = "DELETE
-			FROM ResourceAdministeringSiteLink
-			WHERE resourceID = '" . $this->resourceID . "'";
-
-		$result = $this->db->processQuery($query);
-	}
-
-
-
-	//removes payment records
-	public function removeResourcePayments() {
-
-		$query = "DELETE
-			FROM ResourcePayment
-			WHERE resourceID = '" . $this->resourceID . "'";
-
-		$result = $this->db->processQuery($query);
-	}
-
-
-
-	//removes resource licenses
-	public function removeResourceLicenses() {
-
-		$query = "DELETE
-			FROM ResourceLicenseLink
-			WHERE resourceID = '" . $this->resourceID . "'";
-
-		$result = $this->db->processQuery($query);
-	}
-
-
-
-	//removes resource license statuses
-	public function removeResourceLicenseStatuses() {
-
-		$query = "DELETE
-			FROM ResourceLicenseStatus
-			WHERE resourceID = '" . $this->resourceID . "'";
-
-		$result = $this->db->processQuery($query);
-	}
-
-
-
 	//removes resource organizations
 	public function removeResourceOrganizations() {
 
@@ -1833,23 +1537,10 @@ class Resource extends DatabaseObject {
 
 		$query = "DELETE
 			FROM ResourceNote
-			WHERE resourceID = '" . $this->resourceID . "'";
+			WHERE entityID = '" . $this->resourceID . "'";
 
 		$result = $this->db->processQuery($query);
 	}
-
-
-
-	//removes resource steps
-	public function removeResourceSteps() {
-
-		$query = "DELETE
-			FROM ResourceStep
-			WHERE resourceID = '" . $this->resourceID . "' AND archivingDate IS NOT NULL";
-
-		$result = $this->db->processQuery($query);
-	}
-
 
 
 	//search used for the resource autocomplete
@@ -1932,280 +1623,6 @@ class Resource extends DatabaseObject {
 
 
 		return $licenseArray;
-	}
-
-
-
-	///////////////////////////////////////////////////////////////////////////////////
-	//
-	//  Workflow functions follow
-	//
-	///////////////////////////////////////////////////////////////////////////////////
-
-
-	//returns array of ResourceStep objects for this Resource
-	public function getResourceSteps() {
-
-
-		$query = "SELECT * FROM ResourceStep
-					WHERE resourceID = '" . $this->resourceID . "'
-					ORDER BY (archivingDate IS NOT NULL), archivingDate DESC, displayOrderSequence, stepID";
-
-		$result = $this->db->processQuery($query, 'assoc');
-
-		$objects = array();
-
-		//need to do this since it could be that there's only one request and this is how the dbservice returns result
-		if (isset($result['resourceStepID'])) { $result = [$result]; }
-		foreach ($result as $row) {
-			$object = new ResourceStep(new NamedArguments(array('primaryKey' => $row['resourceStepID'])));
-			array_push($objects, $object);
-		}
-
-		return $objects;
-
-	}
-
-    public function getCurrentWorkflowID() {
-        $query = "SELECT Step.workflowID FROM Step, ResourceStep
-                    WHERE ResourceStep.resourceID = '" . $this->resourceID . "'
-                    AND ResourceStep.archivingDate IS NULL
-                    AND ResourceStep.stepID = Step.stepID LIMIT 1";
-
-		$result = $this->db->processQuery($query, 'assoc');
-        return $result['workflowID'];
-    }
-
-    public function getCurrentWorkflowResourceSteps(){
-		$query = "SELECT * FROM ResourceStep
-					WHERE resourceID = '" . $this->resourceID . "'
-                    AND archivingDate IS NULL ORDER BY displayOrderSequence, stepID";
-
-		$result = $this->db->processQuery($query, 'assoc');
-
-		$objects = array();
-
-		//need to do this since it could be that there's only one request and this is how the dbservice returns result
-		if (isset($result['resourceStepID'])){
-			$object = new ResourceStep(new NamedArguments(array('primaryKey' => $result['resourceStepID'])));
-			array_push($objects, $object);
-		}else{
-			foreach ($result as $row) {
-				$object = new ResourceStep(new NamedArguments(array('primaryKey' => $row['resourceStepID'])));
-				array_push($objects, $object);
-			}
-		}
-
-		return $objects;
-
-	}
-
-    public function isCurrentWorkflowComplete() {
-		$status = new Status();
-		$statusID = $status->getIDFromName('complete');
-        if ($this->statusID == $statusID) {
-            return true;
-        }
-
-        $steps = $this->getCurrentWorkflowResourceSteps(); 
-        foreach ($steps as $step) {
-            if (!$step->isComplete()) return false;
-        }
-        return true;
-    }
-
-
-    public function getDistinctWorkflows() {
-        $query = "SELECT DISTINCT archivingDate FROM ResourceStep
-					WHERE resourceID = '" . $this->resourceID . "'
-                    AND archivingDate IS NOT NULL
-					ORDER BY archivingDate ASC";
-
-		$result = $this->db->processQuery($query, 'assoc');
-
-		return $result;
-
-    }
-
-
-    public function getArchivedResourceSteps() {
-        return $this->getResourceSteps(true);
-    }
-
-
-	//returns first steps (object) in the workflow for this resource
-	public function getFirstSteps() {
-
-		$query = "SELECT * FROM ResourceStep
-					WHERE resourceID = '" . $this->resourceID . "'
-					AND (priorStepID is null OR priorStepID = '0')
-                    AND archivingDate IS NULL
-					ORDER BY stepID";
-
-		$result = $this->db->processQuery($query, 'assoc');
-
-		$objects = array();
-
-		//need to do this since it could be that there's only one request and this is how the dbservice returns result
-		if (isset($result['resourceStepID'])) { $result = [$result]; }
-		foreach ($result as $row) {
-			$object = new ResourceStep(new NamedArguments(array('primaryKey' => $row['resourceStepID'])));
-			array_push($objects, $object);
-		}
-
-		return $objects;
-	}
-
-    public function archiveWorkflow() {
-
-        // And archive the workflow
-        $query = "UPDATE ResourceStep SET archivingDate=NOW() WHERE archivingDate IS NULL AND resourceID = '" . $this->resourceID . "'";
-		$result = $this->db->processQuery($query);
-    }
-
-    public function deleteWorkflow() {
-        $query = "DELETE FROM ResourceStep WHERE archivingDate IS NULL AND resourceID = '" . $this->resourceID . "'";
-		$result = $this->db->processQuery($query);
-    }
-
-	//enters resource into new workflow
-	public function enterNewWorkflow($workflowID = null){
-		$config = new Configuration();
-
-		//make sure this resource is marked in progress in case it was archived
-		$status = new Status();
-		$this->statusID = $status->getIDFromName('progress');
-		$this->save();
-
-
-		//Determine the workflow this resource belongs to
-		$workflowObj = new Workflow();
-
-        if ($workflowID == null) {
-            $workflowID = $workflowObj->getWorkflowID($this->resourceTypeID, $this->resourceFormatID, $this->acquisitionTypeID);
-        }
-		if ($workflowID){
-
-			$workflow = new Workflow(new NamedArguments(array('primaryKey' => $workflowID)));
-			$resourceTypeObj = new ResourceType();
-            $resourceFormatObj = new ResourceFormat();
-            $acquisitionTypeObj = new AcquisitionType();
-
-            //set new resourceType, resourceFormat and acquisitionType for the resource, according to the selected workflow
-            $this->resourceTypeID = ($workflow->resourceTypeIDValue != null) ? $workflow->resourceTypeIDValue : $resourceTypeObj->getResourceTypeIDByName('any');
-            $this->resourceFormatID =  ($workflow->resourceFormatIDValue != null) ? $workflow->resourceFormatIDValue : $resourceFormatObj->getResourceFormatIDByName('any');
-            $this->acquisitionTypeID = ($workflow->acquisitionTypeIDValue != null) ? $workflow->acquisitionTypeIDValue : $acquisitionTypeObj->getAcquisitionTypeIDByName('any');
-
-            $this->save();
-
-			//Copy all of the step attributes for this workflow to a new resource step
-			foreach ($workflow->getSteps() as $step) {
-				$resourceStep = new ResourceStep();
-
-				$resourceStep->resourceStepID 		= '';
-				$resourceStep->resourceID 			= $this->resourceID;
-				$resourceStep->stepID 				= $step->stepID;
-				$resourceStep->priorStepID			= $step->priorStepID;
-				$resourceStep->stepName				= $step->stepName;
-                $resourceStep->stepStartDate        = '';
-                $resourceStep->stepEndDate          = '';
-                $resourceStep->archivingDate        = '';
-                $resourceStep->endLoginID           = '';
-				$resourceStep->userGroupID			= $step->userGroupID;
-				$resourceStep->displayOrderSequence	= $step->displayOrderSequence;
-
-				$resourceStep->save();
-
-			}
-
-			//Start the first step
-			//this handles updating the db and sending notifications for approval groups
-			foreach ($this->getFirstSteps() as $resourceStep) {
-				$resourceStep->startStep();
-
-			}
-		}
-
-
-		//send an email notification to the feedback email address and the creator
-		$cUser = new User(new NamedArguments(array('primaryKey' => $this->createLoginID)));
-		$acquisitionType = new AcquisitionType(new NamedArguments(array('primaryKey' => $this->acquisitionTypeID)));
-
-		if ($cUser->firstName) {
-			$creator = $cUser->firstName . " " . $cUser->lastName;
-		}else if ($this->createLoginID) {  //for some reason user isn't set up or their firstname/last name don't exist
-			$creator = $this->createLoginID;
-		}else{
-			$creator = "(unknown user)";
-		}
-
-
-		if (($config->settings->feedbackEmailAddress) || ($cUser->emailAddress)) {
-			$email = new Email();
-			$util = new Utility();
-
-			$email->message = $util->createMessageFromTemplate('NewResourceMain', $this->resourceID, $this->titleText, '', '', $creator);
-
-			if ($cUser->emailAddress) {
-				$emailTo[] 			= $cUser->emailAddress;
-			}
-
-			if ($config->settings->feedbackEmailAddress != '') {
-				$emailTo[] 			=  $config->settings->feedbackEmailAddress;
-			}
-
-			$email->to = implode(",", $emailTo);
-
-			if ($acquisitionType->shortName) {
-				$email->subject		= "CORAL Alert: New " . $acquisitionType->shortName . " Resource Added: " . $this->titleText;
-			}else{
-				$email->subject		= "CORAL Alert: New Resource Added: " . $this->titleText;
-			}
-
-			$email->send();
-
-		}
-
-	}
-
-
-
-	//completes a workflow (changes status to complete and sends notifications to creator and "master email")
-	public function completeWorkflow() {
-		$config = new Configuration();
-		$util = new Utility();
-		$status = new Status();
-		$statusID = $status->getIDFromName('complete');
-
-		if ($statusID) {
-			$this->statusID = $statusID;
-			$this->save();
-		}
-
-
-
-		//send notification to creator and master email address
-
-		$cUser = new User(new NamedArguments(array('primaryKey' => $this->createLoginID)));
-
-		//formulate emil to be sent
-		$email = new Email();
-		$email->message = $util->createMessageFromTemplate('CompleteResource', $this->resourceID, $this->titleText, '', $this->systemNumber, '');
-
-		if ($cUser->emailAddress) {
-			$emailTo[] 			= $cUser->emailAddress;
-		}
-
-		if ($config->settings->feedbackEmailAddress != '') {
-			$emailTo[] 			=	$config->settings->feedbackEmailAddress;
-		}
-
-		$email->to = implode(",", $emailTo);
-
-		$email->subject		= "CORAL Alert: Workflow completion for " . $this->titleText;
-
-
-		$email->send();
 	}
 
 
@@ -2309,6 +1726,44 @@ class Resource extends DatabaseObject {
 				$isbnOrIssn->save();
 			}
 		}
+	}
+
+	/*
+	* TAMU Customization
+	*/
+	public function findByPurchaseOrder($purchaseOrder) {
+		$query = "SELECT r.resourceID FROM Resource r
+				LEFT JOIN ResourcePayment rp ON rp.resourceID=r.resourceID
+				WHERE rp.purchaseOrder='{$purchaseOrder}' LIMIT 1";
+		$result = $this->db->processQuery($query);
+		if (is_array($result)) {
+			return $result[0];
+		}
+		return false;
+	}
+
+	/*
+	* TAMU Customization - returns a list of resources with similar titles to the search criteria
+	*/
+	public function findResourcesByTitle($title) {
+
+		$query = "SELECT *
+			FROM Resource
+			WHERE UPPER(titleText) LIKE '" . str_replace("'", "''", strtoupper($title)) . "%'
+			ORDER BY titleText";
+
+		$result = $this->db->processQuery($query, 'assoc');
+
+		$objects = array();
+
+		//need to do this since it could be that there's only one request and this is how the dbservice returns result
+		if (isset($result['resourceID'])) { $result = [$result]; }
+		foreach ($result as $row) {
+			$object = new Resource(new NamedArguments(array('primaryKey' => $row['resourceID'])));
+			array_push($objects, $object);
+		}
+
+		return $objects;
 	}
 }
 ?>

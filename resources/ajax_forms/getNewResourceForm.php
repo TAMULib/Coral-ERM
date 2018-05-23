@@ -2,10 +2,24 @@
 
 		$resourceID = $_GET['resourceID'];
 		if ($resourceID){
-		$resource = new Resource(new NamedArguments(array('primaryKey' => $resourceID)));
+			$resource = new Resource(new NamedArguments(array('primaryKey' => $resourceID)));
+			if ($_GET['mode'] == 'clone') {
+				$createMode = $_GET['mode'];
+				$resourceAcquisitionID = $_GET['resourceAcquisitionID'];
+			} else {
+				$createMode = 'save';
+			}
 		}else{
 			$resource = new Resource();
 		}
+
+        // get resource acquisition for this resource 
+        // at this point, there are none (resource not saved yet)
+        // or only one (resource saved as draft)
+        if ($resource->resourceID && !isset($resourceAcquisitionID)) {
+            $resourceAcquisitions = $resource->getResourceAcquisitions();
+            $resourceAcquisition = $resourceAcquisitions[0];
+        }
 
 		//used for default currency
 		$config = new Configuration();
@@ -41,22 +55,6 @@
 		$costDetailsObj = new CostDetails();
 		$costDetailsArray = $costDetailsObj->allAsArray();
 
-		//get payments
-		$paymentArray = array();
-		if ($resourceID){
-			$sanitizedInstance = array();
-			$instance = new ResourcePayment();
-			foreach ($resource->getResourcePayments() as $instance) {
-				foreach (array_keys($instance->attributeNames) as $attributeName) {
-					$sanitizedInstance[$attributeName] = $instance->$attributeName;
-				}
-
-				$sanitizedInstance[$instance->primaryKeyName] = $instance->primaryKey;
-
-				array_push($paymentArray, $sanitizedInstance);
-			}
-		}
-
 		//get notes
 		if ($resourceID){
 			$resourceNote = $resource->getInitialNote;
@@ -74,14 +72,39 @@
 			$providerText = $resource->providerText;
 			$orgID = '';
 		}
+
+		if ($resourceID) {
+			if ($createMode == 'clone') {
+				$modalTitle = "Clone Resource";
+				$titleText = $resource->titleText." [clone]";
+			} else {
+				$modalTitle = "Edit Saved Resource";
+				$titleText = $resource->titleText;
+			}
+		} else {
+			$modalTitle = "Add New Resource";
+			$titleText = "";
+		}
 ?>
 		<div id='div_resourceSubmitForm'>
 		<form id='resourcePromptForm'>
 
 
 		<input type='hidden' id='organizationID' value='<?php echo $orgID; ?>' />
+<?php
+if ($resourceID) {
+?>
+		<input type='hidden' id='createMode' value='<?php echo $createMode; ?>' />
 		<input type='hidden' id='editResourceID' value='<?php echo $resourceID; ?>' />
-		<div class='formTitle' style='width:745px;'><span class='headerText'><?php if ($resourceID) { echo _("Edit Saved Resource"); }else{ echo _("Add New Resource"); } ?></span></div>
+<?php
+	if ($createMode == 'clone') {
+?>
+		<input type='hidden' id='resourceAcquisitionID' value='<?php echo $resourceAcquisitionID; ?>' />
+<?php
+	}
+}
+?>
+		<div class='formTitle' style='width:745px;'><span class='headerText'><?php echo _($modalTitle); ?></span></div>
 		<div class='smallDarkRedText' style='height:14px;margin:3px 0px 0px 0px;'>&nbsp;* <?php echo _("required fields");?></div>
 
 		<table class='noBorder'>
@@ -98,7 +121,7 @@
 
 					<tr>
 					<td style='vertical-align:top;text-align:left;'><label for='titleText'><?php echo _("Name:");?>&nbsp;&nbsp;<span class='bigDarkRedText'>*</span></label></td>
-					<td><input type='text' id='titleText' style='width:220px;' class='changeInput' value="<?php echo $resource->titleText; ?>" /><span id='span_error_titleText' class='smallDarkRedText'></span></td>
+					<td><input type='text' id='titleText' style='width:220px;' class='changeInput' value="<?php echo $titleText; ?>" /><span id='span_error_titleText' class='smallDarkRedText'></span></td>
 					</tr>
 
 					<tr>
@@ -191,7 +214,7 @@
 
 					//set default
 					if ($resourceID){
-						if ($acquisitionType['acquisitionTypeID'] == $resource->acquisitionTypeID) $checked = 'checked'; else $checked = '';
+						if ($acquisitionType['acquisitionTypeID'] == $resourceAcquisition->acquisitionTypeID) $checked = 'checked'; else $checked = '';
 					}else{
 						if (strtoupper($acquisitionType['shortName']) == 'PAID') $checked = 'checked'; else $checked = '';
 					}

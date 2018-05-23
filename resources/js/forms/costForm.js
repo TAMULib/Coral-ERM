@@ -118,7 +118,7 @@ $(function(){
 		var fName     = $('.newPaymentTable').find('.fundName').val();
 		var pte       = $('.newPaymentTable').find('.priceTaxExcluded').val();
 		var tr        = $('.newPaymentTable').find('.taxRate').val();
-		var pti 	  = $('.newPaymentTable').find('.priceTaxIncluded').val();
+		var pti       = $('.newPaymentTable').find('.priceTaxIncluded').val();
 		var typeID    = $('.newPaymentTable').find('.orderTypeID').val();
 		var detailsID = $('.newPaymentTable').find('.costDetailsID').val();
 		var pAmount   = $('.newPaymentTable').find('.paymentAmount').val();
@@ -159,6 +159,13 @@ $(function(){
 			$('.newPaymentTable').find('.costDetailsID').val('');
 			$('.newPaymentTable').find('.costNote').val('');
 			$('.newPaymentTable').find('.invoiceNum').val('');
+
+			//TAMU Customization - additional cost fields
+			$('.newPaymentTable').find('.purchaseOrder').val('');
+			$('.newPaymentTable').find('.systemID').val('');
+			$('.newPaymentTable').find('.vendorCode').val('');
+			$('.newPaymentTable').find('.fundSpecial').val('');
+
 			var tableDiv=$('.paymentTableDiv')[0];
 			tableDiv.scrollTop=tableDiv.scrollHeight;
 			return true;
@@ -182,7 +189,11 @@ function submitCostForm()
 	var cNote      = $('.newPaymentTR').find('.costNote').val();
 	var invoiceNum = $('.newPaymentTR').find('.invoiceNum').val();
 
-	if(y != '' || ssd != '' || sed != '' || fName != '' || pAmount != '' || typeID != '' || detailsID != '' || cNote != '' || invoiceNum != '')
+	var purchaseOrder = $('.newPaymentTR').find('.purchaseOrder').val();
+	var systemID = $('.newPaymentTR').find('.systemID').val();
+	var vendorCode = $('.newPaymentTR').find('.vendorCode').val();
+
+	if(y != '' || ssd != '' || sed != '' || fName != '' || pAmount != '' || typeID != '' || detailsID != '' || cNote != '' || invoiceNum != '' || purchaseOrder != '' || systemID != '' || vendorCode != '')
 	{
 		if(confirm('There is unsaved information on the add line. To discard this information, click OK, otherwise click Cancel.')==false)
 		{
@@ -261,13 +272,38 @@ function submitCostForm()
 		$(".paymentTable").find(".invoiceNum").each(function(id) {
 		      invoiceList += $(this).val() + ":::";
 		});
-                $('#submitCost').attr("disabled", "disabled");
+
+		//TAMU Customization - Additional cost fields
+		purchaseOrderList ='';
+		$(".paymentTable").find(".purchaseOrder").each(function(id) {
+		      purchaseOrderList += $(this).val() + ":::";
+		});
+
+		systemIDList ='';
+		$(".paymentTable").find(".systemID").each(function(id) {
+		      systemIDList += $(this).val() + ":::";
+		});
+
+		vendorCodeList ='';
+		$(".paymentTable").find(".vendorCode").each(function(id) {
+		      vendorCodeList += $(this).val() + ":::";
+		});
+
+		fundSpecialList ='';
+		$(".paymentTable").find(".fundSpecial").each(function(id) {
+		      fundSpecialList += $(this).val() + ":::";
+		});
+
+		$('#submitCost').attr("disabled", "disabled");
+
+		//TAMU Customization - Additional cost fields
 		$.ajax({
 			type:  "POST",
 			url:   "ajax_processing.php?action=submitCost",
 			cache: false,
 			data: {
 				resourceID: $("#editResourceID").val(),
+				resourceAcquisitionID: $("#editResourceAcquisitionID").val(),
 				years: yearList,
 				subStarts: subStartList,
 				subEnds: subEndList,
@@ -280,7 +316,11 @@ function submitCostForm()
 				orderTypes: orderTypeList,
 				costDetails: detailsList,
 				costNotes: costNoteList,
-				invoices: invoiceList
+				invoices: invoiceList,
+				purchaseOrders: purchaseOrderList,
+				systemIDs: systemIDList,
+				vendorCodes: vendorCodeList,
+				fundSpecials: fundSpecialList
 			},
 			success:   function(html) {
 				if (html){
@@ -319,8 +359,8 @@ function validateTable(objRows)
 		var pAmount    = $(objRows[currentRow]).find('.paymentAmount').val();
 		var typeID     = $(objRows[currentRow]).find('.orderTypeID').val();
 		var detailsID  = $(objRows[currentRow]).find('.costDetailsID').val();
-		var pte 	   = $(objRows[currentRow]).find('.priceTaxIncluded').val();
-		var pti 	   = $(objRows[currentRow]).find('.priceTaxExcluded').val();
+		var pte        = $(objRows[currentRow]).find('.priceTaxIncluded').val();
+		var pti        = $(objRows[currentRow]).find('.priceTaxExcluded').val();
 		var cNote      = $(objRows[currentRow]).find('.costNote').val();
 		var invoiceNum = $(objRows[currentRow]).find('.invoiceNum').val();
 

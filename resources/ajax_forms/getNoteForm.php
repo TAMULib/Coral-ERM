@@ -1,5 +1,5 @@
 <?php
-	$resourceID = $_GET['resourceID'];
+	$entityID = isset($_GET['entityID']) ? $_GET['entityID'] : null;
 	if (isset($_GET['resourceNoteID'])) $resourceNoteID = $_GET['resourceNoteID']; else $resourceNoteID = '';
 		if (isset($_GET['tab'])) $tabName = $_GET['tab']; else $tabName = '';
 	$resourceNote = new ResourceNote(new NamedArguments(array('primaryKey' => $resourceNoteID)));
@@ -11,7 +11,7 @@
 ?>
 		<div id='div_noteForm'>
 		<form id='noteForm'>
-		<input type='hidden' name='editResourceID' id='editResourceID' value='<?php echo $resourceID; ?>'>
+		<input type='hidden' name='editEntityID' id='editEntityID' value='<?php echo $entityID; ?>'>
 		<input type='hidden' name='editResourceNoteID' id='editResourceNoteID' value='<?php echo $resourceNoteID; ?>'>
 		<input type='hidden' name='tab' id='tab' value='<?php echo $tabName; ?>'>
 
@@ -66,6 +66,66 @@
 
 		</form>
 		</div>
+<?php
+$showNotes = (isset($_GET['shownotes']) && $_GET['shownotes']) ? true:false;
+if ($showNotes && $resourceID) {
+	$resource = new Resource(new NamedArguments(array('primaryKey' => $resourceID)));
+	//get notes for this tab
+	$sanitizedInstance = array();
+	$noteArray = array();
 
+	foreach ($resource->getNotes('Product') as $instance) {
+		foreach (array_keys($instance->attributeNames) as $attributeName) {
+			$sanitizedInstance[$attributeName] = $instance->$attributeName;
+		}
+
+		$sanitizedInstance[$instance->primaryKeyName] = $instance->primaryKey;
+
+		$updateUser = new User(new NamedArguments(array('primaryKey' => $instance->updateLoginID)));
+
+		//in case this user doesn't have a first / last name set up
+		if (($updateUser->firstName != '') || ($updateUser->lastName != '')){
+			$sanitizedInstance['updateUser'] = $updateUser->firstName . " " . $updateUser->lastName;
+		}else{
+			$sanitizedInstance['updateUser'] = $instance->updateLoginID;
+		}
+
+		$noteType = new NoteType(new NamedArguments(array('primaryKey' => $instance->noteTypeID)));
+
+		if (!$noteType->shortName){
+			$sanitizedInstance['noteTypeName'] = 'General Note';
+		}else{
+			$sanitizedInstance['noteTypeName'] = $noteType->shortName;
+		}
+
+		array_push($noteArray, $sanitizedInstance);
+	}
+?>
+		<div class="existing-notes">
+			<h3>Existing Notes</h3>
+<?php
+	if (count($noteArray) > 0){
+?>
+			<table class='linedFormTable'>
+<?php 
+		foreach ($noteArray as $resourceNote) {
+?>
+				<tr>
+					<td style="width:25%">
+<?php echo $resourceNote['noteTypeName']; ?>
+					</td>
+					<td><?php echo nl2br($resourceNote['noteText']); ?><br /><i><?php echo format_date($resourceNote['updateDate']) . _(" by ") . $resourceNote['updateUser']; ?></i></td>
+				</tr>
+<?php 
+		}
+?>
+			</table>
+<?php
+	} else {
+		echo 'No notes';
+	}
+	echo '</div>';
+}
+?>
 		<script type="text/javascript" src="js/forms/resourceNoteForm.js?random=<?php echo rand(); ?>"></script>
 

@@ -97,22 +97,29 @@ $(document).ready(function(){
 
 });
 
-
 function updateResourceStep(){
         var reassigned = $("#userGroupID").val() == $("#currentGroupID").val() ? 0 : 1;
         $('#submitResourceStepForm').attr("disabled", "disabled");
+        //TAMU Customization - newStepStartDate
         $.ajax({
             type:       "POST",
             url:        "ajax_processing.php?action=updateResourceStep",
             cache:      false,
-            data:       { resourceStepID: $("#editRSID").val(), userGroupID: $("#userGroupID").val(), applyToAll: $('#applyToAll').is(':checked'), orderNum: $('#orderNum').val(), note: $('#note').val(), userGroupIDChanged: reassigned },
+            data:       { resourceStepID: $("#editRSID").val(), userGroupID: $("#userGroupID").val(), applyToAll: $('#applyToAll').is(':checked'), orderNum: $('#orderNum').val(), note: $('#note').val(), userGroupIDChanged: reassigned,newStepStartDate: $("#newStepStartDate").val() },
             success:    function(html) {
                 if (html){
                     $("#span_errors").html(html);
                 }else{
                     tb_remove();
-                    window.parent.updateRouting();
-                    //eval("window.parent.update" + $("#tab").val() + "();");
+                    //TAMU Customization - check for existence of and potentially execute more functions
+                    var updateFunctions = ['updateWorkflow','updateOutstandingTasks'];
+                    $.each(updateFunctions,function(i,functionName) {
+                        //if a function exists, call it, and break out of the loop
+                        if (typeof window.parent[functionName] == 'function') {
+                            window.parent[functionName].call();
+                            return false;
+                        }
+                    });
                     return false;
                 }
 

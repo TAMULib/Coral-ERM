@@ -3,13 +3,14 @@
 	$enhancedCostFlag = ((isset($config->settings->enhancedCostHistory)) && (strtoupper($config->settings->enhancedCostHistory) == 'Y')) ? 1 : 0;
 	$enhancedCostFlag = (strtoupper($config->settings->enhancedCostHistory) == 'Y') ? 1 : 0;
 	if ($enhancedCostFlag){
-		$numCols = 12;
+		$numCols = 15;
 		$tableWidth = 760;
 		$formWidth = 1084;
                 ?>
 		<!-- Hide the helpful links, etc. -->
-        	<script>
-			$('#div_fullRightPanel').hide();
+ 		<script type="text/javascript">
+				$('#div_fullRightPanel').hide();
+				$("#div_acquisitions").addClass("enhanced-cost");
 		</script>
                 <?php
 	}else{
@@ -20,23 +21,14 @@
 
 	$resourceID = $_GET['resourceID'];
 	$resource = new Resource(new NamedArguments(array('primaryKey' => $resourceID)));
-
-	$orderType = new OrderType(new NamedArguments(array('primaryKey' => $resource->orderTypeID)));
-		$acquisitionType = new AcquisitionType(new NamedArguments(array('primaryKey' => $resource->acquisitionTypeID)));
-
-		//get purchase sites
-		$sanitizedInstance = array();
-		$instance = new PurchaseSite();
-		$purchaseSiteArray = array();
-		foreach ($resource->getResourcePurchaseSites() as $instance) {
-			$purchaseSiteArray[]=$instance->shortName;
-		}
+	$resourceAcquisitionID = $_GET['resourceAcquisitionID'];
+	$resourceAcquisition = new ResourceAcquisition(new NamedArguments(array('primaryKey' => $resourceAcquisitionID)));
 
 		//get payments
 		$sanitizedInstance = array();
 		$instance = new ResourcePayment();
 		$paymentArray = array();
-		foreach ($resource->getResourcePayments() as $instance) {
+		foreach ($resourceAcquisition->getResourcePayments() as $instance) {
 				foreach (array_keys($instance->attributeNames) as $attributeName) {
 					$sanitizedInstance[$attributeName] = $instance->$attributeName;
 				}
@@ -56,7 +48,7 @@
 				}
 
 				$fund = new Fund(new NamedArguments(array('primaryKey' => $instance->fundID)));
-				$sanitizedInstance['fundCode'] = $fund->shortName . " [" . $fund->fundCode . "]";
+				$sanitizedInstance['fundCode'] = "[" . $fund->fundCode . $instance->fundSpecial. "] ".$fund->shortName;
 
 				array_push($paymentArray, $sanitizedInstance);
 
@@ -67,7 +59,7 @@
 		$sanitizedInstance = array();
 		$instance = new ResourceLicenseStatus();
 		$licenseStatusArray = array();
-		foreach ($resource->getResourceLicenseStatuses() as $instance) {
+		foreach ($resourceAcquisition->getResourceLicenseStatuses() as $instance) {
 				foreach (array_keys($instance->attributeNames) as $attributeName) {
 					$sanitizedInstance[$attributeName] = $instance->$attributeName;
 				}
@@ -92,86 +84,16 @@
 
 
 		//get licenses (already returned in array)
-		$licenseArray = $resource->getLicenseArray();
+		$licenseArray = $resourceAcquisition->getLicenseArray();
 
 ?>
-			<table class='linedFormTable' style='width:<?php echo $tableWidth; ?>px;padding:0x;margin:0px;height:100%;'>
-			<tr>
-			<th colspan='2' style='vertical-align:bottom;'>
-			<span style='float:left;vertical-align:bottom;'><?php echo _("Order");?></span>
-			<?php if ($user->canEdit()){ ?>
-				<span style='float:right;vertical-align:bottom;'><a href='ajax_forms.php?action=getOrderForm&height=400&width=440&modal=true&resourceID=<?php echo $resourceID; ?>' class='thickbox' id='editOrder'><img src='images/edit.gif' alt='<?php echo _("edit");?>' title='<?php echo _("edit order information");?>'></a></span>
-			<?php } ?>
-
-			</th>
-			</tr>
-
-			<?php if ($resource->acquisitionTypeID) { ?>
-				<tr>
-				<td style='vertical-align:top;width:110px;'><?php echo _("Acquisition Type:");?></td>
-				<td style='width:350px;'><?php echo $acquisitionType->shortName; ?></td>
-				</tr>
-			<?php } ?>
-
-			<?php if ($resource->orderNumber) { ?>
-				<tr>
-				<td style='vertical-align:top;width:110px;'><?php echo _("Order Number:");?></td>
-				<td style='width:350px;'><?php echo $resource->orderNumber; ?></td>
-				</tr>
-			<?php } ?>
-
-			<?php if ($resource->systemNumber) { ?>
-				<tr>
-				<td style='vertical-align:top;width:110px;'><?php echo _("System Number:");?></td>
-				<td style='width:350px;'>
-				<?php
-					echo $resource->systemNumber;
-					if ($config->settings->catalogURL != ''){
-						echo "&nbsp;&nbsp;<a href='" . $config->settings->catalogURL . $resource->systemNumber . "' target='_blank'>"._("catalog view")."</a>";
-					}
-				?>
-				</td>
-				</tr>
-			<?php } ?>
-
-			<?php if (count($purchaseSiteArray) > 0) { ?>
-				<tr>
-				<td style='vertical-align:top;width:110px;'><?php echo _("Purchasing Sites:");?></td>
-				<td style='width:350px;'><?php echo implode(", ", $purchaseSiteArray); ?></td>
-				</tr>
-			<?php } ?>
-
-			<?php if (($resource->currentStartDate) && ($resource->currentStartDate != '0000-00-00')) { ?>
-			<tr>
-			<td style='vertical-align:top;width:110px;'><?php echo _("Sub Start:");?></td>
-			<td style='width:350px;'><?php echo format_date($resource->currentStartDate); ?></td>
-			</tr>
-			<?php } ?>
-
-			<?php if (($resource->currentEndDate) && ($resource->currentEndDate != '0000-00-00')) { ?>
-			<tr>
-			<td style='vertical-align:top;width:110px;'>Current Sub End:</td>
-			<td style='width:350px;'><?php echo format_date($resource->currentEndDate); ?>&nbsp;&nbsp;
-			<?php if ($resource->subscriptionAlertEnabledInd == "1") { echo "<i>"._("Expiration Alert Enabled")."</i>"; } ?>
-			</td>
-			</tr>
-			<?php } ?>
-
-			</table>
-			<?php if ($user->canEdit()){ ?>
-				<a href='ajax_forms.php?action=getOrderForm&height=400&width=440&modal=true&resourceID=<?php echo $resourceID; ?>' class='thickbox'><?php echo _("edit order information");?></a>
-			<?php } ?>
-			<br />
-			<br />
-			<br />
-
 			<table class='linedFormTable formTable' style='width:<?php echo $tableWidth; ?>px;margin-bottom:5px;'>
 <thead>
 			<tr>
 			<th colspan='<?php echo $numCols; ?>' style='vertical-align:bottom;'>
 			<span style='float:left;vertical-align:bottom;'><?php echo _("Cost History");?></span>
 			<?php if ($user->canEdit()){ ?>
-				<span style='float:right;vertical-align:bottom;'><a href='ajax_forms.php?action=getCostForm&height=400&width=<?php echo $formWidth; ?>&modal=true&resourceID=<?php echo $resourceID; ?>' class='thickbox' id='editCost'><img src='images/edit.gif' alt='<?php echo _("edit");?>' title='<?php echo _("edit cost history");?>'></a></span>
+				<span style='float:right;vertical-align:bottom;'><a href='ajax_forms.php?action=getCostForm&height=400&width=<?php echo $formWidth; ?>&modal=true&resourceID=<?php echo $resourceID; ?>&resourceAcquisitionID=<?php echo $resourceAcquisitionID; ?>' class='thickbox' id='editCost'><img src='images/edit.gif' alt='<?php echo _("edit");?>' title='<?php echo _("edit cost history");?>'></a></span>
 			<?php } ?>
 
 			</th>
@@ -199,6 +121,9 @@
 			<th><?php echo _("Notes");?></th>
 		<?php if ($enhancedCostFlag){ ?>
 			<th><?php echo _("Invoice");?></th>
+			<th><?php echo _("Purchase Order");?></th>
+			<th><?php echo _("System ID");?></th>
+			<th><?php echo _("Vendor Code");?></th>
 		<?php } ?>
 			</tr>
 </thead>
@@ -219,7 +144,7 @@
 				$subEnd = $payment['subscriptionEndDate'] ? normalize_date($payment['subscriptionEndDate']) : "&nbsp;";
 				$fundCode = $payment['fundCode'] ? $payment['fundCode'] : "&nbsp;";
                 $taxRate = $payment['taxRate'] ? integer_to_cost($payment['taxRate']) . '&nbsp;%' : "&nbsp;";
-                foreach (Array('priceTaxExcluded', 'priceTaxIncluded', 'paymentAmount') as $amount) {
+                foreach (Array('priceTaxExcluded', 'priceTaxIncluded', 'paymentAmount') as $amount) { 
                   if (integer_to_cost($payment[$amount])){
                     $cost[$amount] = $payment['currencyCode'] . " " . integer_to_cost($payment[$amount]);
                   }else{
@@ -229,6 +154,9 @@
 				$costDetails = $payment['costDetails'] ? $payment['costDetails'] : "&nbsp;";
 				$costNote = $payment['costNote'] ? $payment['costNote'] : "&nbsp;";
 				$invoiceNum = $payment['invoiceNum'] ? $payment['invoiceNum'] : "&nbsp;";
+				$purchaseOrder = !empty($payment['purchaseOrder']) ? $payment['purchaseOrder'] : "&nbsp;";
+				$systemID = !empty($payment['systemID']) ? $payment['systemID'] : "&nbsp;";
+				$vendorCode = !empty($payment['vendorCode']) ? $payment['vendorCode'] : "&nbsp;";
 
 				?>
 				<tr>
@@ -254,6 +182,9 @@
 				<td <?php echo $classAdd;?>><?php echo $costNote; ?></td>
 			<?php if ($enhancedCostFlag){ ?>
 				<td <?php echo $classAdd;?>><?php echo $invoiceNum; ?></td>
+				<td <?php echo $classAdd;?>><?php echo $purchaseOrder; ?></td>
+				<td <?php echo $classAdd;?>><?php echo $systemID; ?></td>
+				<td <?php echo $classAdd;?>><?php echo $vendorCode; ?></td>
 			<?php } ?>
 				</tr>
 
@@ -266,7 +197,7 @@
 </tbody>
 			</table>
 			<?php if ($user->canEdit()){ ?>
-				<a href='ajax_forms.php?action=getCostForm&height=400&width=<?php echo $formWidth; ?>&modal=true&resourceID=<?php echo $resourceID; ?>' class='thickbox'><?php echo _("edit cost history");?></a>
+				<a href='ajax_forms.php?action=getCostForm&height=400&width=<?php echo $formWidth; ?>&modal=true&resourceID=<?php echo $resourceID; ?>&resourceAcquisitionID=<?php echo $resourceAcquisitionID; ?>' class='thickbox'><?php echo _("edit cost history");?></a>
 			<?php } ?>
 			<br />
 			<br />
@@ -277,7 +208,7 @@
 			<th colspan='2'>
 			<span style='float:left;vertical-align:bottom;'><?php echo _("License");?></span>
 			<?php if ($user->canEdit()){ ?>
-				<span style='float:right;vertical-align:bottom;'><a href='ajax_forms.php?action=getLicenseForm&height=420&width=385&modal=true&resourceID=<?php echo $resourceID; ?>' class='thickbox' id='editLicense'><img src='images/edit.gif' alt='<?php echo _("edit");?>' title='<?php echo _("edit resource");?>'></a></span>
+				<span style='float:right;vertical-align:bottom;'><a href='ajax_forms.php?action=getLicenseForm&height=420&width=385&modal=true&resourceID=<?php echo $resourceID; ?>&resourceAcquisitionID=<?php echo $resourceAcquisitionID; ?>' class='thickbox' id='editLicense'><img src='images/edit.gif' alt='<?php echo _("edit");?>' title='<?php echo _("edit license");?>'></a></span>
 			<?php } ?>
 			</th>
 			</tr>
@@ -325,9 +256,9 @@
 			</table>
 			<?php if ($user->canEdit()){ ?>
 				<?php if ($config->settings->licensingModule == "Y"){ ?>
-					<a href='ajax_forms.php?action=getLicenseForm&height=420&width=378&modal=true&resourceID=<?php echo $resourceID; ?>' class='thickbox'><?php echo _("edit license and status");?></a>
+					<a href='ajax_forms.php?action=getLicenseForm&height=420&width=378&modal=true&resourceID=<?php echo $resourceID; ?>&resourceAcquisitionID=<?php echo $resourceAcquisitionID; ?>' class='thickbox'><?php echo _("edit license and status");?></a>
 				<?php }else{ ?>
-					<a href='ajax_forms.php?action=getLicenseForm&height=300&width=378&modal=true&resourceID=<?php echo $resourceID; ?>' class='thickbox'><?php echo _("edit license status");?></a>
+					<a href='ajax_forms.php?action=getLicenseForm&height=300&width=378&modal=true&resourceID=<?php echo $resourceID; ?>&resourceAcquisitionID=<?php echo $resourceAcquisitionID; ?>' class='thickbox'><?php echo _("edit license status");?></a>
 				<?php } ?>
 			<?php } ?>
 			<br /><br /><br /><br />
@@ -339,7 +270,7 @@
 		//get notes for this tab
 		$sanitizedInstance = array();
 		$noteArray = array();
-		foreach ($resource->getNotes('Acquisitions') as $instance) {
+		foreach ($resourceAcquisition->getNotes('Acquisitions') as $instance) {
 			foreach (array_keys($instance->attributeNames) as $attributeName) {
 				$sanitizedInstance[$attributeName] = $instance->$attributeName;
 			}
@@ -372,7 +303,7 @@
 				<th><?php echo _("Additional Notes");?></th>
 				<th>
 				<?php if ($user->canEdit()){?>
-					<a href='ajax_forms.php?action=getNoteForm&height=233&width=410&tab=Acquisitions&resourceID=<?php echo $resourceID; ?>&resourceNoteID=&modal=true' class='thickbox'><?php echo _("add new note");?></a>
+					<a href='ajax_forms.php?action=getNoteForm&height=233&width=410&tab=Acquisitions&entityID=<?php echo $resourceAcquisitionID; ?>&resourceNoteID=&modal=true' class='thickbox'><?php echo _("add new note");?></a>
 				<?php } ?>
 				</th>
 				</tr>
@@ -380,7 +311,7 @@
 					<tr>
 					<td style='width:110px;'><?php echo $resourceNote['noteTypeName']; ?><br />
 					<?php if ($user->canEdit()){?>
-					<a href='ajax_forms.php?action=getNoteForm&height=233&width=410&tab=Acquisitions&resourceID=<?php echo $resourceID; ?>&resourceNoteID=<?php echo $resourceNote['resourceNoteID']; ?>&modal=true' class='thickbox'><img src='images/edit.gif' alt='<?php echo _("edit");?>' title='<?php echo _("edit note");?>'></a>  <a href='javascript:void(0);' class='removeNote' id='<?php echo $resourceNote['resourceNoteID']; ?>' tab='Acquisitions'><img src='images/cross.gif' alt='<?php echo _("remove note");?>' title='<?php echo _("remove note");?>'></a>
+					<a href='ajax_forms.php?action=getNoteForm&height=233&width=410&tab=Acquisitions&entityID=<?php echo $resourceAcquisitionID; ?>&resourceNoteID=<?php echo $resourceNote['resourceNoteID']; ?>&modal=true' class='thickbox'><img src='images/edit.gif' alt='<?php echo _("edit");?>' title='<?php echo _("edit note");?>'></a>  <a href='javascript:void(0);' class='removeNote' id='<?php echo $resourceNote['resourceNoteID']; ?>' tab='Acquisitions'><img src='images/cross.gif' alt='<?php echo _("remove note");?>' title='<?php echo _("remove note");?>'></a>
 					<?php } ?>
 					</td>
 					<td><?php echo nl2br($resourceNote['noteText']); ?><br /><i><?php echo format_date($resourceNote['updateDate']) . _(" by ") . $resourceNote['updateUser']; ?></i></td>
@@ -391,7 +322,7 @@
 		}else{
 			if ($user->canEdit()){
 			?>
-				<a href='ajax_forms.php?action=getNoteForm&height=233&width=410&tab=Acquisitions&resourceID=<?php echo $resourceID; ?>&resourceNoteID=&modal=true' class='thickbox'><?php echo _("add new note");?></a>
+				<a href='ajax_forms.php?action=getNoteForm&height=233&width=410&tab=Acquisitions&entityID=<?php echo $resourceAcquisitionID; ?>&resourceNoteID=&modal=true' class='thickbox'><?php echo _("add new note");?></a>
 			<?php
 			}
 		}

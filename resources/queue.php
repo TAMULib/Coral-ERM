@@ -21,14 +21,16 @@ include_once 'directory.php';
 
 
 //set referring page
-CoralSession::set('ref_script', $currentPage);
+CoralSession::set('ref_script', $currentPage = '');
 
 $pageTitle=_('My Queue');
 include 'templates/header.php';
 
+//TAMU Customization - Completed Requests
 $tabs = array(array("id"=>"OutstandingTasks","spanClass"=>"OutstandingTasksNumber","text"=>"Outstanding Tasks"),
 				array("id"=>"SavedRequests","spanClass"=>"SavedRequestsNumber","text"=>"Saved Requests"),
-				array("id"=>"SubmittedRequests","spanClass"=>"SubmittedRequestsNumber","text"=>"Submitted Requests"));
+				array("id"=>"SubmittedRequests","spanClass"=>"SubmittedRequestsNumber","text"=>"Submitted Requests"),
+				array("id"=>"CompletedRequests","spanClass"=>"CompletedRequestsNumber","text"=>"Completed Requests"));
 
 ?>
 
@@ -89,5 +91,3 @@ foreach ($tabs as $tab) {
 <?php
 include 'templates/footer.php';
 ?>
-
-

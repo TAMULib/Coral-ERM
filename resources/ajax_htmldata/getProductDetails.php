@@ -1,4 +1,5 @@
 <?php
+			$resourceAcquisitionID = $_GET['resourceAcquisitionID'];
 			$resourceID = $_GET['resourceID'];
 			$resource = new Resource(new NamedArguments(array('primaryKey' => $resourceID)));
 			$resourceFormat = new ResourceFormat(new NamedArguments(array('primaryKey' => $resource->resourceFormatID)));
@@ -74,6 +75,13 @@
 							<img src='images/edit.gif'
 								alt='<?php echo _("edit");?>'
 								title='<?php echo _("edit resource");?>' /></a>
+
+						<a href='ajax_forms.php?action=getNewResourceForm&height=700&width=730&mode=clone&resourceID=<?php echo $resource->resourceID."&resourceAcquisitionID=".$resourceAcquisitionID;?>&modal=true'
+							class='thickbox'>
+
+							<img src='images/notes.gif'
+								alt='<?php echo _("clone");?>'
+								title='<?php echo _("clone resource");?>' /></a>
 					<?php } ?>
 					<?php if ($user->isAdmin) { ?>
 						<a href='javascript:void(0);'
@@ -240,7 +248,16 @@
 			</tr>
 			<?php
 			}
-
+if ($resource->vendorCode) {
+?>
+			<tr>
+				<td><?php echo _("Vendor Code:");?></td>
+				<td>
+					<?php echo $resource->vendorCode;?>
+				</td>
+			</tr>
+<?php
+}
 
 			if (count($orgArray) > 0){
 			?>
@@ -328,8 +345,8 @@
 				<?php
 					$generalSubjectID = 0;
 					foreach ($generalDetailSubjectIDArray as $generalDetailSubjectID){
-						$generalSubject = new GeneralSubject(new NamedArguments(array('primaryKey' => $generalDetailSubjectID[generalSubjectID])));
-						$detailedSubject = new DetailedSubject(new NamedArguments(array('primaryKey' => $generalDetailSubjectID[detailedSubjectID])));
+						$generalSubject = new GeneralSubject(new NamedArguments(array('primaryKey' => $generalDetailSubjectID['generalSubjectID'])));
+						$detailedSubject = new DetailedSubject(new NamedArguments(array('primaryKey' => $generalDetailSubjectID['detailedSubjectID'])));
 
 				?>
 						<tr>
@@ -359,7 +376,7 @@
 								<a href='javascript:void(0);'
 									tab='Product'
 									class='removeResourceSubjectRelationship'
-									generalDetailSubjectID='<?php echo $generalDetailSubjectID[generalDetailSubjectLinkID]; ?>'
+									generalDetailSubjectID='<?php echo $generalDetailSubjectID['generalDetailSubjectLinkID']; ?>'
 									resourceID='<?php echo $resourceID; ?>'>
 
 									<img src='images/cross.gif'
@@ -435,7 +452,7 @@
 				<th><?php echo _("Additional Notes");?></th>
 				<th>
 				<?php if ($user->canEdit()){ ?>
-					<a href='ajax_forms.php?action=getNoteForm&height=233&width=410&tab=Product&resourceID=<?php echo $resourceID; ?>&resourceNoteID=&modal=true' class='thickbox'><?php echo _("add new note");?></a>
+					<a href='ajax_forms.php?action=getNoteForm&height=233&width=410&tab=Product&entityID=<?php echo $resourceID; ?>&resourceNoteID=&modal=true' class='thickbox'><?php echo _("add new note");?></a>
 				<?php } ?>
 				</th>
 				</tr>
@@ -443,7 +460,7 @@
 					<tr>
 					<td style='width:115px;'><?php echo $resourceNote['noteTypeName']; ?><br />
 					<?php if ($user->canEdit()){ ?>
-					<a href='ajax_forms.php?action=getNoteForm&height=233&width=410&tab=Product&resourceID=<?php echo $resourceID; ?>&resourceNoteID=<?php echo $resourceNote['resourceNoteID']; ?>&modal=true' class='thickbox'><img src='images/edit.gif' alt='<?php echo _("edit");?>' title='<?php echo _("edit note");?>'></a>  <a href='javascript:void(0);' class='removeNote' id='<?php echo $resourceNote['resourceNoteID']; ?>' tab='Product'><img src='images/cross.gif' alt='<?php echo _("remove note");?>' title='<?php echo _("remove note");?>'></a>
+					<a href='ajax_forms.php?action=getNoteForm&height=233&width=410&tab=Product&entityID=<?php echo $resourceID; ?>&resourceNoteID=<?php echo $resourceNote['resourceNoteID']; ?>&modal=true' class='thickbox'><img src='images/edit.gif' alt='<?php echo _("edit");?>' title='<?php echo _("edit note");?>'></a>  <a href='javascript:void(0);' class='removeNote' id='<?php echo $resourceNote['resourceNoteID']; ?>' tab='Product'><img src='images/cross.gif' alt='<?php echo _("remove note");?>' title='<?php echo _("remove note");?>'></a>
 					<?php } ?>
 					</td>
 					<td><?php echo nl2br($resourceNote['noteText']); ?><br /><i><?php echo format_date($resourceNote['updateDate']) . _(" by ") . $resourceNote['updateUser']; ?></i></td>
@@ -454,7 +471,7 @@
 		}else{
 			if ($user->canEdit()){
 			?>
-				<a href='ajax_forms.php?action=getNoteForm&height=233&width=410&tab=Product&resourceID=<?php echo $resourceID; ?>&resourceNoteID=&modal=true' class='thickbox'><?php echo _("add new note");?></a>
+				<a href='ajax_forms.php?action=getNoteForm&height=233&width=410&tab=Product&entityID=<?php echo $resourceID; ?>&resourceNoteID=&modal=true' class='thickbox'><?php echo _("add new note");?></a>
 			<?php
 			}
 		}

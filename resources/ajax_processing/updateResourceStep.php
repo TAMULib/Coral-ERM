@@ -4,7 +4,7 @@ $userGroupID = $_POST['userGroupID'];
 $note = $_POST['note'];
 $applyToAll = ($_POST['applyToAll'] == "true")? true:false;
 $userGroupIDChanged = $_POST['userGroupIDChanged'];
-
+$newStepStartDate = date("Y-m-d",strtotime($_POST['newStepStartDate']));
 
 if($resourceStepID != ''){
     $step = new ResourceStep(new NamedArguments(array('primaryKey' => $resourceStepID)));
@@ -30,6 +30,15 @@ if($resourceStepID != ''){
                     }
                 }
             }
+        } catch (Exception $e) {
+            echo $e->getMessage();
+        }
+    }
+
+    if ($newStepStartDate != $step->stepStartDate) {
+        $step->stepStartDate = $newStepStartDate;
+        try {
+            $step->save();
         } catch (Exception $e) {
             echo $e->getMessage();
         }

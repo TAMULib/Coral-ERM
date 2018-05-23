@@ -111,7 +111,7 @@ class User extends DatabaseObject {
 		$status = new Status();
 		$statusID = $status->getIDFromName($statusName);
 
-		$query = "SELECT resourceID, date_format(createDate, '%c/%e/%Y') createDate, acquisitionTypeID, titleText, statusID
+		$query = "SELECT resourceID, date_format(createDate, '%c/%e/%Y') createDate, titleText, statusID
 			FROM Resource
 			WHERE statusID = '" . $statusID . "'
 			AND createLoginID = '" . $this->loginID . "'
@@ -151,7 +151,18 @@ class User extends DatabaseObject {
 
 
 	//returns array of resource arrays that are in the outstanding queue for this user
-	public function getOutstandingTasks(){
+	public function getOutstandingTasks($type="current") {
+		$config = new Configuration();
+		//The current/future task results can be configured as splitting at n months into the future.
+		//The default behavior is for current tasks to fall as current year or earlier, future tasks as next year and later
+		$monthsIntoFuture = (is_numeric($config->settings->futureTaskMonths)) ? $config->settings->futureTaskMonths:null;
+		if ($monthsIntoFuture) {
+			$futureSql = "RS.stepStartDate > DATE_ADD(NOW(), INTERVAL {$monthsIntoFuture} MONTH)";
+			$currentSql = "RS.stepStartDate <= DATE_ADD(NOW(), INTERVAL {$monthsIntoFuture} MONTH)";
+		} else {
+			$futureSql = 'YEAR(RS.stepStartDate) > YEAR(CURDATE())';
+			$currentSql = 'YEAR(RS.stepStartDate) <= YEAR(CURDATE())';
+		}
 
 		$status = new Status();
 		$excludeStatus =  Array();
@@ -166,15 +177,31 @@ class User extends DatabaseObject {
 			$whereAdd = "";
 		}
 
-		$query = "SELECT DISTINCT R.resourceID, date_format(createDate, '%c/%e/%Y') createDate, acquisitionTypeID, titleText, statusID
-			FROM Resource R, ResourceStep RS, UserGroupLink UGL
-			WHERE R.resourceID = RS.resourceID
+		$orderBy = '1 desc';
+		switch($type) {
+			case 'future':
+				$whereAdd = "AND {$futureSql}";
+			break;
+			case 'current':
+			default:
+				$whereAdd = "AND {$currentSql}";
+				$orderBy = 'RS.reviewDate ASC, 1 DESC';
+			break;
+		}
+
+		$query = "SELECT DISTINCT R.resourceID, date_format(createDate, '%c/%e/%Y') createDate, titleText, statusID, 
+            RA.resourceAcquisitionID, RA.acquisitionTypeID,
+            date_format(subscriptionStartDate, '%c/%e/%Y') subscriptionStartDate,
+            date_format(subscriptionEndDate, '%c/%e/%Y') subscriptionEndDate, RS.reviewDate
+			FROM Resource R, ResourceAcquisition RA, ResourceStep RS, UserGroupLink UGL
+			WHERE R.resourceID = RA.resourceID
+            AND RA.resourceAcquisitionID = RS.resourceAcquisitionID
 			AND RS.userGroupID = UGL.userGroupID
 			AND UGL.loginID = '" . $this->loginID . "'
 			AND (RS.stepEndDate IS NULL OR RS.stepEndDate = '0000-00-00')
 			AND (RS.stepStartDate IS NOT NULL AND RS.stepStartDate != '0000-00-00')
 			" . $whereAdd . "
-			ORDER BY 1 desc";
+			ORDER BY {$orderBy}";
 
 		$result = $this->db->processQuery($query, 'assoc');
 
@@ -211,7 +238,6 @@ class User extends DatabaseObject {
 
 	//returns array of tasks that are in the outstanding queue for this resource and user
 	public function getOutstandingTasksByResource($outstandingResourceID){
-
 		$status = new Status();
 		$excludeStatus =  Array();
 		$excludeStatus[]=$status->getIDFromName('complete');
@@ -225,17 +251,19 @@ class User extends DatabaseObject {
 			$whereAdd = "";
 		}
 
+		//TAMU Customization - fundCode alias
 		$query = "SELECT DISTINCT RS.stepName, date_format(stepStartDate, '%c/%e/%Y') startDate
-			FROM Resource R, ResourceStep RS, UserGroupLink UGL
-			WHERE R.resourceID = RS.resourceID
+				(SELECT IF(RP.fundSpecial IS NOT NULL,CONCAT(F.fundCode,RP.fundSpecial),F.fundCode) FROM ResourcePayment RP LEFT JOIN Fund F ON F.fundID=RP.fundID WHERE RP.resourceID=R.resourceID ORDER BY RP.resourcePaymentID DESC LIMIT 1) AS fundCode
+			FROM Resource R, ResourceAcquisition RA, ResourceStep RS, UserGroupLink UGL
+			WHERE R.resourceID = RA.resourceID
+            AND RA.resourceAcquisitionID = RS.resourceAcquisitionID
 			AND RS.userGroupID = UGL.userGroupID
 			AND UGL.loginID = '" . $this->loginID . "'
 			AND R.resourceID = '" . $outstandingResourceID . "'
 			AND (RS.stepEndDate IS NULL OR RS.stepEndDate = '0000-00-00')
 			AND (RS.stepStartDate IS NOT NULL AND RS.stepStartDate != '0000-00-00')
 			" . $whereAdd . "
-			ORDER BY 1 desc LIMIT 0,25";
-
+			ORDER BY 1 DESC LIMIT 0,25";
 		$result = $this->db->processQuery($query, 'assoc');
 
 		$resourceArray = array();

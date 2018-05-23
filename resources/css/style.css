@@ -525,6 +525,11 @@ table.dataTable td.alt {
 	vertical-align: middle;
 }
 
+table.table-striped tbody tr:nth-child(odd) td{
+	background-color: #fff;
+}
+
+
 table.dataTable th {
 	margin: 0;
 	padding: 6px;
@@ -884,7 +889,7 @@ table.borderedFormTable td.searchRow {
 	-moz-border-radius: 0px;
 }
 
-table.borderedFormTable td.searchRow label b {
+table.borderedFormTable td.searchRow label b, table.borderedFormTable td.searchRow label strong {
 			color: #fff;
 			font-weight: 100;
 			font-size: 11px;
@@ -1146,33 +1151,33 @@ img[src*="arrowup.png"] {
 			vertical-align: middle !important;
 }
 
+div#div_acquisitions {
+		width: 597px !important;
+}
+
 /*--- Table Column Widths ---*/
 
 table.dataTable th:nth-of-type(1) {
-			min-width: 36px;
-}
-
-table.dataTable th:nth-of-type(2) {
 			min-width: 250px;
 }
 
-table.dataTable th:nth-of-type(3) {
+table.dataTable th:nth-of-type(2) {
 			min-width: 36px;
 }
 
-table.dataTable th:nth-of-type(4) {
+table.dataTable th:nth-of-type(3) {
 			min-width: 68px;
 }
 
-table.dataTable th:nth-of-type(5) {
+table.dataTable th:nth-of-type(4) {
 			min-width: 100px;
 }
 
-table.dataTable th:nth-of-type(6) {
+table.dataTable th:nth-of-type(5) {
 			min-width: 120px;
 }
 
-table.dataTable th:nth-of-type(7) {
+table.dataTable th:nth-of-type(6) {
 			min-width: 68px;
 }
 
@@ -1202,7 +1207,6 @@ a.newSearch:before {
 
 a.newSearch {
 			text-decoration: none;
-			text-transform: capitalize;
 			font-size: 12px;
 }
 
@@ -1219,7 +1223,6 @@ a#logout:before {
 
 a#logout {
 			text-decoration: none;
-			text-transform: capitalize;
 			font-size: 12px;
 			position: relative;
 			top: 4px;
@@ -1239,7 +1242,6 @@ a#showMoreOptions:before {
 
 a#showMoreOptions {
 			text-decoration: none;
-			text-transform: capitalize;
 			font-size: 12px;
 }
 
@@ -1256,7 +1258,6 @@ a#showMoreOptions:hover {
 
 #print-view a {
 			text-decoration: none;
-			text-transform: capitalize;
 			font-size: 12px;
 }
 
@@ -1275,7 +1276,6 @@ a.showProduct:before {
 
 a.showProduct {
 			text-decoration: none;
-			text-transform: capitalize;
 			font-size: 12px;
 }
 
@@ -1292,7 +1292,6 @@ a.showAcquisitions:before {
 
 a.showAcquisitions {
 			text-decoration: none;
-			text-transform: capitalize;
 			font-size: 12px;
 }
 
@@ -1309,7 +1308,6 @@ a.showAccess:before {
 
 a.showAccess {
 			text-decoration: none;
-			text-transform: capitalize;
 			font-size: 12px;
 }
 
@@ -1326,7 +1324,6 @@ a.showCataloging:before {
 
 a.showCataloging {
 			text-decoration: none;
-			text-transform: capitalize;
 			font-size: 12px;
 }
 
@@ -1343,7 +1340,6 @@ a.showContacts:before {
 
 a.showContacts {
 			text-decoration: none;
-			text-transform: capitalize;
 			font-size: 12px;
 }
 
@@ -1360,7 +1356,6 @@ a.showAttachments:before {
 
 a.showAttachments {
 			text-decoration: none;
-			text-transform: capitalize;
 			font-size: 12px;
 }
 
@@ -1377,13 +1372,29 @@ a.showWorkflow:before {
 
 a.showWorkflow {
 			text-decoration: none;
-			text-transform: capitalize;
 			font-size: 12px;
 }
 
 a.showWorkflow:hover {
 			color: #ccc;
 }
+
+a.showOrders:before {
+	font-family: FontAwesome;
+	content: "\f080";
+	font-size: 11px;
+	margin-right: 5px;
+}
+
+a.showOrders {
+			text-decoration: none;
+			font-size: 12px;
+}
+
+a.showOrders:hover {
+			color: #ccc;
+}
+
 
 /*---------------*/
 
@@ -1420,7 +1431,7 @@ td.searchRow textarea {
 }
 
 .resource_tab_content {
-			width: 630px !important;
+			width: 630px;
 }
 
 .sidemenu {
@@ -1429,7 +1440,7 @@ td.searchRow textarea {
 }
 
 .mainContent {
-			width: 430px;
+			width: 100%;
 			padding: 10px;
 }
 
@@ -1460,6 +1471,11 @@ input[type="button"]:hover {
 			cursor: pointer;
 }
 
+input:disabled, select:disabled, input[readonly] {
+	background-color: #e9ecef;
+	opacity: 1;
+}
+
 table.surroundBox table.noBorder {
 			margin: 15px !important;
 }
@@ -1472,7 +1488,6 @@ table.surroundBox table.noBorder {
 			background: #1b76a9;
 			border: none;
 			padding: 5px 10px;
-			text-transform: capitalize;
 }*/
 
 table.headerTable > tbody > tr > td > table:nth-child(1) > tbody > tr > td {
@@ -1484,7 +1499,6 @@ table.headerTable > tbody > tr > td > table:nth-child(1) > tbody > tr > td {
 
 .queueMenuLink a {
 	text-decoration: none;
-	text-transform: capitalize;
 	font-size: 12px;
 }
 
@@ -1533,6 +1547,11 @@ a.helpfulLink {
 			text-decoration: underline !important;
 }
 
+a.helpfulLink__hidden {
+	position: absolute;
+	left: -9999999px;
+}
+
 /*--- Custom CSS for Login Box ---*/
 
 label:nth-of-type(3) {
@@ -1563,7 +1582,6 @@ a#admin-link:before {
 
 a#admin-link {
 			text-decoration: none;
-			text-transform: capitalize;
 			font-size: 14px;
 }
 
@@ -1580,7 +1598,6 @@ a#login-link:before {
 
 a#login-link {
 			text-decoration: none;
-			text-transform: capitalize;
 			font-size: 14px;
 }
 
@@ -1606,6 +1623,11 @@ a#login-link:hover {
 	margin-bottom: 20px;
 }
 
+#dashboardPage legend {
+    color: white;
+    margin-bottom: 10px;
+}
+
 input#resourceTypeID {
 	margin-right: 5px;
 }
@@ -1617,12 +1639,6 @@ div#div_searchResults > i {
 	position: relative;
 	top: 20px;
 	left: 20px;
-}
-
-/*--- Capitalize Add/Edit Links ---*/
-
-.div_mainContent a {
-	text-transform: capitalize;
 }
 
 /*---  Adjust Edit Resource Form Modal Window ---*/
@@ -1644,7 +1660,6 @@ span#newParent {
 	background: #1b76a9;
 	border: none;
 	padding: 5px 10px;
-	text-transform: capitalize;
 	margin-left: 15px;
 }
 
@@ -1660,7 +1675,6 @@ span#newParent {
 	background: #1b76a9;
 	border: none;
 	padding: 5px 10px;
-	text-transform: capitalize;
 	margin-left: 5px;
 }
 
@@ -1698,7 +1712,6 @@ img.addAlias {
 	background: #1b76a9;
 	border: none;
 	padding: 5px 10px;
-	text-transform: capitalize;
 	margin-left: 5px;
 }
 
@@ -1716,7 +1729,6 @@ img.addAlias {
 	background: #1b76a9;
 	border: none;
 	padding: 5px 10px;
-	text-transform: capitalize;
 	margin-left: 5px;
 }
 
@@ -1732,7 +1744,6 @@ img.addAlias {
 	background: #1b76a9;
 	border: none;
 	padding: 5px 10px;
-	text-transform: capitalize;
 	margin-left: 5px;
 }
 
@@ -1750,7 +1761,6 @@ img.addAlias {
 	background: #1b76a9;
 	border: none;
 	padding: 5px 10px;
-	text-transform: capitalize;
 	margin-left: 5px;
 }
 
@@ -1768,7 +1778,6 @@ img.addAlias {
 	background: #1b76a9;
 	border: none;
 	padding: 5px 10px;
-	text-transform: capitalize;
 	margin-left: 5px;
 }
 
@@ -1786,7 +1795,6 @@ img.addAlias {
 	background: #1b76a9;
 	border: none;
 	padding: 5px 10px;
-	text-transform: capitalize;
 	margin-left: 5px;
 }
 
@@ -1802,7 +1810,6 @@ img.addAlias {
 	background: #1b76a9;
 	border: none;
 	padding: 5px 10px;
-	text-transform: capitalize;
 	margin-left: 5px;
 }
 
@@ -1825,7 +1832,6 @@ img.addLicense {
 	background: #1b76a9;
 	border: none;
 	padding: 5px 10px;
-	text-transform: capitalize;
 	margin-left: 5px;
 }
 
@@ -1841,7 +1847,6 @@ img.addLicense {
 	background: #1b76a9;
 	border: none;
 	padding: 5px 10px;
-	text-transform: capitalize;
 	margin-left: 5px;
 }
 
@@ -1859,7 +1864,6 @@ img.addLicense {
 	background: #1b76a9;
 	border: none;
 	padding: 5px 10px;
-	text-transform: capitalize;
 	margin-left: 5px;
 }
 
@@ -1875,7 +1879,6 @@ img.addLicense {
 	background: #1b76a9;
 	border: none;
 	padding: 5px 10px;
-	text-transform: capitalize;
 	margin-left: 5px;
 }
 
@@ -1893,7 +1896,6 @@ img.addLicense {
 	background: #1b76a9;
 	border: none;
 	padding: 5px 10px;
-	text-transform: capitalize;
 	margin-left: 5px;
 }
 
@@ -1909,7 +1911,6 @@ img.addLicense {
 	background: #1b76a9;
 	border: none;
 	padding: 5px 10px;
-	text-transform: capitalize;
 	margin-left: 5px;
 }
 
@@ -1927,7 +1928,6 @@ img.addLicense {
 	background: #1b76a9;
 	border: none;
 	padding: 5px 10px;
-	text-transform: capitalize;
 	margin-left: 5px;
 }
 
@@ -1943,7 +1943,6 @@ img.addLicense {
 	background: #1b76a9;
 	border: none;
 	padding: 5px 10px;
-	text-transform: capitalize;
 	margin-left: 5px;
 }
 
@@ -1962,7 +1961,6 @@ label[for=uploadFile] {
 /*------------------------------*/
 
 .adminRightPanel a {
-	text-transform: capitalize;
 }
 
 div#div_AdminContent .linedDataTable {
@@ -1979,7 +1977,6 @@ div#div_AdminContent .linedDataTable {
 	background: #1b76a9;
 	border: none;
 	padding: 5px 10px;
-	text-transform: capitalize;
 	margin-left: 5px;
 }
 
@@ -1997,7 +1994,6 @@ div#div_AdminContent .linedDataTable {
 	background: #1b76a9;
 	border: none;
 	padding: 5px 10px;
-	text-transform: capitalize;
 	margin-left: 5px;
 }
 
@@ -2015,7 +2011,6 @@ div#div_AdminContent .linedDataTable {
 	background: #1b76a9;
 	border: none;
 	padding: 5px 10px;
-	text-transform: capitalize;
 	margin-left: 5px;
 }
 
@@ -2031,7 +2026,6 @@ div#div_AdminContent .linedDataTable {
 	background: #1b76a9;
 	border: none;
 	padding: 5px 10px;
-	text-transform: capitalize;
 	margin-left: 5px;
 }
 
@@ -2049,7 +2043,6 @@ div#div_AdminContent .linedDataTable {
 	background: #1b76a9;
 	border: none;
 	padding: 5px 10px;
-	text-transform: capitalize;
 	margin-left: 5px;
 }
 
@@ -2067,7 +2060,6 @@ div#div_AdminContent .linedDataTable {
 	background: #1b76a9;
 	border: none;
 	padding: 5px 10px;
-	text-transform: capitalize;
 	margin-left: 5px;
 }
 
@@ -2083,7 +2075,6 @@ div#div_AdminContent .linedDataTable {
 	background: #1b76a9;
 	border: none;
 	padding: 5px 10px;
-	text-transform: capitalize;
 	margin-left: 5px;
 }
 
@@ -2099,7 +2090,6 @@ div#div_AdminContent .linedDataTable {
 	background: #1b76a9;
 	border: none;
 	padding: 5px 10px;
-	text-transform: capitalize;
 	margin-left: 5px;
 }
 
@@ -2117,7 +2107,6 @@ div#div_AdminContent .linedDataTable {
 	background: #1b76a9;
 	border: none;
 	padding: 5px 10px;
-	text-transform: capitalize;
 	margin-left: 5px;
 }
 
@@ -2133,7 +2122,6 @@ div#div_AdminContent .linedDataTable {
 	background: #1b76a9;
 	border: none;
 	padding: 5px 10px;
-	text-transform: capitalize;
 	margin-left: 5px;
 }
 
@@ -2151,7 +2139,6 @@ div#div_AdminContent .linedDataTable {
 	background: #1b76a9;
 	border: none;
 	padding: 5px 10px;
-	text-transform: capitalize;
 	margin-left: 5px;
 }
 
@@ -2167,7 +2154,6 @@ div#div_AdminContent .linedDataTable {
 	background: #1b76a9;
 	border: none;
 	padding: 5px 10px;
-	text-transform: capitalize;
 	margin-left: 5px;
 }
 
@@ -2196,9 +2182,6 @@ a.showAccounts:before {
 		margin-right: 5px;
 }
 
-a.showAccounts {
-	text-transform: capitalize;
-}
 
 /*--- IE 11 Fix for Sidemenu Link Color ---*/
 
@@ -2216,18 +2199,16 @@ input#stats {
 		margin-left: 5px;
 }
 
-/*--- Capitalize Logout Link ---
-
-.titleTable a {
-		text-transform: capitalize;
-}
-*/
 /*--- Decorate Pagination Links ---*/
 
 a.smallLink {
 	font-size: 12px;
 	text-decoration: none;
 	color: #1B76A9;
+}
+
+.pagination > span, .pagination > a {
+	padding: 0 1px;
 }
 
 /*--- Add Scrollbar to Subject Modal Window ---*/
@@ -2347,10 +2328,6 @@ a.showIssues:before {
     margin-right: 5px;
 }
 
-a.showIssues {
-	text-transform: capitalize;
-}
-
 #issueTable img {
 	width: 20px;
 	margin-left: 8px;
@@ -2420,7 +2397,6 @@ div#archivedDowntime {
     background: #1b76a9;
     border: none;
     padding: 5px 10px;
-    text-transform: capitalize;
     margin-left: 5px;
 }
 
@@ -2436,16 +2412,11 @@ div#archivedDowntime {
     background: #1b76a9;
     border: none;
     padding: 5px 10px;
-    text-transform: capitalize;
 }
 
 #newIssueForm input[value=cancel]:hover {
     cursor: pointer;
 }*/
-
-a#getCreateContactForm {
-	text-transform: capitalize;
-}
 
 .issueResources {
 	margin-top: 8px;
@@ -2512,7 +2483,6 @@ a#getCreateContactForm {
     background: #1b76a9;
     border: none;
     padding: 5px 10px;
-    text-transform: capitalize;
     margin-left: 5px;
 }
 
@@ -2528,7 +2498,6 @@ a#getCreateContactForm {
     background: #1b76a9;
     border: none;
     padding: 5px 10px;
-    text-transform: capitalize;
 }
 
 #newDowntimeForm input[value=cancel]:hover {
@@ -2543,7 +2512,6 @@ a#getCreateContactForm {
     background: #1b76a9;
     border: none;
     padding: 5px 10px;
-    text-transform: capitalize;
     margin-bottom: 15px;
 }
 
@@ -2567,7 +2535,6 @@ a#getCreateContactForm {
     background: #1b76a9;
     border: none;
     padding: 2px 10px;
-    text-transform: capitalize;
     margin-bottom: 15px;
 }
 
@@ -2671,7 +2638,6 @@ a#archiveddowntimeBtn {
     background: #1b76a9;
     border: none;
     padding: 5px 10px;
-    text-transform: capitalize;
     margin-right: 5px;
 }
 
@@ -2814,7 +2780,6 @@ form#config_form #matchsubmit {
     background: #1b76a9;
     border: none;
     padding: 5px 10px;
-    text-transform: capitalize;
 }
 
 form#config_form #matchsubmit:hover {
@@ -2950,7 +2915,6 @@ table#resource-type td {
     background: #1b76a9;
     border: none;
     padding: 5px 10px;
-    text-transform: capitalize;
     margin-left: 8px;
     min-width: 60px;
     margin-top: 10px;
@@ -2984,6 +2948,38 @@ a.save-button
  {
     color: #FFFFFF !important;
     text-decoration: none !important;
+}
+
+.btn {
+	border-color: rgb(216, 216, 216) rgb(209, 209, 209) rgb(186, 186, 186);
+	border-radius: 4px;
+	border-style: solid;
+	border-width: 1px;
+	padding: 1px 7px 2px;
+	font-family: "Arial", sans-serif;
+	font-size: 11px;
+	font-weight: normal;
+	height: 18px;
+	line-height: 8px;
+	cursor: pointer;
+	min-width: 60px;
+}
+a.btn {
+	padding: 3px 10px;
+}
+.btn-primary {
+	color: #FFFFFF !important;
+	text-decoration: none !important;
+	border: none;
+	background: #1b76a9;
+}
+
+/*--- Text Helpers ---*/
+.text-success {
+	color: #4B7717;
+}
+.text-danger {
+	color: #99351E;
 }
 
 /*--- Add Space Between Up/Down Arrows ---*/
@@ -3155,6 +3151,7 @@ table.titleTable {
 
 #main-table {
     margin: 0 30px;
+    width: 1024px;
 }
 
 /*--- Allow Browser to Scroll When Modal Appears ---*/
@@ -3246,3 +3243,103 @@ input#archiveInd {
 	margin-top: 0px !important;
 	overflow-x: hidden !important;
 }
+
+/* TAMU Customizations */
+
+.task-group table.dataTable {	
+	width: 100%;
+}
+
+.existing-notes {
+	margin-top: 12px;
+}
+
+.existing-notes h3 {
+	margin: 8px 0;
+}
+
+#quickToDoForm td {
+	padding: 6px;
+}
+
+#quickToDoForm td label {
+	font-weight: bold;
+}
+
+#quickToDoForm #formButtons {
+	min-height: 40px;
+}
+
+#quickToDoForm #formButtons.loading {
+	background-image: url('../images/circle.gif');
+	background-position: center center;
+	background-repeat: no-repeat;
+}
+
+#quickToDoForm #formButtons.loading table {
+	display: none;
+}
+
+#quickToDoForm #forceDuplicate {
+	display: none;
+}
+
+/* Have to use important here, in order to override its use in .resource_tab_content */
+#div_acquisitions.enhanced-cost {
+    width: 900px !important;
+}
+
+#div_acquisitions.enhanced-cost .mainContent {
+    width: 880px;
+}
+
+#div_acquisitions.enhanced-cost #div_fullRightPanel {
+	display: none;
+}
+
+.paymentTable td.fund, .newPaymentTable td.fund {
+	width: 110px;
+	min-width: 110px;
+}
+
+.paymentTable td.fund select, .newPaymentTable td.fund select {
+	max-width: 80px;
+}
+
+.paymentTable td.fund input, .newPaymentTable td.fund input {
+	max-width: 20px;
+}
+
+#outstandingTasks .sortable {
+	cursor: pointer;
+}
+
+div.surroundBox .form-element {
+	display:inline-block;
+	vertical-align:middle;
+}
+
+div.surroundBox .form-element-label {
+	margin-right: 30px;
+}
+
+.surroundBox {
+	border-width: 1px;
+	border-style: solid;
+	border-color: #e6e5e9;
+	font-size:100%;
+}
+
+div.surroundBox {
+	padding: 24px;
+}
+
+table.newPaymentTable td {
+	padding:2px 5px;
+}
+
+.paymentTable td.date-wrapper, .newPaymentTable td.date-wrapper {
+	width: 90px;
+	min-width: 90px;
+}
+

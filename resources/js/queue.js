@@ -29,6 +29,11 @@
 		updatePage($(this).attr("id"),"getSavedQueue");
 	});
 
+	//TAMU Customization - Extra tab
+	$("#CompletedRequests").click(function () {
+		updatePage($(this).attr("id"),"getCompletedQueue");
+	});
+
 	$('.deleteRequest').live('click', function () {
 		deleteRequest($(this).attr("id"));
 	});
@@ -37,7 +42,68 @@
 	//load the initial tab on page load
 	$("#OutstandingTasks").click();
 
+	//TAMU Customization - Sorting
+	$('#outstandingTasks th.sortable').live('click',function(){
+	    var table = $(this).parents('table').eq(0);
+	    var rows = table.find('tr:gt(0)').toArray().sort(comparer($(this).index()));
+	    this.asc = !this.asc;
+	    if (!this.asc) {
+			rows = rows.reverse();
+		}
+	    for (var i = 0; i < rows.length; i++) {
+			table.append(rows[i]);
+		}
+	});
+
+	function comparer(index) {
+	    return function(a, b) {
+	        var valA = getCellValue(a, index), valB = getCellValue(b, index)
+	        return valA.localeCompare(valB);
+	    }
+	}
+
+	function getCellValue(row, index) {
+		return $(row).children('td').eq(index).text();
+	}
+
+	//TAMU Customization - Delete Requests
+ 	$('.deleteRequest').live('click', function () {
+ 		deleteRequest($(this).attr("id"));
+ 	});
+
+ 	//TAMU Customization - Mark complete/reviewed
+ 	$(".mark-complete").live("click", function(e) {
+		e.preventDefault();
+		$.ajax({
+			type:       "GET",
+			url:        "ajax_processing.php",
+			cache:      false,
+			data:       "action=markComplete&resourceStepID=" + $(this).attr("href"),
+			success:    function(html) {
+				$("#OutstandingTasks").click();
+			}
+		});
+	});
+
+	$(".mark-reviewed").live("click", function(e) {
+		e.preventDefault();
+		$.ajax({
+			type:       "GET",
+			url:        "ajax_processing.php",
+			cache:      false,
+			data:       "action=markReviewed&resourceStepID=" + $(this).attr("href"),
+			success:    function(html) {
+				$("#OutstandingTasks").click();
+			}
+		});
+	});
+
 });
+
+//TAMU Customization - this wrapper function allows us to refresh the tasks view from other contexts. Currently used by resourceStepForm.js
+function updateOutstandingTasks() {
+	$("#OutstandingTasks").click();
+}
 
 function updatePage(activeTab,requestAction) {
 	$(".queueMenuLink a").parent().parent().removeClass('selected');
@@ -57,9 +123,11 @@ function updatePage(activeTab,requestAction) {
 }
 
 function updateTaskNumbers(classSuffix,requestAction) {
+	//TAMU Customization - CompletedRequests
 	taskData = [{"classSuffix":"OutstandingTasksNumber","requestAction":"getOutstandingTasksNumber"},
 				{"classSuffix":"SavedRequestsNumber","requestAction":"getSavedRequestsNumber"},
-				{"classSuffix":"SubmittedRequestsNumber","requestAction":"getSubmittedRequestsNumber"}];
+				{"classSuffix":"SubmittedRequestsNumber","requestAction":"getSubmittedRequestsNumber"},
+				{"classSuffix":"CompletedRequestsNumber","requestAction":"getCompletedRequestsNumber"}];
 	$.each(taskData,function(i,task) {
 	   $.ajax({
 	 	 type:       "GET",
