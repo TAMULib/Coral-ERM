@@ -1733,8 +1733,9 @@ class Resource extends DatabaseObject implements ResourceInterface {
 	*/
 	public function findByPurchaseOrder($purchaseOrder) {
 		$query = "SELECT r.resourceID FROM Resource r
-				LEFT JOIN ResourcePayment rp ON rp.resourceID=r.resourceID
-				WHERE rp.purchaseOrder='{$purchaseOrder}' LIMIT 1";
+                LEFT JOIN ResourceAcquisition RA ON RA.resourceID = r.resourceID
+				LEFT JOIN ResourcePayment RPAY ON RA.resourceAcquisitionID = RPAY.resourceAcquisitionID
+				WHERE RPAY.purchaseOrder='{$purchaseOrder}' LIMIT 1";
 		$result = $this->db->processQuery($query);
 		if (is_array($result)) {
 			return $result[0];
