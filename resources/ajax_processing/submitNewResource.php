@@ -2,10 +2,6 @@
 
 $config = new Configuration();
 
-$resourceID = $_POST['resourceID'];
-$resourceAcquisitionID = $_POST['resourceAcquisitionID'];
-$createMode = $_POST['createMode'];
-
 /*
 if $externalId is defined and an ExternalResource implementation is configured, we will:
 	1) Try to retrieve the remote resource data by $externalId
@@ -18,6 +14,14 @@ $forceDuplicate = !empty($_POST['forceDuplicate']) ? $_POST['forceDuplicate']:nu
 
 $fromExternal = ($externalId && class_exists($config->settings->externalResourceRepoClass));
 $outputJson = $fromExternal ? true:false;
+
+$resourceID = null;
+$createMode = null;
+if (!$fromExternal) {
+	$resourceID = $_POST['resourceID'];
+	$resourceAcquisitionID = $_POST['resourceAcquisitionID'];
+	$createMode = $_POST['createMode'];
+}
 
 if ($resourceID && $createMode != 'clone') {
 	//get this resource
@@ -71,7 +75,7 @@ if (!$fromExternal) {
 	try {
 		$resource->save();
 	} catch (Exception $e) {
-		echo $e->getMessage();
+		error_log($e->getMessage());
 	}
 }
 
@@ -90,13 +94,9 @@ try {
 			$resource->resourceTypeID = 2;
 			$resource->resourceFormatID = 2;
 			$resource->acquisitionTypeID = 1;
-			try {
-				$resource->save();
-			} catch (Exception $e) {
-				echo $e->getMessage();
-			}
+
 			$status = new Status();
-			$statusID = $status->getIDFromName('progress');
+			$resource->statusID = $status->getIDFromName('progress');
 
 			$resource->setTitleText($remoteResourceRepo->getResourceObject()->getTitleText());
 
@@ -105,6 +105,19 @@ try {
 				$addableIsbnOrIssns[] = $isbnOrIssnObject->getIsbnOrIssn();
 			}
 			$resource->setIsbnOrIssn($addableIsbnOrIssns);
+
+			try {
+				$resource->save();
+			} catch (Exception $e) {
+				error_log($e->getMessage());
+			}
+
+			$resourceAcquisition = new ResourceAcquisition();
+			$resourceAcquisition->resourceID = $resource->primaryKey;
+			$resourceAcquisition->acquisitionTypeID = $resource->acquisitionTypeID;
+			$resourceAcquisition->subscriptionStartDate = date("Y-m-d");
+			$resourceAcquisition->subscriptionEndDate = date("Y-m-d");
+			$resourceAcquisition->save();
 
 			$fund = new Fund();
 			foreach ($remoteResourceRepo->getResourcePaymentObjects() as $remoteResourcePayment) {
@@ -125,7 +138,6 @@ try {
 					}
 				}
 				$resourcePayment = new ResourcePayment();
-				$resourcePayment->resourceID    = $resource->primaryKey;
 				$resourcePayment->year          = date("Y");
 				$resourcePayment->fundID      	= $fundID;
 				$resourcePayment->fundSpecial      	= $fundSpecial;
@@ -135,6 +147,7 @@ try {
 				$resourcePayment->paymentAmount = 0;
 				$resourcePayment->currencyCode  = $config->settings->defaultCurrency;
 				$resourcePayment->orderTypeID   = 1;
+				$resourcePayment->resourceAcquisitionID = $resourceAcquisition->primaryKey;
 				$paymentYear = date("Y");
 				if (date("Y-m-d") > $currentYear.'-07-01') {
 					$paymentYear++;
@@ -144,7 +157,7 @@ try {
 				try {
 					$resourcePayment->save();
 				} catch (Exception $e) {
-					echo $e->getMessage();
+					error_log($e->getMessage());
 				}
 			}
 			$resourceData = array("resourceID"=>$resource->primaryKey);
