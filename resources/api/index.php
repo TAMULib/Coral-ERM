@@ -394,7 +394,7 @@ Flight::route('/postResourceNote/', function() {
     if ($resourceID && $noteText) {
         try {
             $noteType = new NoteType();
-            $noteTypeID = $noteType->getNoteTypeIDByName("Feedback");
+            $noteTypeID = $noteType->getNoteTypeIDByName(isset(Flight::request()->data['noteTypeName']) ? Flight::request()->data['noteTypeName'] : "Feedback");
             $resourceNote = new ResourceNote();
             $resourceNote->resourceNoteID   = '';
             $resourceNote->updateLoginID    = $user;
