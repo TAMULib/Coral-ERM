@@ -59,6 +59,19 @@ Flight::route('/proposeResource/', function(){
     foreach ($fieldNames as $fieldName) {
         $resource->$fieldName = Flight::request()->data->$fieldName;
     }
+
+    $resourceTypeObj = new ResourceType();
+    $resourceType = $resourceTypeObj->getResourceTypeIDByName('Database');
+    if ($resourceType) {
+        $resource->resourceTypeID = $resourceType;
+    }
+
+    $resourceFormatObj = new ResourceFormat();
+    $resourceFormat = $resourceFormatObj->getResourceFormatIDByName('Electronic');
+    if ($resourceFormat) {
+        $resource->resourceFormatID = $resourceFormat;
+    }
+
     try {
         $resource->save();
         $resourceID = $resource->primaryKey;
