@@ -239,8 +239,8 @@
                 <textarea type="text" class="form-control do-note" id="noteVendor" rows="5" minlength="1" required></textarea>
               </div>
               <div class="form-group">
-                <label for="noteQuote"><span class="label-text">Vendor Price Quote</span>:<span class="required-asterisk" aria-hidden="true">*</span></label>
-                <input type="text" class="form-control do-note" id="noteQuote" value="" minlength="1" required>
+                <label for="noteQuote"><span class="label-text">Vendor Price Quote</span>:</label>
+                <input type="text" class="form-control do-note" id="noteQuote" value="">
               </div>
               <div class="form-group">
                 <label for="noteInfo"><span class="label-text">Notes/Additional Info</span>:</label>
