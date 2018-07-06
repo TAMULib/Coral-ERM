@@ -111,11 +111,13 @@ Flight::route('/proposeResource/', function(){
 
         // General notes
         $noteText = '';
-        foreach (array("noteText" => "Note", "providerText" => "Provider", "publicationYear" => "Publication Year or order start date", "edition" => "Edition", "holdLocation" => "Hold location", "patronHold" => "Patron hold", "neededByDate" => "Urgent") as $key => $value) {
+        foreach (array("noteText" => FALSE, "providerText" => "Provider", "publicationYear" => "Publication Year or order start date", "edition" => "Edition", "holdLocation" => "Hold location", "patronHold" => "Patron hold", "neededByDate" => "Urgent") as $key => $value) {
             if (isset(Flight::request()->data[$key])) {
-                $noteText .= $value . ": " . Flight::request()->data[$key] . "\n";
+                if ($value) {
+                    $noteText .= $value . ": ";
+                }
+                $noteText .= Flight::request()->data[$key] . "\n";
             }
-
         }
         if ($noteText) {
             $noteType = new NoteType();
