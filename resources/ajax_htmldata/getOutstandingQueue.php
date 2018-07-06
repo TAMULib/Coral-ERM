@@ -108,7 +108,7 @@
 												echo format_date($task['stepEndDate']) . _(" by ") . $task['endLoginID'];
 											}
 										} else {
-											if (($user->isAdmin || $user->isInGroup($task['userGroupID'])) && $task['stepStartDate']) {
+											if (($user->isAdmin || $user->isInGroup($task['userGroupID'])) && !empty($task['stepStartDate'])) {
 												echo "<a href=\"{$task['resourceStepID']}\" class=\"mark-complete\" id=\"task_{$task['resourceStepID']}\">"._("yes")."</a>";
 											}
 										}
