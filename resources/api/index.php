@@ -64,6 +64,16 @@ Flight::route('/proposeResource/', function(){
         $resourceID = $resource->primaryKey;
         $resource = new Resource(new NamedArguments(array('primaryKey' => $resourceID)));
 
+        // TAMU Customization - Prepend the provide selector and feedback information to the descriptionText.
+        $selectorEmail =  isset(Flight::request()->data->selectorEmail) ? filter_var(Flight::request()->data->selectorEmail, FILTER_SANITIZE_EMAIL) : '';
+        $selectorFirstName =  isset(Flight::request()->data->selectorFirstName) ? filter_var(Flight::request()->data->selectorFirstName, FILTER_SANITIZE_STRING) : '';
+        $selectorLastName =  isset(Flight::request()->data->selectorLastName) ? filter_var(Flight::request()->data->selectorLastName, FILTER_SANITIZE_STRING) : '';
+        $selectorTitle =  isset(Flight::request()->data->selectorTitle) ? filter_var(Flight::request()->data->selectorTitle, FILTER_SANITIZE_STRING) : '';
+        $resourceIDInt = (int) $resourceID;
+        $descriptionText = "Trial ends. Provide feedback to <a href=\"mailto:$selectorEmail\">$selectorFirstName $selectorLastName</a>, $selectorTitle or fill out a <a href=\"../tamu_trial_feedback.php?resourceID=$resourceIDInt\">short survey</a>.\n";
+        $resource->descriptionText = $descriptionText . $resource->descriptionText;
+        $resource->save();
+
 		if (isset(Flight::request()->data->isbn)){
 		    $isbnIssnArray = (is_array(Flight::request()->data->isbn))? Flight::request()->data->isbn : array(Flight::request()->data->isbn);
 			$resource->setIsbnOrIssn($isbnIssnArray);
