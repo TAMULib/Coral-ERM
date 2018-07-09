@@ -111,11 +111,11 @@
                 });
       }
 
-      function postCoralResource($form) {
+      function postCoralResource($formData) {
         return $.ajax({
                   type: "POST",
                   url: coralAPI+'proposeResource/',
-                  data: $form.serialize()
+                  data: $formData
                 }).done(function(data) {
                   if (data.resourceID) {
                     $("#doContent").html("Your proposal has been submitted.");
@@ -167,12 +167,19 @@
         });
 
         $("#proposeResourceForm").submit(function() {
-          var noteText = "\n";
-          $(this).find(".do-note").each(function() {
-            noteText += $(this).siblings("label").children(".label-text").first().text() + ": " + $(this).val() + ".\n\n";
+          var form = this;
+          var formData = {};
+
+          $(form).find("[name!=''][name]").each(function() {
+              formData[this.name] = this.value;
           });
-          $("#noteText").val(noteText);
-          postCoralResource($(this));
+
+          formData["noteText"] = {};
+          $(form).find(".do-note").each(function() {
+            formData["noteText"][$(this).siblings("label").children(".label-text").first().text()] = $(this).val() + ".";
+          });
+
+          postCoralResource(formData);
           return false;
         });
       });
@@ -219,7 +226,6 @@
             <div><p>Use the form below to request a trial for a new resource.</p></div>
             <div class="errors" aria-live="assertive"></div>
             <form id="proposeResourceForm" action="" method="POST" class="request_trial-form form">
-              <input type="hidden" id="noteText" name="noteText" value="">
               <input type="hidden" id="doAcquisitionTypeId" name="acquisitionTypeID" value="0">
               <div class="form-group">
                 <label for="titleText"><span class="label-text">Title of Resource</span>:<span class="required-asterisk" aria-hidden="true">*</span></label>

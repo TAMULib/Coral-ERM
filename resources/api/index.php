@@ -110,13 +110,7 @@ Flight::route('/proposeResource/', function(){
         }
 
         // General notes
-        $noteText = '';
-        foreach (array("noteText" => "Note", "providerText" => "Provider", "publicationYear" => "Publication Year or order start date", "edition" => "Edition", "holdLocation" => "Hold location", "patronHold" => "Patron hold", "neededByDate" => "Urgent") as $key => $value) {
-            if (isset(Flight::request()->data[$key])) {
-                $noteText .= $value . ": " . Flight::request()->data[$key] . "\n";
-            }
-
-        }
+        $noteText = generateNoteText(Flight::request()->data, array("noteText" => "Note", "providerText" => "Provider", "publicationYear" => "Publication Year or order start date", "edition" => "Edition", "holdLocation" => "Hold location", "patronHold" => "Patron hold", "neededByDate" => "Urgent"));
         if ($noteText) {
             $noteType = new NoteType();
             $noteTypeID = $noteType->getInitialNoteTypeID();
@@ -132,10 +126,7 @@ Flight::route('/proposeResource/', function(){
         }
 
         // add existing license and/or license required
-        $noteText = '';
-        foreach (array("licenseRequired" => "License required?", "existingLicense" => "Existing License?") as $key => $value) {
-            $noteText .= $value . " " . Flight::request()->data[$key] . "\n";
-        }
+        $noteText = generateNoteText(Flight::request()->data, array("licenseRequired" => "License required?", "existingLicense" => "Existing License?"));
         if ($noteText) {
             $noteTypeID = createNoteType("License Type");
             $resourceNote = new ResourceNote();
@@ -166,12 +157,7 @@ Flight::route('/proposeResource/', function(){
         }
 
         // add CM Important Factor
-        $noteText = '';
-        foreach (array("ripCode" => "RIP code", "subjectCoverage" => "Subject coverage", "audience" => "Audience", "frequency" => "Frequency and language", "access" => "Access via indexes", "contributingFactors" => "Contributing factors") as $key => $value) {
-            if (Flight::request()->data[$key]) {
-                $noteText .= $value . ": " . Flight::request()->data[$key] . "\n";
-            }
-        }
+        $noteText = generateNoteText(Flight::request()->data, array("ripCode" => "RIP code", "subjectCoverage" => "Subject coverage", "audience" => "Audience", "frequency" => "Frequency and language", "access" => "Access via indexes", "contributingFactors" => "Contributing factors"));
         if ($noteText) {
             $noteTypeID = createNoteType("CM Important Factor");
             $resourceNote = new ResourceNote();
@@ -476,4 +462,34 @@ function userExists($user) {
     $createUser = new User(new NamedArguments(array('primaryKey' => $user)));
     return $createUser->loginID ? true : false;
 }
+
+// generate a note text, with the option of supporting a keyed array (of strings) for any single mapped value.
+function generateNoteText($data, $mapping) {
+    $noteText = FALSE;
+    foreach ($mapping as $mappedKey => $mappedValue) {
+        if (!isset($data[$mappedKey])) {
+            continue;
+        }
+
+        if (is_array($data[$mappedKey])) {
+            foreach ($data[$mappedKey] as $subkey => $subvalue) {
+                if (is_string($subvalue)) {
+                    if ($noteText) {
+                        $noteText .= "\n";
+                    }
+                    $noteText .= $subkey . ": " . $subvalue . "\n";
+                }
+            }
+        }
+        else if (is_string($data[$mappedKey])) {
+            if ($noteText) {
+                $noteText .= "\n";
+            }
+            $noteText .= $mappedValue . ": " . $data[$mappedKey] . "\n";
+        }
+    }
+
+    return $noteText;
+}
+
 ?>
