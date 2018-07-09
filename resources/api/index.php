@@ -60,6 +60,7 @@ Flight::route('/proposeResource/', function(){
         $resource->$fieldName = Flight::request()->data->$fieldName;
     }
 
+    // TAMU Customization - Use explicitly defined Type and Format defaults, ensuring that a default workflow is properly started.
     $resourceTypeObj = new ResourceType();
     $resourceType = $resourceTypeObj->getResourceTypeIDByName('Database');
     if ($resourceType) {
