@@ -240,7 +240,8 @@
           var formData = {
             "user": "API",
             "resourceID": $("#resourceID").val(),
-            "noteText": noteText
+            "noteText": noteText,
+            "noteTypeName": "Trial Feedback"
           };
           postCoralResourceNote(formData);
           return false;
