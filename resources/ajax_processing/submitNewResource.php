@@ -186,6 +186,7 @@ try {
 			$resourceAcquisition->subscriptionStartDate = date("Y-m-d");
             $resourceAcquisition->subscriptionEndDate = date("Y-m-d");
             $resourceAcquisition->save();
+	}
 
       if ($createMode == 'clone' && $oldResourceAcquisition) {
         $licenseIds = array();
