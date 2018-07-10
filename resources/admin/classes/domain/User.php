@@ -189,7 +189,7 @@ class User extends DatabaseObject {
 			break;
 		}
 
-		$query = "SELECT DISTINCT R.resourceID, date_format(createDate, '%c/%e/%Y') createDate, titleText, statusID, 
+		$query = "SELECT DISTINCT R.resourceID, date_format(createDate, '%c/%e/%Y') createDate, titleText, statusID,
             RA.resourceAcquisitionID, RA.acquisitionTypeID,
             date_format(subscriptionStartDate, '%c/%e/%Y') subscriptionStartDate,
             date_format(subscriptionEndDate, '%c/%e/%Y') subscriptionEndDate, RS.reviewDate
@@ -252,8 +252,13 @@ class User extends DatabaseObject {
 		}
 
 		//TAMU Customization - fundCode alias
-		$query = "SELECT DISTINCT RS.stepName, date_format(stepStartDate, '%c/%e/%Y') startDate
-				(SELECT IF(RP.fundSpecial IS NOT NULL,CONCAT(F.fundCode,RP.fundSpecial),F.fundCode) FROM ResourcePayment RP LEFT JOIN Fund F ON F.fundID=RP.fundID WHERE RP.resourceID=R.resourceID ORDER BY RP.resourcePaymentID DESC LIMIT 1) AS fundCode
+		$query = "SELECT DISTINCT RS.resourceStepID, RS.stepName,  RS.userGroupID, date_format(stepStartDate, '%c/%e/%Y') AS startDate,RS.reviewDate, RS.reviewLoginID,
+				(SELECT IF(RP.fundSpecial IS NOT NULL,CONCAT(F.fundCode,RP.fundSpecial),F.fundCode)
+          FROM ResourceAcquisition RA
+					LEFT JOIN ResourcePayment RP ON RP.resourceAcquisitionID=RA.resourceAcquisitionID
+					LEFT JOIN Fund F ON F.fundID=RP.fundID
+					WHERE RA.resourceID=R.resourceID ORDER BY RP.resourcePaymentID DESC LIMIT 1)
+				AS fundCode
 			FROM Resource R, ResourceAcquisition RA, ResourceStep RS, UserGroupLink UGL
 			WHERE R.resourceID = RA.resourceID
             AND RA.resourceAcquisitionID = RS.resourceAcquisitionID

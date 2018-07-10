@@ -59,6 +59,20 @@ Flight::route('/proposeResource/', function(){
     foreach ($fieldNames as $fieldName) {
         $resource->$fieldName = Flight::request()->data->$fieldName;
     }
+
+    // TAMU Customization - Use explicitly defined Type and Format defaults, ensuring that a default workflow is properly started.
+    $resourceTypeObj = new ResourceType();
+    $resourceType = $resourceTypeObj->getResourceTypeIDByName('Database');
+    if ($resourceType) {
+        $resource->resourceTypeID = $resourceType;
+    }
+
+    $resourceFormatObj = new ResourceFormat();
+    $resourceFormat = $resourceFormatObj->getResourceFormatIDByName('Electronic');
+    if ($resourceFormat) {
+        $resource->resourceFormatID = $resourceFormat;
+    }
+
     try {
         $resource->save();
         $resourceID = $resource->primaryKey;
@@ -121,11 +135,13 @@ Flight::route('/proposeResource/', function(){
 
         // General notes
         $noteText = '';
-        foreach (array("noteText" => "Note", "providerText" => "Provider", "publicationYear" => "Publication Year or order start date", "edition" => "Edition", "holdLocation" => "Hold location", "patronHold" => "Patron hold", "neededByDate" => "Urgent") as $key => $value) {
+        foreach (array("noteText" => FALSE, "providerText" => "Provider", "publicationYear" => "Publication Year or order start date", "edition" => "Edition", "holdLocation" => "Hold location", "patronHold" => "Patron hold", "neededByDate" => "Urgent") as $key => $value) {
             if (isset(Flight::request()->data[$key])) {
-                $noteText .= $value . ": " . Flight::request()->data[$key] . "\n";
+                if ($value) {
+                    $noteText .= $value . ": ";
+                }
+                $noteText .= Flight::request()->data[$key] . "\n";
             }
-
         }
         if ($noteText) {
             $noteType = new NoteType();
@@ -404,7 +420,7 @@ Flight::route('/postResourceNote/', function() {
     if ($resourceID && $noteText) {
         try {
             $noteType = new NoteType();
-            $noteTypeID = $noteType->getNoteTypeIDByName("Feedback");
+            $noteTypeID = $noteType->getNoteTypeIDByName(isset(Flight::request()->data['noteTypeName']) ? Flight::request()->data['noteTypeName'] : "Feedback");
             $resourceNote = new ResourceNote();
             $resourceNote->resourceNoteID   = '';
             $resourceNote->updateLoginID    = $user;

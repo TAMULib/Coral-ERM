@@ -183,7 +183,7 @@
     $(document).ready(function() {
         var queryString = window.location.search.substring(1);
         if (queryString) {
-          var queryObject = JSON.parse('{"' + decodeURI(queryString).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"') + '"}');
+          var queryObject = JSON.parse('{"' + decodeURI(queryString.toLowerCase()).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"') + '"}');
           if (typeof queryObject.resourceid !== 'undefined') {
             getResource(queryObject.resourceid).done(function(data) {
               if (data.resourceID) {
@@ -240,7 +240,8 @@
           var formData = {
             "user": "API",
             "resourceID": $("#resourceID").val(),
-            "noteText": noteText
+            "noteText": noteText,
+            "noteTypeName": "Trial Feedback"
           };
           postCoralResourceNote(formData);
           return false;

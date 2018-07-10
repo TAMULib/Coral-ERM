@@ -177,16 +177,18 @@ try {
 
 	$resourceID=$resource->primaryKey;
 
-    // Create the default order
-    //first, remove existing order in case this was saved before
-    $resource->removeResourceAcquisitions();
+	if (!$fromExternal) {
+		// Create the default order
+		//first, remove existing order in case this was saved before
+		$resource->removeResourceAcquisitions();
 
-    $resourceAcquisition = new ResourceAcquisition();
-    $resourceAcquisition->resourceID = $resourceID;
-	$resourceAcquisition->acquisitionTypeID = $_POST['acquisitionTypeID'];
-	$resourceAcquisition->subscriptionStartDate = date("Y-m-d");
-    $resourceAcquisition->subscriptionEndDate = date("Y-m-d");
-    $resourceAcquisition->save();
+		$resourceAcquisition = new ResourceAcquisition();
+		$resourceAcquisition->resourceID = $resourceID;
+		$resourceAcquisition->acquisitionTypeID = $_POST['acquisitionTypeID'];
+		$resourceAcquisition->subscriptionStartDate = date("Y-m-d");
+		$resourceAcquisition->subscriptionEndDate = date("Y-m-d");
+		$resourceAcquisition->save();
+	}
 
 			if ($createMode == 'clone' && $oldResourceAcquisition) {
 				$licenseIds = array();
