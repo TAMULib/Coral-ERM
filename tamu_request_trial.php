@@ -225,19 +225,19 @@
                 <legend>User Information</legend>
                 <div class="form-group">
                   <label for="selectorEmail"><span class="label-text">E-Mail</span>:<span class="required-asterisk" aria-hidden="true">*</span></label>
-                  <input type="email" class="form-control do-provider" id="selectorEmail" name="selectorEmail" value="" minlength="1" required>
+                  <input type="email" class="form-control" id="selectorEmail" name="selectorEmail" value="" minlength="1" required>
                 </div>
                 <div class="form-group">
                   <label for="selectorTitle"><span class="label-text">Title</span>:<span class="required-asterisk" aria-hidden="true">*</span></label>
-                  <input type="text" class="form-control do-provider" id="selectorTitle" name="selectorTitle" value="" minlength="1" required>
+                  <input type="text" class="form-control" id="selectorTitle" name="selectorTitle" value="" minlength="1" required>
                 </div>
                 <div class="form-group">
                   <label for="selectorFirstName"><span class="label-text">First Name</span>:<span class="required-asterisk" aria-hidden="true">*</span></label>
-                  <input type="text" class="form-control do-provider" id="selectorFirstName" name="selectorFirstName" value="" minlength="1" required>
+                  <input type="text" class="form-control" id="selectorFirstName" name="selectorFirstName" value="" minlength="1" required>
                 </div>
                 <div class="form-group">
                   <label for="selectorLastName"><span class="label-text">Last Name</span>:<span class="required-asterisk" aria-hidden="true">*</span></label>
-                  <input type="text" class="form-control do-provider" id="selectorLastName" name="selectorLastName" value="" minlength="1" required>
+                  <input type="text" class="form-control" id="selectorLastName" name="selectorLastName" value="" minlength="1" required>
                 </div>
               </fieldset>
               <fieldset id="requestInformation">
