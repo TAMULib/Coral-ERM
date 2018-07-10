@@ -167,7 +167,7 @@
         });
 
         $("#proposeResourceForm").submit(function() {
-          var noteText = "\n";
+          var noteText = "";
           $(this).find(".do-note").each(function() {
             noteText += $(this).siblings("label").children(".label-text").first().text() + ": " + $(this).val() + ".\n\n";
           });
