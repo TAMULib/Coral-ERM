@@ -6,6 +6,7 @@
 			if ($_GET['mode'] == 'clone') {
 				$createMode = $_GET['mode'];
 				$resourceAcquisitionID = $_GET['resourceAcquisitionID'];
+				$resourceAcquisition = new ResourceAcquisition(new NamedArguments(array('primaryKey' => $resourceAcquisitionID)));
 			} else {
 				$createMode = 'save';
 			}
