@@ -267,11 +267,11 @@
                   <label for="noteInfo"><span class="label-text">Notes/Additional Info</span>:</label>
                   <textarea type="text" class="form-control do-note" id="noteInfo" rows="5" ></textarea>
                 </div>
-                <div class="questions-buttons form-group no-print">
-                  <input id="submitProposeResourceForm" type="submit" class="btn btn-primary" value="Submit Request" disabled>
-                  <input id="clear" type="reset" class="btn button" value="Clear Form">
-                </div>
               </fieldset>
+              <div class="questions-buttons form-group no-print">
+                <input id="submitProposeResourceForm" type="submit" class="btn btn-primary" value="Submit Request" disabled>
+                <input id="clear" type="reset" class="btn button" value="Clear Form">
+              </div>
             </form>
           </div>
         </div>
