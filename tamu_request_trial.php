@@ -221,31 +221,53 @@
             <form id="proposeResourceForm" action="" method="POST" class="request_trial-form form">
               <input type="hidden" id="noteText" name="noteText" value="">
               <input type="hidden" id="doAcquisitionTypeId" name="acquisitionTypeID" value="0">
-              <div class="form-group">
-                <label for="titleText"><span class="label-text">Title of Resource</span>:<span class="required-asterisk" aria-hidden="true">*</span></label>
-                <input type="text" class="form-control" id="titleText" name="titleText" value="" minlength="1" required>
-                <div id="doTitleMatches"></div>
-              </div>
-              <div class="form-group">
-                <label for="descriptionText"><span class="label-text">Description of Resource</span>:<span class="required-asterisk" aria-hidden="true">*</span></label>
-                <textarea type="text" class="form-control" id="descriptionText" name="descriptionText" rows="5" minlength="1" required></textarea>
-              </div>
-              <div class="form-group">
-                <label for="noteDates"><span class="label-text">Desired Dates of Trial</span>:<span class="required-asterisk" aria-hidden="true">*</span></label>
-                <input type="text" class="form-control do-note" id="noteDates" value="" minlength="1" required>
-              </div>
-              <div class="form-group">
-                <label for="noteVendor"><span class="label-text">Vendor Contact Information (Name, Phone, Email, Date of Contact)</span>:<span class="required-asterisk" aria-hidden="true">*</span></label>
-                <textarea type="text" class="form-control do-note" id="noteVendor" rows="5" minlength="1" required></textarea>
-              </div>
-              <div class="form-group">
-                <label for="noteQuote"><span class="label-text">Vendor Price Quote</span>:</label>
-                <input type="text" class="form-control do-note" id="noteQuote" value="">
-              </div>
-              <div class="form-group">
-                <label for="noteInfo"><span class="label-text">Notes/Additional Info</span>:</label>
-                <textarea type="text" class="form-control do-note" id="noteInfo" rows="5" ></textarea>
-              </div>
+              <fieldset id="userInformation">
+                <legend>User Information</legend>
+                <div class="form-group">
+                  <label for="selectorEmail"><span class="label-text">E-Mail</span>:<span class="required-asterisk" aria-hidden="true">*</span></label>
+                  <input type="email" class="form-control" id="selectorEmail" name="selectorEmail" value="" minlength="1" required>
+                </div>
+                <div class="form-group">
+                  <label for="selectorTitle"><span class="label-text">Title</span>:<span class="required-asterisk" aria-hidden="true">*</span></label>
+                  <input type="text" class="form-control" id="selectorTitle" name="selectorTitle" value="" minlength="1" required>
+                </div>
+                <div class="form-group">
+                  <label for="selectorFirstName"><span class="label-text">First Name</span>:<span class="required-asterisk" aria-hidden="true">*</span></label>
+                  <input type="text" class="form-control" id="selectorFirstName" name="selectorFirstName" value="" minlength="1" required>
+                </div>
+                <div class="form-group">
+                  <label for="selectorLastName"><span class="label-text">Last Name</span>:<span class="required-asterisk" aria-hidden="true">*</span></label>
+                  <input type="text" class="form-control" id="selectorLastName" name="selectorLastName" value="" minlength="1" required>
+                </div>
+              </fieldset>
+              <fieldset id="requestInformation">
+                <legend>Request Information</legend>
+                <div class="form-group">
+                  <label for="titleText"><span class="label-text">Title of Resource</span>:<span class="required-asterisk" aria-hidden="true">*</span></label>
+                  <input type="text" class="form-control" id="titleText" name="titleText" value="" minlength="1" required>
+                  <div id="doTitleMatches"></div>
+                </div>
+                <div class="form-group">
+                  <label for="descriptionText"><span class="label-text">Description of Resource</span>:<span class="required-asterisk" aria-hidden="true">*</span></label>
+                  <textarea type="text" class="form-control" id="descriptionText" name="descriptionText" rows="5" minlength="1" required></textarea>
+                </div>
+                <div class="form-group">
+                  <label for="noteDates"><span class="label-text">Desired Dates of Trial</span>:<span class="required-asterisk" aria-hidden="true">*</span></label>
+                  <input type="text" class="form-control do-note" id="noteDates" value="" minlength="1" required>
+                </div>
+                <div class="form-group">
+                  <label for="noteVendor"><span class="label-text">Vendor Contact Information (Name, Phone, Email, Date of Contact)</span>:<span class="required-asterisk" aria-hidden="true">*</span></label>
+                  <textarea type="text" class="form-control do-note" id="noteVendor" rows="5" minlength="1" required></textarea>
+                </div>
+                <div class="form-group">
+                  <label for="noteQuote"><span class="label-text">Vendor Price Quote</span>:</label>
+                  <input type="text" class="form-control do-note" id="noteQuote" value="">
+                </div>
+                <div class="form-group">
+                  <label for="noteInfo"><span class="label-text">Notes/Additional Info</span>:</label>
+                  <textarea type="text" class="form-control do-note" id="noteInfo" rows="5" ></textarea>
+                </div>
+              </fieldset>
               <div class="questions-buttons form-group no-print">
                 <input id="submitProposeResourceForm" type="submit" class="btn btn-primary" value="Submit Request" disabled>
                 <input id="clear" type="reset" class="btn button" value="Clear Form">
