@@ -59,6 +59,20 @@ Flight::route('/proposeResource/', function(){
     foreach ($fieldNames as $fieldName) {
         $resource->$fieldName = Flight::request()->data->$fieldName;
     }
+
+    // TAMU Customization - Use explicitly defined Type and Format defaults, ensuring that a default workflow is properly started.
+    $resourceTypeObj = new ResourceType();
+    $resourceType = $resourceTypeObj->getResourceTypeIDByName('Database');
+    if ($resourceType) {
+        $resource->resourceTypeID = $resourceType;
+    }
+
+    $resourceFormatObj = new ResourceFormat();
+    $resourceFormat = $resourceFormatObj->getResourceFormatIDByName('Electronic');
+    if ($resourceFormat) {
+        $resource->resourceFormatID = $resourceFormat;
+    }
+
     try {
         $resource->save();
         $resourceID = $resource->primaryKey;
