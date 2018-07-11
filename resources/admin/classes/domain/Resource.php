@@ -17,13 +17,37 @@
 **************************************************************************************************************************
 */
 
-class Resource extends DatabaseObject {
+class Resource extends DatabaseObject implements ResourceInterface {
 
 	protected function defineRelationships() {}
 
 	protected function defineIsbnOrIssn() {}
 
 	protected function overridePrimaryKeyName() {}
+
+	public function getTitleText() {
+		return $this->attributes['titleText'];
+	}
+
+	public function getDescriptionText() {
+		return $this->attributes['descriptionText'];
+	}
+
+	public function getOrderNumber() {
+		return $this->attributes['orderNumber'];
+	}
+
+	public function getSystemNumber() {
+		return $this->attributes['systemNumber'];
+	}
+
+	public function getProviderText() {
+		return $this->attributes['providerText'];
+	}
+
+	public function getCoverageText() {
+		return $this->attributes['coverageText'];
+	}
 
     public function asArray() {
 		$rarray = array();
@@ -64,8 +88,8 @@ class Resource extends DatabaseObject {
 		}
 
 		return $rarray;
-		
-  
+
+
     }
 
 	//returns resource objects by title
@@ -472,7 +496,7 @@ class Resource extends DatabaseObject {
 	public function archiveExpiredResources() {
 		$status = new Status();
 		$archivedStatusID = $status->getIDFromName('archived');
-		$query = "UPDATE Resource r 
+		$query = "UPDATE Resource r
 				LEFT JOIN ResourceType rt ON rt.resourceTypeID=r.resourceTypeID
 				SET r.statusID={$archivedStatusID} WHERE rt.hideArchived=1 AND r.currentEndDate < NOW() ";
 		return $this->db->processQuery($query);
@@ -1004,12 +1028,12 @@ class Resource extends DatabaseObject {
 						RA.authenticationPassword, RA.coverageText, CT.shortName catalogingType, CS.shortName catalogingStatus, RA.recordSetIdentifier, RA.bibSourceURL,
 						RA.numberRecordsAvailable, RA.numberRecordsLoaded, RA.hasOclcHoldings, GROUP_CONCAT(DISTINCT I.isbnOrIssn ORDER BY isbnOrIssnID SEPARATOR '; ') AS isbnOrIssn,
                         RPAY.year,
-                        F.shortName as fundName, F.fundCode, 
-                        ROUND(COALESCE(RPAY.priceTaxExcluded, 0) / 100, 2) as priceTaxExcluded, 
-                        ROUND(COALESCE(RPAY.taxRate, 0) / 100, 2) as taxRate, 
-                        ROUND(COALESCE(RPAY.priceTaxIncluded, 0) / 100, 2) as priceTaxIncluded, 
-                        ROUND(COALESCE(RPAY.paymentAmount, 0) / 100, 2) as paymentAmount, 
-                        RPAY.currencyCode, CD.shortName as costDetails, OT.shortName as orderType, RPAY.costNote, RPAY.invoiceNum, 
+                        F.shortName as fundName, F.fundCode,
+                        ROUND(COALESCE(RPAY.priceTaxExcluded, 0) / 100, 2) as priceTaxExcluded,
+                        ROUND(COALESCE(RPAY.taxRate, 0) / 100, 2) as taxRate,
+                        ROUND(COALESCE(RPAY.priceTaxIncluded, 0) / 100, 2) as priceTaxIncluded,
+                        ROUND(COALESCE(RPAY.paymentAmount, 0) / 100, 2) as paymentAmount,
+                        RPAY.currencyCode, CD.shortName as costDetails, OT.shortName as orderType, RPAY.costNote, RPAY.invoiceNum,
 						" . $orgSelectAdd . ",
 						" . $licSelectAdd . "
 						GROUP_CONCAT(DISTINCT A.shortName ORDER BY A.shortName DESC SEPARATOR '; ') aliases,
@@ -1727,5 +1751,20 @@ class Resource extends DatabaseObject {
 
 		return $objects;
 	}
+
+  /*
+  * TAMU Customization
+  */
+  public function findByPurchaseOrder($purchaseOrder) {
+    $query = "SELECT r.resourceID FROM Resource r
+                LEFT JOIN ResourceAcquisition RA ON RA.resourceID = r.resourceID
+        LEFT JOIN ResourcePayment RPAY ON RA.resourceAcquisitionID = RPAY.resourceAcquisitionID
+        WHERE RPAY.purchaseOrder='{$purchaseOrder}' LIMIT 1";
+    $result = $this->db->processQuery($query);
+    if (is_array($result)) {
+      return $result[0];
+    }
+    return false;
+  }
 }
 ?>

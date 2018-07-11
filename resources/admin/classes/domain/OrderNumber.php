@@ -17,13 +17,17 @@
 **************************************************************************************************************************
 */
 
-class IsbnOrIssn extends DatabaseObject implements IsbnOrIssnInterface {
+class OrderNumber extends DatabaseObject implements OrderNumberInterface {
 
-	public function getIsbnOrIssn() {
-		return $this->attributes['isbnOrIssn'];
+	public function getOrderNumber() {
+		return $this->attributes['orderNumber'];
 	}
 
-	protected function defineIsbnOrIssn() {}
+	public function getDateAdded() {
+		return $this->attributes['dateAdded'];
+	}
+
+	protected function defineOrderNumber() {}
 
 	protected function overridePrimaryKeyName() {}
 

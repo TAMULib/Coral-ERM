@@ -1241,7 +1241,7 @@ msgid "Role(s):"
 msgstr "角色："
 
 #: ajax_forms/getCostForm.php:52
-msgid "Edit Cost Information"
+msgid "Edit Cost History"
 msgstr "編輯成本資訊"
 
 #: ajax_forms/getCostForm.php:59 ajax_htmldata/getAcquisitionsDetails.php:172

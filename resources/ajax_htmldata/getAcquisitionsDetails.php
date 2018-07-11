@@ -3,13 +3,14 @@
 	$enhancedCostFlag = ((isset($config->settings->enhancedCostHistory)) && (strtoupper($config->settings->enhancedCostHistory) == 'Y')) ? 1 : 0;
 	$enhancedCostFlag = (strtoupper($config->settings->enhancedCostHistory) == 'Y') ? 1 : 0;
 	if ($enhancedCostFlag){
-		$numCols = 12;
+		$numCols = 15;
 		$tableWidth = 760;
 		$formWidth = 1084;
                 ?>
 		<!-- Hide the helpful links, etc. -->
-        	<script>
-			$('#div_fullRightPanel').hide(); 
+ 		<script type="text/javascript">
+				$('#div_fullRightPanel').hide();
+				$("#div_acquisitions").addClass("enhanced-cost");
 		</script>
                 <?php
 	}else{
@@ -47,7 +48,7 @@
 				}
 
 				$fund = new Fund(new NamedArguments(array('primaryKey' => $instance->fundID)));
-				$sanitizedInstance['fundCode'] = $fund->shortName . " [" . $fund->fundCode . "]";
+				$sanitizedInstance['fundCode'] = "[" . $fund->fundCode . $instance->fundSpecial. "] ".$fund->shortName;
 
 				array_push($paymentArray, $sanitizedInstance);
 
@@ -120,6 +121,9 @@
 			<th><?php echo _("Notes");?></th>
 		<?php if ($enhancedCostFlag){ ?>
 			<th><?php echo _("Invoice");?></th>
+			<th><?php echo _("Purchase Order");?></th>
+			<th><?php echo _("System ID");?></th>
+			<th><?php echo _("Vendor Code");?></th>
 		<?php } ?>
 			</tr>
 </thead>
@@ -150,6 +154,9 @@
 				$costDetails = $payment['costDetails'] ? $payment['costDetails'] : "&nbsp;";
 				$costNote = $payment['costNote'] ? $payment['costNote'] : "&nbsp;";
 				$invoiceNum = $payment['invoiceNum'] ? $payment['invoiceNum'] : "&nbsp;";
+				$purchaseOrder = !empty($payment['purchaseOrder']) ? $payment['purchaseOrder'] : "&nbsp;";
+				$systemID = !empty($payment['systemID']) ? $payment['systemID'] : "&nbsp;";
+				$vendorCode = !empty($payment['vendorCode']) ? $payment['vendorCode'] : "&nbsp;";
 
 				?>
 				<tr>
@@ -175,6 +182,9 @@
 				<td <?php echo $classAdd;?>><?php echo $costNote; ?></td>
 			<?php if ($enhancedCostFlag){ ?>
 				<td <?php echo $classAdd;?>><?php echo $invoiceNum; ?></td>
+				<td <?php echo $classAdd;?>><?php echo $purchaseOrder; ?></td>
+				<td <?php echo $classAdd;?>><?php echo $systemID; ?></td>
+				<td <?php echo $classAdd;?>><?php echo $vendorCode; ?></td>
 			<?php } ?>
 				</tr>
 

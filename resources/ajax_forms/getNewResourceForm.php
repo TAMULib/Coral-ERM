@@ -9,11 +9,11 @@
 			} else {
 				$createMode = 'save';
 			}
-		}else{
+		} else {
 			$resource = new Resource();
 		}
 
-        // get resource acquisition for this resource 
+        // get resource acquisition for this resource
         // at this point, there are none (resource not saved yet)
         // or only one (resource saved as draft)
         if ($resource->resourceID && !isset($resourceAcquisitionID)) {
