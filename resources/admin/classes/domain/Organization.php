@@ -24,7 +24,15 @@ class Organization extends DatabaseObject {
 	protected function overridePrimaryKeyName() {}
 
 
-
+    public function asArray() {
+		$rarray = array();
+		foreach (array_keys($this->attributeNames) as $attributeName) {
+		if ($this->$attributeName != null) {
+			$rarray[$attributeName] = $this->$attributeName;
+			}
+		}
+		return $rarray;
+	}
 
 	//returns number of children for this particular contact role
 	public function getNumberOfChildren(){
@@ -49,8 +57,23 @@ class Organization extends DatabaseObject {
 		return $result['organizationID'];
   }
 
+    public function getOrganizationByEbscoKbId($ebscoKbId) {
+
+        $query = "SELECT organizationID
+			FROM Organization
+			WHERE ebscoKbID = $ebscoKbId
+			LIMIT 0,1";
+        $result = $this->db->processQuery($query, 'assoc');
+
+        if (isset($result['organizationID'])) {
+            return new Organization(new NamedArguments(array('primaryKey' => $result['organizationID'])));
+        } else {
+            return false;
+        }
+    }
+
 	public function getIssues($archivedOnly=false) {
-		$query = "SELECT i.* 
+		$query = "SELECT i.*
 			  FROM Issue i
 			  LEFT JOIN IssueRelationship ir ON (ir.issueID=i.issueID AND ir.entityTypeID=1)
 			  WHERE ir.entityID='{$this->primaryKey}'";
@@ -86,15 +109,15 @@ class Organization extends DatabaseObject {
 		}
 
 		$query = "SELECT i.*,(SELECT GROUP_CONCAT(CONCAT(sc.name,' - ',sc.emailAddress) SEPARATOR ', ')
-								FROM IssueContact sic 
+								FROM IssueContact sic
 								LEFT JOIN `{$orgDB}`.Contact sc ON sc.contactID=sic.contactID
 								WHERE sic.issueID=i.issueID) AS `contacts`,
 							 (SELECT GROUP_CONCAT(se.{$orgField} SEPARATOR ', ')
-								FROM IssueRelationship sir 
+								FROM IssueRelationship sir
 								LEFT JOIN `{$orgDB}`.Organization se ON (se.organizationID=sir.entityID AND sir.entityTypeID=1)
 								WHERE sir.issueID=i.issueID) AS `appliesto`,
 							 (SELECT GROUP_CONCAT(sie.email SEPARATOR ', ')
-								FROM IssueEmail sie 
+								FROM IssueEmail sie
 								WHERE sie.issueID=i.issueID) AS `CCs`
 			  FROM Issue i
 			  LEFT JOIN IssueRelationship ir ON (ir.issueID=i.issueID AND ir.entityTypeID=1)
@@ -117,7 +140,7 @@ class Organization extends DatabaseObject {
 	}
 
 	private function getDownTimeResults($archivedOnly=false) {
-		$query = "SELECT d.* 
+		$query = "SELECT d.*
 			  FROM Downtime d
 			  WHERE d.entityID='{$this->primaryKey}'
 			  AND d.entityTypeID=1";

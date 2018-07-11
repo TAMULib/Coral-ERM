@@ -1,5 +1,5 @@
-html { 
- height: 100%; 
+html {
+ height: 100%;
  margin: 0;
  padding: 0;
 }
@@ -50,7 +50,6 @@ input, select, multiple, textarea {
      background: #1b76a9;
      border: none;
      padding: 5px 10px;
-     text-transform: capitalize;
 }
 
 
@@ -141,15 +140,15 @@ div.formTitle {
 
 
 span.surroundBoxTitle {
-	background-color:white; 
-	position:relative; 
-	top:8px; 
+	background-color:white;
+	position:relative;
+	top:8px;
 	left:5px;
 	font-size:110%;
 }
 
 
-table.surroundBox {	
+table.surroundBox {
 	border-width: 1px;
 	border-style: solid;
 	border-color: #e6e5e9;
@@ -166,13 +165,13 @@ table.surroundBox td {
 	-moz-border-radius: 0px;
 }
 
-table.surroundBox tr {	
+table.surroundBox tr {
 	vertical-align:top;
 }
 
 
 
-table.surroundForm {	
+table.surroundForm {
 	border-width: 1px 1px 0px 1px;
 	border-style: solid;
 	border-color: #e6e5e9;
@@ -193,7 +192,7 @@ table.surroundForm td {
 	-moz-border-radius: 0px;
 }
 
-table.surroundForm tr {	
+table.surroundForm tr {
 	vertical-align:top;
 }
 
@@ -336,7 +335,6 @@ label:nth-of-type(3) {
     background: #1b76a9;
     border: none;
     padding: 5px 10px;
-    text-transform: capitalize;
     min-width: 60px;
     margin-top: 10px;
 }
@@ -358,7 +356,6 @@ a#admin-link:before {
 
 a#admin-link {
      text-decoration: none;
-     text-transform: capitalize;
      font-size: 14px;
 }
 
@@ -375,7 +372,6 @@ a#login-link:before {
 
 a#login-link {
      text-decoration: none;
-     text-transform: capitalize;
      font-size: 14px;
 }
 
@@ -398,7 +394,6 @@ a#addUser:before {
 
 a#addUser {
      text-decoration: none;
-     text-transform: capitalize;
      font-size: 12px;
 }
 

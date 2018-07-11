@@ -1,19 +1,24 @@
 <?php
 $resourceStepID = $_POST['resourceStepID'];
 $userGroupID = $_POST['userGroupID'];
+$note = $_POST['note'];
 $applyToAll = ($_POST['applyToAll'] == "true")? true:false;
+//TAMU Customization - Editable stepStartDate
 $newStepStartDate = date("Y-m-d",strtotime($_POST['newStepStartDate']));
+$userGroupIDChanged = $_POST['userGroupIDChanged'];
+
 
 if($resourceStepID != ''){
     $step = new ResourceStep(new NamedArguments(array('primaryKey' => $resourceStepID)));
 
     //business logic
+    $step->note = $note;
+    $step->save();
 
-    if ($userGroupID !=  $step->userGroupID) {
+    // If the step has been reassigned
+    if ($userGroupIDChanged) {
         $step->userGroupID = $userGroupID;
-
         //if apply to all selected, we need to cycle through later steps.
-
         try {
             $step->restartReassignedStep();
 
@@ -31,7 +36,7 @@ if($resourceStepID != ''){
             echo $e->getMessage();
         }
     }
-
+    //TAMU Customization - Editable stepStartDate
     if ($newStepStartDate != $step->stepStartDate) {
         $step->stepStartDate = $newStepStartDate;
         try {

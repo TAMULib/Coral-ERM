@@ -111,7 +111,7 @@ class User extends DatabaseObject {
 		$status = new Status();
 		$statusID = $status->getIDFromName($statusName);
 
-		$query = "SELECT resourceID, date_format(createDate, '%c/%e/%Y') createDate, acquisitionTypeID, titleText, statusID
+		$query = "SELECT resourceID, date_format(createDate, '%c/%e/%Y') createDate, titleText, statusID
 			FROM Resource
 			WHERE statusID = '" . $statusID . "'
 			AND createLoginID = '" . $this->loginID . "'
@@ -151,6 +151,7 @@ class User extends DatabaseObject {
 
 
 	//returns array of resource arrays that are in the outstanding queue for this user
+  // TAMU Customization - Tasks are grouped as current/future based on their stepStartDates
 	public function getOutstandingTasks($type="current") {
 		$config = new Configuration();
 		//The current/future task results can be configured as splitting at n months into the future.
@@ -189,9 +190,13 @@ class User extends DatabaseObject {
 			break;
 		}
 
-		$query = "SELECT DISTINCT R.resourceID, date_format(createDate, '%c/%e/%Y') createDate, acquisitionTypeID, titleText, statusID
-			FROM Resource R, ResourceStep RS, UserGroupLink UGL
-			WHERE R.resourceID = RS.resourceID
+		$query = "SELECT DISTINCT R.resourceID, date_format(createDate, '%c/%e/%Y') createDate, titleText, statusID,
+            RA.resourceAcquisitionID, RA.acquisitionTypeID, RS.reviewDate,
+            date_format(subscriptionStartDate, '%c/%e/%Y') subscriptionStartDate,
+            date_format(subscriptionEndDate, '%c/%e/%Y') subscriptionEndDate
+			FROM Resource R, ResourceAcquisition RA, ResourceStep RS, UserGroupLink UGL
+			WHERE R.resourceID = RA.resourceID
+            AND RA.resourceAcquisitionID = RS.resourceAcquisitionID
 			AND RS.userGroupID = UGL.userGroupID
 			AND UGL.loginID = '" . $this->loginID . "'
 			AND (RS.stepEndDate IS NULL OR RS.stepEndDate = '0000-00-00')
@@ -247,10 +252,17 @@ class User extends DatabaseObject {
 			$whereAdd = "";
 		}
 
+    //TAMU Customization - fundCode alias
 		$query = "SELECT DISTINCT RS.resourceStepID, RS.stepName, RS.userGroupID, RS.stepStartDate, date_format(stepStartDate, '%c/%e/%Y') startDate,RS.reviewDate, RS.reviewLoginID,
-					(SELECT IF(RP.fundSpecial IS NOT NULL,CONCAT(F.fundCode,RP.fundSpecial),F.fundCode) FROM ResourcePayment RP LEFT JOIN Fund F ON F.fundID=RP.fundID WHERE RP.resourceID=R.resourceID ORDER BY RP.resourcePaymentID DESC LIMIT 1) AS fundCode
-			FROM Resource R, ResourceStep RS, UserGroupLink UGL
-			WHERE R.resourceID = RS.resourceID
+                (SELECT IF(RP.fundSpecial IS NOT NULL,CONCAT(F.fundCode,RP.fundSpecial),F.fundCode)
+                      FROM ResourceAcquisition RA
+                     LEFT JOIN ResourcePayment RP ON RP.resourceAcquisitionID=RA.resourceAcquisitionID
+                     LEFT JOIN Fund F ON F.fundID=RP.fundID
+                     WHERE RA.resourceID=R.resourceID ORDER BY RP.resourcePaymentID DESC LIMIT 1)
+                   AS fundCode
+			FROM Resource R, ResourceAcquisition RA, ResourceStep RS, UserGroupLink UGL
+			WHERE R.resourceID = RA.resourceID
+            AND RA.resourceAcquisitionID = RS.resourceAcquisitionID
 			AND RS.userGroupID = UGL.userGroupID
 			AND UGL.loginID = '" . $this->loginID . "'
 			AND R.resourceID = '" . $outstandingResourceID . "'

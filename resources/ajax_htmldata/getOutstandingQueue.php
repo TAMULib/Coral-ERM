@@ -17,8 +17,9 @@ foreach ($resourceGroups as $type=>$resourceGroup) {
 			<tr>
 				<th><?php echo _("ID");?></th>
 				<th><?php echo _("Name");?></th>
+        <th><?php echo _("Order");?></th>
 				<th><?php echo _("Acquisition Type");?></th>
-				<th><?php echo _("Routing Step");?></th>
+        <th><?php echo _("Workflow Step");?></th>
 				<th class="sortable"><?php echo _("Fund");?></th>
 				<th><?php echo _("Start Date");?></th>
 				<th><?php echo _("Last Reviewed");?></th>
@@ -45,22 +46,26 @@ foreach ($resourceGroups as $type=>$resourceGroup) {
 			$status = new Status(new NamedArguments(array('primaryKey' => $resource['statusID'])));
 
 ?>
-			<tr id='tr_<?php echo $resource['resourceID']; ?>' style='padding:0;margin:0;height:100%;'>
-				<td <?php echo $classAdd; ?>><a href='resource.php?resourceID=<?php echo $resource['resourceID']; ?>'><?php echo $resource['resourceID']; ?></a></td>
-				<td <?php echo $classAdd; ?>><a href='resource.php?resourceID=<?php echo $resource['resourceID']; ?>'><?php echo $resource['titleText']; ?></a></td>
-				<td <?php echo $classAdd; ?>><?php echo $acquisitionType->shortName; ?></td>
+        <tr id='tr_<?php echo $resource['resourceID']; ?>' style='padding:0px;margin:0px;height:100%;'>
+          <td <?php echo $classAdd; ?>><a href='resource.php?resourceID=<?php echo $resource['resourceID']; ?>&resourceAcquisitionID=<?php echo $resource['resourceAcquisitionID']?>'><?php echo $resource['resourceID']; ?></a></td>
+          <td <?php echo $classAdd; ?>><a href='resource.php?resourceID=<?php echo $resource['resourceID']; ?>&resourceAcquisitionID=<?php echo $resource['resourceAcquisitionID']?>'><?php echo $resource['titleText']; ?></a></td>
+          <td <?php echo $classAdd; ?>><?php echo $resource['subscriptionStartDate']; ?> - <?php echo $resource['subscriptionEndDate']; ?></a></td>
+          <td <?php echo $classAdd; ?>><?php echo $acquisitionType->shortName; ?></td>
 
-<?php
-			$j=0;
+          <?php
+            $j=0;
 
-			if (count($taskArray) > 0) {
-				foreach ($taskArray as $task) {
-					if ($j > 0) {
-?>
-			<tr>
-				<td <?php echo $classAdd; ?> style='border-top-style:none;'>&nbsp;</td>
-				<td <?php echo $classAdd; ?> style='border-top-style:none;'>&nbsp;</td>
-				<td <?php echo $classAdd; ?> style='border-top-style:none;'>&nbsp;</td>
+
+            if (count($taskArray) > 0){
+              foreach ($taskArray as $task){
+                if ($j > 0){
+                ?>
+                <tr>
+                <td <?php echo $classAdd; ?> style='border-top-style:none;'>&nbsp;</td>
+                <td <?php echo $classAdd; ?> style='border-top-style:none;'>&nbsp;</td>
+                <td <?php echo $classAdd; ?> style='border-top-style:none;'>&nbsp;</td>
+                <td <?php echo $classAdd; ?> style='border-top-style:none;'>&nbsp;</td>
+
 
 <?php
 						$styleAdd=" style='border-top-style:none;'";

@@ -47,7 +47,7 @@ class Utility {
 
 		return $pagePath;
 	}
-	
+
 	//returns file path for this module, i.e. /coral/licensing/
 	public function getModulePath(){
 	  $replace_path = preg_quote(DIRECTORY_SEPARATOR."admin".DIRECTORY_SEPARATOR."classes".DIRECTORY_SEPARATOR."common");
@@ -94,7 +94,7 @@ class Utility {
 		if ($editLicenseID == ""){
 			//need to get the most recent added license since it will have been added but we didn''t get the resonse of the new license ID
 			//since this will have happened instantly we can be safe to assume this is the correct record
-			$this->db = new DBService;
+			$this->db = DBService::getInstance();
 
 			$result = $this->db->processQuery("select max(licenseID) max_licenseID from License;", 'assoc');
 

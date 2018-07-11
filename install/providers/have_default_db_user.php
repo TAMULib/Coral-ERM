@@ -114,9 +114,11 @@ function register_have_default_db_user_provider()
 									$db = $shared_module_info["provided"]["get_db_connection"]( $db_details["dbname"] );
 									$slash_pass = addslashes($db_details["password"]);
 									try {
+										$db_user_result = $db->processQuery("SELECT SUBSTRING_INDEX(USER(),'@',-1)");
+										$db_client_host = $db_user_result->fetchRow()[0];
 										$db->processQuery("REVOKE ALL ON {$db_details["dbname"]}.* FROM {$db_details["username"]}@{$db_details["host"]}");
 									} catch(Exception $e){ }
-									$db->processQuery("GRANT SELECT, INSERT, UPDATE, DELETE ON {$db_details["dbname"]}.* TO {$db_details["username"]}@{$db_details["host"]} IDENTIFIED BY '$slash_pass'");
+									$db->processQuery("GRANT SELECT, INSERT, UPDATE, DELETE ON {$db_details["dbname"]}.* TO {$db_details["username"]}@{$db_client_host} IDENTIFIED BY '$slash_pass'");
 								}
 								catch (Exception $e)
 								{
@@ -137,7 +139,7 @@ function register_have_default_db_user_provider()
 								"uid" => "check_user_has_access_db_access",
 								"translatable_title" => sprintf(_("Check %s Has DB Access"), $default_db_username),
 								"post_installation" => true,
-								"bundle" => function($version = 0) use ($config_files, $testFileAccess, $fileACCESS) {
+                "bundle" => function($version = 0) use ($db_info, $failed_user_grants) {
 									return [
 										"function" => function($shared_module_info) use ($db_info, $failed_user_grants) {
 											$return = new stdClass();
