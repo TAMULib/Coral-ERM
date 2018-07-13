@@ -86,6 +86,9 @@ select option { color: #3D545D; font-family: "arial"; font-size: 95%; margin:1px
 
 input, select, multiple, textarea{color: #3D545D; font-family: "arial"; font-size: 95%; font-weight: medium;}
 
+.capitalize {
+	text-transform: capitalize;
+}
 
 /* following is for the right panel (helpful links) in the resource page
 *************************/
@@ -198,6 +201,10 @@ table.queueDataTable tr {
 	vertical-align:top;
 }
 
+#outstandingTasks .sortable {
+	cursor: pointer;
+}
+
 /* following is all for admin and queue pages
 *************************/
 div.adminRightHeader{font-size:135%; color:#3D545D; margin-bottom:5px; }
@@ -211,7 +218,7 @@ table.adminMenuTable {
 	border-width: 0 0 1px 1px;
 	border-style: solid;
 	border-color: #e6e5e9;
-	border-collapse: collapse;
+	border-collapse: collapse;#
 	border-spacing: 0;
 	font-size:95%;
 	background-color: #f6f8fa;
@@ -547,6 +554,10 @@ table.dataTable th {
 
 table.dataTable tr {vertical-align: top;}
 
+.task-group table.dataTable {
+	width: 100%;
+}
+
 table.sample {
 	padding:0px;
 	margin:0px;
@@ -805,14 +816,29 @@ span.surroundBoxTitle {
 	font-size:110%;
 }
 
+div.surroundBox .form-element {
+	display:inline-block;
+	vertical-align:middle;
+}
 
-table.surroundBox {
+div.surroundBox .form-element-label {
+	margin-right: 30px;
+}
+
+.surroundBox {
 	border-width: 1px;
 	border-style: solid;
 	border-color: #e6e5e9;
+	font-size:100%;
+}
+
+div.surroundBox {
+	padding: 24px;
+}
+
+table.surroundBox {
 	border-collapse: collapse;
 	border-spacing: 0;
-	font-size:100%;
 	width: 370px !important;
 }
 
@@ -941,9 +967,8 @@ table.noMargin { border:0px;margin:0px; padding:0px;text-align:center; }
 table.noMargin tr { border:0px;margin:0px; padding:0px; vertical-align:center; }
 table.noMargin td { border:0px;margin:0px; padding:0px; }
 
-table.newPaymentTable td { padding:2px;}
+table.newPaymentTable td { padding:2px 5px;}
 table.paymentTable td { padding-right:8px;}
-
 
 .formText {font-weight:bold;}
 
@@ -1104,6 +1129,14 @@ a#showMoreOptions:hover {
 #div_searchName {
 			margin-left: 0 !important;
 			margin-top: 6px;
+}
+
+.existing-notes {
+	margin-top: 12px;
+}
+
+.existing-notes h3 {
+	margin: 8px 0;
 }
 
 #div_searchISBNOrISSN {
@@ -1434,6 +1467,19 @@ td.searchRow textarea {
 			width: 630px;
 }
 
+/* Have to use important here, in order to override its use in .resource_tab_content */
+#div_acquisitions.enhanced-cost {
+    width: 900px !important;
+}
+
+#div_acquisitions.enhanced-cost .mainContent {
+    width: 880px;
+}
+
+#div_acquisitions.enhanced-cost #div_fullRightPanel {
+	display: none;
+}
+
 .sidemenu {
 			width: 170px;
 			float: left;
@@ -1527,7 +1573,6 @@ a#SubmittedRequests:before {
 a#CompletedRequests:before {
 	content: "\f00c";
 }
-
 
 .task-number {
 			color: #FFF654;
@@ -2238,6 +2283,25 @@ a.smallLink {
 	padding-left: 3px;
 }
 
+.paymentTable td.date-wrapper, .newPaymentTable td.date-wrapper {
+	width: 90px;
+	min-width: 90px;
+}
+
+.paymentTable td.fund, .newPaymentTable td.fund {
+	width: 110px;
+	min-width: 110px;
+}
+
+.paymentTable td.fund select, .newPaymentTable td.fund select {
+	max-width: 80px;
+}
+
+.paymentTable td.fund input, .newPaymentTable td.fund input {
+	max-width: 20px;
+}
+
+
 .costHistoryYear {
 	width: 30px;
 }
@@ -2247,9 +2311,11 @@ a.smallLink {
 .costHistorySubEnd {
 	width: 60px !important;
 }
+/*
 .costHistoryFund {
 	width: 150px;
 }
+*/
 .costHistoryPayment {
 	width: 50px;
 }
@@ -3243,3 +3309,128 @@ input#archiveInd {
 	margin-top: 0px !important;
 	overflow-x: hidden !important;
 }
+
+.existing-notes {
+	margin-top: 12px;
+}
+
+.existing-notes h3 {
+	margin: 8px 0;
+}
+
+#quickToDoForm td {
+	padding: 6px;
+}
+
+#quickToDoForm td label {
+	font-weight: bold;
+}
+
+#quickToDoForm #formButtons {
+	min-height: 40px;
+}
+
+#quickToDoForm #formButtons.loading {
+	background-image: url('../images/circle.gif');
+	background-position: center center;
+	background-repeat: no-repeat;
+}
+
+#quickToDoForm #formButtons.loading table {
+	display: none;
+}
+
+#quickToDoForm #forceDuplicate {
+	display: none;
+}
+
+/* Have to use important here, in order to override its use in .resource_tab_content */
+#div_acquisitions.enhanced-cost {
+    width: 900px !important;
+}
+
+#div_acquisitions.enhanced-cost .mainContent {
+    width: 880px;
+}
+
+#div_acquisitions.enhanced-cost #div_fullRightPanel {
+	display: none;
+}
+
+.paymentTable td.fund, .newPaymentTable td.fund {
+	width: 110px;
+	min-width: 110px;
+}
+
+.paymentTable td.fund select, .newPaymentTable td.fund select {
+	max-width: 80px;
+}
+
+.paymentTable td.fund input, .newPaymentTable td.fund input {
+	max-width: 20px;
+}
+
+#outstandingTasks .sortable {
+	cursor: pointer;
+}
+
+div.surroundBox .form-element {
+	display:inline-block;
+	vertical-align:middle;
+}
+
+div.surroundBox .form-element-label {
+	margin-right: 30px;
+}
+
+.surroundBox {
+	border-width: 1px;
+	border-style: solid;
+	border-color: #e6e5e9;
+	font-size:100%;
+}
+
+div.surroundBox {
+	padding: 24px;
+}
+
+table.newPaymentTable td {
+	padding:2px 5px;
+}
+
+.paymentTable td.date-wrapper, .newPaymentTable td.date-wrapper {
+	width: 90px;
+	min-width: 90px;
+}
+
+/*--- Overriding Table Column Widths ---*/
+
+table.dataTable th:nth-of-type(1) {
+	min-width: 36px;
+}
+
+table.dataTable th:nth-of-type(2) {
+	min-width: 250px;
+}
+
+table.dataTable th:nth-of-type(3) {
+	min-width: 36px;
+}
+
+table.dataTable th:nth-of-type(4) {
+	min-width: 68px;
+}
+
+table.dataTable th:nth-of-type(5) {
+	min-width: 100px;
+}
+
+table.dataTable th:nth-of-type(6) {
+	min-width: 120px;
+}
+
+table.dataTable th:nth-of-type(7) {
+	min-width: 68px;
+}
+
+/*-----*/

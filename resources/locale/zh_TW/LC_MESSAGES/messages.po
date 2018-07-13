@@ -1241,7 +1241,7 @@ msgid "Role(s):"
 msgstr "角色："
 
 #: ajax_forms/getCostForm.php:52
-msgid "Edit Cost Information"
+msgid "Edit Cost History"
 msgstr "編輯成本資訊"
 
 #: ajax_forms/getCostForm.php:59 ajax_htmldata/getAcquisitionsDetails.php:172
@@ -2257,7 +2257,7 @@ msgid "Downtime"
 msgstr "停機時間"
 
 #: ajax_htmldata/getIssues.php:43
-msgid "report new Downtime"
+msgid "report new downtime"
 msgstr "報告新的停機時間"
 
 #: ajax_htmldata/getIssues.php:47

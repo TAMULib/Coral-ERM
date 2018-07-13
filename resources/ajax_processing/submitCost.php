@@ -12,7 +12,8 @@
 			$yearArray          = array();  $yearArray          = explode(':::',$_POST['years']);
 			$subStartArray      = array();  $subStartArray      = explode(':::',$_POST['subStarts']);
 			$subEndArray        = array();  $subEndArray        = explode(':::',$_POST['subEnds']);
-			$fundIDArray        = array();  $fundIDArray      = explode(':::',$_POST['fundIDs']);
+			$fundIDArray        = array();  $fundIDArray      	= explode(':::',$_POST['fundIDs']);
+			$fundSpecialArray	= array();  $fundSpecialArray 	= explode(':::',$_POST['fundSpecials']);
             $pteArray           = array();  $pteArray           = explode(':::',$_POST['pricesTaxExcluded']);
             $taxRateArray       = array();  $taxRateArray       = explode(':::',$_POST['taxRates']);
             $ptiArray           = array();  $ptiArray           = explode(':::',$_POST['pricesTaxIncluded']);
@@ -22,6 +23,9 @@
 			$costDetailsArray   = array();  $costDetailsArray   = explode(':::',$_POST['costDetails']);
 			$costNoteArray      = array();  $costNoteArray      = explode(':::',$_POST['costNotes']);
 			$invoiceArray       = array();  $invoiceArray       = explode(':::',$_POST['invoices']);
+			$purchaseOrderArray = array();  $purchaseOrderArray = explode(':::',$_POST['purchaseOrders']);
+			$systemIDArray      = array();  $systemIDArray      = explode(':::',$_POST['systemIDs']);
+			$vendorCodeArray    = array();  $vendorCodeArray    = explode(':::',$_POST['vendorCodes']);
 			foreach ($orderTypeArray as $key => $value){
 				if (($value) && ($paymentAmountArray[$key] || $yearArray[$key] || $fundIDArray[$key] || $costNoteArray[$key])){
 					$resourcePayment = new ResourcePayment();
@@ -32,6 +36,7 @@
 					$resourcePayment->subscriptionStartDate = $start;
 					$resourcePayment->subscriptionEndDate   = $end;
 					$resourcePayment->fundID        = $fundIDArray[$key];
+					$resourcePayment->fundSpecial        = $fundSpecialArray[$key];
 					$resourcePayment->priceTaxExcluded = cost_to_integer($pteArray[$key]);
 					$resourcePayment->taxRate       = cost_to_integer($taxRateArray[$key]);
 					$resourcePayment->priceTaxIncluded = cost_to_integer($ptiArray[$key]);
@@ -41,6 +46,11 @@
 					$resourcePayment->costDetailsID = $costDetailsArray[$key];
 					$resourcePayment->costNote      = $costNoteArray[$key];
 					$resourcePayment->invoiceNum    = $invoiceArray[$key];
+
+					$resourcePayment->purchaseOrder	= $purchaseOrderArray[$key];
+					$resourcePayment->systemID		= $systemIDArray[$key];
+					$resourcePayment->vendorCode   	= $vendorCodeArray[$key];
+
 					try {
 						$resourcePayment->save();
 					} catch (Exception $e) {

@@ -3,7 +3,8 @@
 		$updateID = $_POST['updateID'];
 		$shortName = $_POST['shortName'];
 		if($className=="ResourceType"){
-			$includeStats = $_POST['stats'];
+			$includeStats = ($_POST['stats'] == 'true') ? 1:0;
+			$hideArchived = ($_POST['hideArchived'] == 'true') ? 1:0;
 		}
 
 		if ($updateID != ''){
@@ -14,12 +15,8 @@
 
 		$instance->shortName = $shortName;
 		if($className == "ResourceType"){
-			if($includeStats == 'true'){
-				$includeStats = 1;
-			}else{
-				$includeStats = 0;
-			}
 			$instance->includeStats = $includeStats;
+			$instance->hideArchived = $hideArchived;
 		}
 
 

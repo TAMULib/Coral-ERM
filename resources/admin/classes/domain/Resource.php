@@ -17,13 +17,37 @@
 **************************************************************************************************************************
 */
 
-class Resource extends DatabaseObject {
+class Resource extends DatabaseObject implements ResourceInterface {
 
 	protected function defineRelationships() {}
 
 	protected function defineIsbnOrIssn() {}
 
 	protected function overridePrimaryKeyName() {}
+
+	public function getTitleText() {
+		return $this->attributes['titleText'];
+	}
+
+	public function getDescriptionText() {
+		return $this->attributes['descriptionText'];
+	}
+
+	public function getOrderNumber() {
+		return $this->attributes['orderNumber'];
+	}
+
+	public function getSystemNumber() {
+		return $this->attributes['systemNumber'];
+	}
+
+	public function getProviderText() {
+		return $this->attributes['providerText'];
+	}
+
+	public function getCoverageText() {
+		return $this->attributes['coverageText'];
+	}
 
     public function asArray() {
 		$rarray = array();
@@ -466,7 +490,17 @@ class Resource extends DatabaseObject {
 		return $objects;
 	}
 
-
+	/*
+	*	This method 'batch' archives all resources of auto-archiveable types whose subscriptions have expired
+	*/
+	public function archiveExpiredResources() {
+		$status = new Status();
+		$archivedStatusID = $status->getIDFromName('archived');
+		$query = "UPDATE Resource r
+				LEFT JOIN ResourceType rt ON rt.resourceTypeID=r.resourceTypeID
+				SET r.statusID={$archivedStatusID} WHERE rt.hideArchived=1 AND r.currentEndDate < NOW() ";
+		return $this->db->processQuery($query);
+	}
 
 	public static function setSearch($search) {
 	$config = new Configuration;
@@ -588,12 +622,18 @@ class Resource extends DatabaseObject {
 			$searchDisplay[] = _("Resource Format: ") . $resourceFormat->shortName;
 		}
 
+		//TAMU Customization - Resources can be hidden from the default search by configured Acquisition Type
+		//We have to assign the value to use it because Config properties are protected
+		$hiddenAcquisitionIds = $config->tamu->hiddenAcquisitionIds;
+
 		if ($search['acquisitionTypeID']) {
 			$whereAdd[] = "RA.acquisitionTypeID = '" . $resource->db->escapeString($search['acquisitionTypeID']) . "'";
 			$acquisitionType = new AcquisitionType(new NamedArguments(array('primaryKey' => $search['acquisitionTypeID'])));
 			$searchDisplay[] = _("Acquisition Type: ") . $acquisitionType->shortName;
-		}
 
+		} else if (!empty($hiddenAcquisitionIds)) {
+			$whereAdd[] = "(RA.acquisitionTypeID IS NULL OR RA.acquisitionTypeID NOT IN ({$hiddenAcquisitionIds}))";
+		}
 
 		if ($search['resourceNote']) {
 			$whereAdd[] = "(UPPER(RNA.noteText) LIKE UPPER('%" . $resource->db->escapeString($search['resourceNote']) . "%') AND RNA.tabName <> 'Product') OR (UPPER(RNR.noteText) LIKE UPPER('%" . $resource->db->escapeString($search['resourceNote']) . "%') AND RNR.tabName = 'Product')";
@@ -637,6 +677,13 @@ class Resource extends DatabaseObject {
 			$whereAdd[] = "R.resourceTypeID = '" . $resource->db->escapeString($search['resourceTypeID']) . "'";
 			$resourceType = new ResourceType(new NamedArguments(array('primaryKey' => $search['resourceTypeID'])));
 			$searchDisplay[] = _("Resource Type: ") . $resourceType->shortName;
+		} else {
+			//if not searching by resource type, hide archived Resources of types that have their hideArchived flags set
+			$status = new Status();
+			$archivedStatusId = $status->getIDFromName('archived');
+			if ($search['statusID'] !== $archivedStatusId) {
+				$whereAdd[] = "((RT.hideArchived=0 OR RT.hideArchived IS NULL) OR (RT.hideArchived=1 AND R.statusID != ".intval($status->getIDFromName('archived'))."))";
+			}
 		}
 
 
@@ -780,6 +827,7 @@ class Resource extends DatabaseObject {
 		}
 
 		$savedStatusID = intval($status->getIDFromName('saved'));
+
 		//also add to not retrieve saved records
 		$whereAdd[] = "R.statusID != " . $savedStatusID;
 
@@ -1679,5 +1727,44 @@ class Resource extends DatabaseObject {
 			}
 		}
 	}
+
+	/*
+	* TAMU Customization - returns a list of resources with similar titles to the search criteria
+	*/
+	public function findResourcesByTitle($title) {
+
+		$query = "SELECT *
+			FROM Resource
+			WHERE UPPER(titleText) LIKE '" . str_replace("'", "''", strtoupper($title)) . "%'
+			ORDER BY titleText";
+
+		$result = $this->db->processQuery($query, 'assoc');
+
+		$objects = array();
+
+		//need to do this since it could be that there's only one request and this is how the dbservice returns result
+		if (isset($result['resourceID'])) { $result = [$result]; }
+		foreach ($result as $row) {
+			$object = new Resource(new NamedArguments(array('primaryKey' => $row['resourceID'])));
+			array_push($objects, $object);
+		}
+
+		return $objects;
+	}
+
+  /*
+  * TAMU Customization
+  */
+  public function findByPurchaseOrder($purchaseOrder) {
+    $query = "SELECT r.resourceID FROM Resource r
+                LEFT JOIN ResourceAcquisition RA ON RA.resourceID = r.resourceID
+        LEFT JOIN ResourcePayment RPAY ON RA.resourceAcquisitionID = RPAY.resourceAcquisitionID
+        WHERE RPAY.purchaseOrder='{$purchaseOrder}' LIMIT 1";
+    $result = $this->db->processQuery($query);
+    if (is_array($result)) {
+      return $result[0];
+    }
+    return false;
+  }
 }
 ?>

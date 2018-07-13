@@ -35,12 +35,12 @@ $(function(){
 	 $('.changeDefault').live('blur', function() {
 		if(this.value == ''){
 			this.value = this.defaultValue;
-		}
+		}		
 	 });
 
-
+	
     	$('.changeInput').addClass("idleField");
-
+    	
 	$('.changeInput').live('focus', function() {
 
 
@@ -76,7 +76,7 @@ $(function(){
 	$('textarea').focus(function() {
 		$(this).removeClass("idleField").addClass("focusField");
 	});
-
+	    
 	$('textarea').blur(function() {
 		$(this).removeClass("focusField").addClass("idleField");
 	});
@@ -123,14 +123,14 @@ $(function(){
 		var detailsID = $('.newPaymentTable').find('.costDetailsID').val();
 		var pAmount   = $('.newPaymentTable').find('.paymentAmount').val();
 		var cNote     = $('.newPaymentTable').find('.costNote').val();
-
+		
 		if(validateTable($('.newPaymentTable tbody tr')))
 		{
 			//we're going to strip out the $ of the payment amount
 			pAmount = pAmount.replace('$','');
-
+		
 			$('#div_errorPayment').html('');
-
+			
 			var newPaymentTR = $('.newPaymentTR')
 			var duplicateTR = newPaymentTR.clone(); //copy the payment being added
 			var selectedOptions=newPaymentTR.find('select'); //get selected options
@@ -151,6 +151,7 @@ $(function(){
 			$('.newPaymentTable').find('.subscriptionStartDate').val('');
 			$('.newPaymentTable').find('.subscriptionEndDate').val('');
 			$('.newPaymentTable').find('.fundID').val('');
+			$('.newPaymentTable').find('.fundSpecial').val('');
 			$('.newPaymentTable').find('.priceTaxExcluded').val('');
 			$('.newPaymentTable').find('.taxRate').val('');
 			$('.newPaymentTable').find('.priceTaxIncluded').val('');
@@ -159,6 +160,9 @@ $(function(){
 			$('.newPaymentTable').find('.costDetailsID').val('');
 			$('.newPaymentTable').find('.costNote').val('');
 			$('.newPaymentTable').find('.invoiceNum').val('');
+			$('.newPaymentTable').find('.purchaseOrder').val('');
+			$('.newPaymentTable').find('.systemID').val('');
+			$('.newPaymentTable').find('.vendorCode').val('');
 			var tableDiv=$('.paymentTableDiv')[0];
 			tableDiv.scrollTop=tableDiv.scrollHeight;
 			return true;
@@ -182,7 +186,11 @@ function submitCostForm()
 	var cNote      = $('.newPaymentTR').find('.costNote').val();
 	var invoiceNum = $('.newPaymentTR').find('.invoiceNum').val();
 
-	if(y != '' || ssd != '' || sed != '' || fName != '' || pAmount != '' || typeID != '' || detailsID != '' || cNote != '' || invoiceNum != '')
+	var purchaseOrder = $('.newPaymentTR').find('.purchaseOrder').val();
+	var systemID = $('.newPaymentTR').find('.systemID').val();
+	var vendorCode = $('.newPaymentTR').find('.vendorCode').val();
+
+	if(y != '' || ssd != '' || sed != '' || fName != '' || pAmount != '' || typeID != '' || detailsID != '' || cNote != '' || invoiceNum != '' || purchaseOrder != '' || systemID != '' || vendorCode != '')
 	{
 		if(confirm('There is unsaved information on the add line. To discard this information, click OK, otherwise click Cancel.')==false)
 		{
@@ -194,74 +202,95 @@ function submitCostForm()
 		purchaseSitesList ='';
 		$(".paymentTable").find(".check_purchaseSite:checked").each(function(id) {
 		      purchaseSitesList += $(this).val() + ":::";
-		});
-
+		}); 
+		
 		yearList ='';
 		$(".paymentTable").find(".year").each(function(id) {
 		      yearList += $(this).val() + ":::";
-		});
+		}); 
 
 		subStartList ='';
 		$(".paymentTable").find(".subscriptionStartDate").each(function(id) {
 		      subStartList += $(this).val() + ":::";
-		});
+		}); 
 
 		subEndList ='';
 		$(".paymentTable").find(".subscriptionEndDate").each(function(id) {
 		      subEndList += $(this).val() + ":::";
-		});
+		}); 
 
 		fundNameList ='';
 		$(".paymentTable").find(".fundID").each(function(id) {
 		      fundNameList += $(this).val() + ":::";
 		});
 
+		fundSpecialList ='';
+		$(".paymentTable").find(".fundSpecial").each(function(id) {
+		      fundSpecialList += $(this).val() + ":::";
+		});
 
 		priceTaxExcludedList ='';
 		$(".paymentTable").find(".priceTaxExcluded").each(function(id) {
 			priceTaxExcludedList += $(this).val() + ":::";
-		});
+		}); 
 
 		taxRateList ='';
 		$(".paymentTable").find(".taxRate").each(function(id) {
 			taxRateList += $(this).val() + ":::";
-		});
+		}); 
 
 		priceTaxIncludedList ='';
 		$(".paymentTable").find(".priceTaxIncluded").each(function(id) {
 			priceTaxIncludedList += $(this).val() + ":::";
-		});
+		}); 
 
 		paymentAmountList ='';
 		$(".paymentTable").find(".paymentAmount").each(function(id) {
 			paymentAmountList += $(this).val() + ":::";
-		});
+		}); 
 
 		currencyCodeList ='';
 		$(".paymentTable").find(".currencyCode").each(function(id) {
 		      currencyCodeList += $(this).val() + ":::";
-		});
-
+		}); 
+		
 		orderTypeList ='';
 		$(".paymentTable").find(".orderTypeID").each(function(id) {
 		      orderTypeList += $(this).val() + ":::";
-		});
+		}); 
 
 		detailsList ='';
 		$(".paymentTable").find(".costDetailsID").each(function(id) {
 		      detailsList += $(this).val() + ":::";
-		});
+		}); 
 
 		costNoteList ='';
 		$(".paymentTable").find(".costNote").each(function(id) {
 		      costNoteList += $(this).val() + ":::";
-		});
+		}); 
 
 		invoiceList ='';
 		$(".paymentTable").find(".invoiceNum").each(function(id) {
 		      invoiceList += $(this).val() + ":::";
 		});
-                $('#submitCost').attr("disabled", "disabled");
+
+		purchaseOrderList ='';
+		$(".paymentTable").find(".purchaseOrder").each(function(id) {
+		      purchaseOrderList += $(this).val() + ":::";
+		});
+
+		systemIDList ='';
+		$(".paymentTable").find(".systemID").each(function(id) {
+		      systemIDList += $(this).val() + ":::";
+		});
+
+		vendorCodeList ='';
+		$(".paymentTable").find(".vendorCode").each(function(id) {
+		      vendorCodeList += $(this).val() + ":::";
+		});
+
+		$('#submitCost').attr("disabled", "disabled"); 
+
 		$.ajax({
 			type:  "POST",
 			url:   "ajax_processing.php?action=submitCost",
@@ -273,6 +302,7 @@ function submitCostForm()
 				subStarts: subStartList,
 				subEnds: subEndList,
 				fundIDs: fundNameList,
+				fundSpecials: fundSpecialList,
 				pricesTaxExcluded: priceTaxExcludedList,
 				taxRates: taxRateList,
 				pricesTaxIncluded: priceTaxIncludedList,
@@ -281,7 +311,10 @@ function submitCostForm()
 				orderTypes: orderTypeList,
 				costDetails: detailsList,
 				costNotes: costNoteList,
-				invoices: invoiceList
+				invoices: invoiceList,
+				purchaseOrders: purchaseOrderList,
+				systemIDs: systemIDList,
+				vendorCodes: vendorCodeList
 			},
 			success:   function(html) {
 				if (html){
@@ -292,7 +325,7 @@ function submitCostForm()
 					window.parent.tb_remove();
 					window.parent.updateAcquisitions();
 					return false;
-				}
+				}					
 
 			}
 		});
@@ -308,7 +341,7 @@ function validateTable(objRows)
 {
 	//var currentRow = 0;
 	var hasNoErrors = true;
-
+ 	
  	$(objRows).find('.div_errorPayment').each(function() {$(this).html('');}); //clear existing errors
  	//while(typeof objRows[currentRow] !== "undefined")
         for (var currentRow = 0; currentRow < objRows.length; currentRow += 2)
@@ -351,11 +384,11 @@ function validateTable(objRows)
  	}
  	return hasNoErrors;
 }
-
+ 
 //kill all binds done by jquery live
 function kill()
 {
-	$('.addPayment').die('click');
+	$('.addPayment').die('click'); 
 	$('.changeDefault').die('blur');
 	$('.changeDefault').die('focus');
 	$('.changeInput').die('blur');

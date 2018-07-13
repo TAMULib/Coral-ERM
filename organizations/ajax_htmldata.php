@@ -685,7 +685,7 @@ switch ($_GET['action']) {
 				<th><?php echo _("Downtime");?></th>
 			</tr>
 			<tr>
-				<td><a id="createDowntimeBtn" class="thickbox" href="ajax_forms.php?action=getNewDowntimeForm&organizationID=<?php echo $_GET['organizationID']; ?>&height=264&width=390&modal=true"><?php echo _("report new Downtime");?></a></td>
+				<td><a id="createDowntimeBtn" class="thickbox" href="ajax_forms.php?action=getNewDowntimeForm&organizationID=<?php echo $_GET['organizationID']; ?>&height=264&width=390&modal=true"><?php echo _("report new downtime");?></a></td>
 			</tr>
 			<tr>
 				<td>

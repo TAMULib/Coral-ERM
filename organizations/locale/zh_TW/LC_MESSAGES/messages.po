@@ -789,7 +789,7 @@ msgid "Downtime"
 msgstr "停機時間"
 
 #: ajax_htmldata.php:676
-msgid "report new Downtime"
+msgid "report new downtime"
 msgstr "報告新的停機時間"
 
 #: ajax_htmldata.php:680

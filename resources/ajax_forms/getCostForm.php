@@ -44,7 +44,7 @@ $baseWidth = 345;
 $numCols = 6;
 if ($enhancedCostFlag){
 	$baseWidth += 688;
-	$numCols += 8; // year, sub start, sub end, cost details, invoice num
+	$numCols += 11; // year, sub start, sub end, cost details, invoice num
 }
 
 ?>
@@ -54,7 +54,7 @@ if ($enhancedCostFlag){
 		<input type='hidden' name='editResourceID' id='editResourceID' value='<?php echo $resourceID; ?>'>
 		<input type='hidden' name='editResourceAcquisitionID' id='editResourceAcquisitionID' value='<?php echo $resourceAcquisitionID; ?>'>
 
-		<div class='formTitle' style='width:<?php echo $baseWidth + 46 ?>px; margin-bottom:5px;'><span class='headerText'><?php echo _("Edit Cost Information");?></span></div>
+		<div class='formTitle' style='width:<?php echo $baseWidth + 46 ?>px; margin-bottom:5px;'><span class='headerText'><?php echo _("Edit Cost History");?></span></div>
 
 		<span class='smallDarkRedText' id='span_errors'></span>
 
@@ -73,7 +73,7 @@ if ($enhancedCostFlag){
 							<th><?php echo _("Sub Start");?></th>
 							<th><?php echo _("Sub End");?></th>
 							<?php } ?>
-							<th><?php echo _("Fund");?></th>
+							<th><?php echo _("Fund/Fund Code");?></th>
 							<?php if ($enhancedCostFlag){ ?>
 							<th><?php echo _("Tax Excl.");?></th>
 							<th><?php echo _("Tax Rate");?></th>
@@ -88,6 +88,9 @@ if ($enhancedCostFlag){
 							<th><?php echo _("Note");?></th>
 							<?php if ($enhancedCostFlag){ ?>
 							<th><?php echo _("Invoice");?></th>
+							<th><?php echo _("Purchase Order");?></th>
+							<th><?php echo _("System ID");?></th>
+							<th><?php echo _("Vendor Code");?></th>
 							<?php } ?>
 							<th>&nbsp;</th>
 						</tr>
@@ -98,14 +101,14 @@ if ($enhancedCostFlag){
 							<td>
 								<input type='text' value='' class='changeDefaultWhite changeInput year costHistoryYear' />
 							</td>
-							<td>
+							<td class="date-wrapper">
 								<input type='text' value='' class='date-pick changeDefaultWhite changeInput subscriptionStartDate costHistorySubStart' placeholder='mm/dd/yyyy' />
 							</td>
-							<td>
+							<td class="date-wrapper">
 								<input type='text' value='' class='date-pick changeDefaultWhite changeInput subscriptionEndDate costHistorySubEnd' placeholder='mm/dd/yyyy' />
 							</td>
 							<?php } ?>
-							<td>
+							<td class="fund">
 								<select class='changeDefaultWhite changeInput fundID costHistoryFund' id='searchFundID'>
 									<option value='' selected></option>
 									<?php
@@ -114,12 +117,13 @@ if ($enhancedCostFlag){
 										{
 											$fundCodeLength = strlen($fund['fundCode']) + 3;
 											$combinedLength = strlen($fund['shortName']) + $fundCodeLength;
-											$fundName = ($combinedLength <=50) ? $fund['shortName'] : substr($fund['shortName'],0,49-$fundCodeLength) . "&hellip;";
-											$fundName .= " [" . $fund['fundCode'] . "]</option>";
+											$fundName = " [" . $fund['fundCode'] . "] ";
+											$fundName .= ($combinedLength <=50) ? $fund['shortName'] : substr($fund['shortName'],0,49-$fundCodeLength) . "&hellip;";
 											echo "<option value='" . $fund['fundID'] . "'>" . $fundName . "</option>";
 										}
 									?>
 								</select>
+								<input type='text' value='' class='changeDefaultWhite changeInput fundSpecial' />
 							</td>
 							<?php if ($enhancedCostFlag){ ?>
 						    <td>
@@ -183,6 +187,15 @@ if ($enhancedCostFlag){
 							<td>
 								<input type='text' value='' class='changeDefaultWhite changeInput invoiceNum costHistoryInvoice' />
 							</td>
+							<td>
+								<input type='text' value='<?php echo $payment['purchaseOrder']; ?>' class='changeDefaultWhite changeInput purchaseOrder costHistoryInvoice' />
+							</td>
+							<td>
+								<input type='text' value='<?php echo $payment['systemID']; ?>' class='changeDefaultWhite changeInput systemID costHistoryInvoice' />
+							</td>
+							<td>
+								<input type='text' value='<?php echo $payment['vendorCode']; ?>' class='changeDefaultWhite changeInput vendorCode costHistoryInvoice' />
+							</td>
 							<?php } ?>
 							<td class='costHistoryAction'>
 								<a href='javascript:void();'>
@@ -213,14 +226,15 @@ if ($enhancedCostFlag){
 								<td>
 									<input type='text' value='<?php echo $payment['year']; ?>' class='changeInput year costHistoryYear' />
 								</td>
-								<td>
+                <!-- TAMU Customization - date-wrapper css class -->
+								<td class="date-wrapper">
 									<input type='text' value='<?php echo normalize_date($payment['subscriptionStartDate']); ?>' class='date-pick changeInput subscriptionStartDate costHistorySubStart' />
 								</td>
-								<td>
+								<td class="date-wrapper">
 									<input type='text' value='<?php echo normalize_date($payment['subscriptionEndDate']); ?>' class='date-pick changeInput subscriptionEndDate costHistorySubEnd' />
 								</td>
 								<?php } ?>
-								<td>
+								<td class="fund">
 									<select class='changeDefaultWhite changeInput fundID costHistoryFund' id='searchFundID'>
 										<option value=''></option>
 										<?php
@@ -238,8 +252,8 @@ if ($enhancedCostFlag){
 											{
 												$fundCodeLength = strlen($fund['fundCode']) + 3;
 												$combinedLength = strlen($fund['shortName']) + $fundCodeLength;
-												$fundName = ($combinedLength <=50) ? $fund['shortName'] : substr($fund['shortName'],0,49-$fundCodeLength) . "&hellip;";
-												$fundName .= " [" . $fund['fundCode'] . "]</option>";
+												$fundName = " [" . $fund['fundCode'] . "] ";
+												$fundName .= ($combinedLength <=50) ? $fund['shortName'] : substr($fund['shortName'],0,49-$fundCodeLength) . "&hellip;";
 												echo "<option";
 												if ($payment['fundID'] == $fund['fundID'])
 												{
@@ -249,6 +263,7 @@ if ($enhancedCostFlag){
 											}
 										?>
 									</select>
+									<input type='text' value='<?php echo $payment['fundSpecial']; ?>' class='changeInput fundSpecial' />
 								</td>
 								<?php if ($enhancedCostFlag){ ?>
 						        <td>
@@ -325,6 +340,15 @@ if ($enhancedCostFlag){
 								<?php if ($enhancedCostFlag){ ?>
 								<td>
 									<input type='text' value='<?php echo $payment['invoiceNum']; ?>' class='changeInput invoiceNum costHistoryInvoice' />
+								</td>
+								<td>
+									<input type='text' value='<?php echo $payment['purchaseOrder']; ?>' class='changeInput purchaseOrder costHistoryInvoice' />
+								</td>
+								<td>
+									<input type='text' value='<?php echo $payment['systemID']; ?>' class='changeInput systemID costHistoryInvoice' />
+								</td>
+								<td>
+									<input type='text' value='<?php echo $payment['vendorCode']; ?>' class='changeInput vendorCode costHistoryInvoice' />
 								</td>
 								<?php } ?>
 								<td class='costHistoryAction'>

@@ -59,10 +59,36 @@ Flight::route('/proposeResource/', function(){
     foreach ($fieldNames as $fieldName) {
         $resource->$fieldName = Flight::request()->data->$fieldName;
     }
+
+    // TAMU Customization - Use explicitly defined Type and Format defaults, ensuring that a default workflow is properly started.
+    $resourceTypeObj = new ResourceType();
+    $resourceType = $resourceTypeObj->getResourceTypeIDByName('Database');
+    if ($resourceType) {
+        $resource->resourceTypeID = $resourceType;
+    }
+
+    $resourceFormatObj = new ResourceFormat();
+    $resourceFormat = $resourceFormatObj->getResourceFormatIDByName('Electronic');
+    if ($resourceFormat) {
+        $resource->resourceFormatID = $resourceFormat;
+    }
+
     try {
         $resource->save();
         $resourceID = $resource->primaryKey;
         $resource = new Resource(new NamedArguments(array('primaryKey' => $resourceID)));
+
+        // TAMU Customization - Prepend the provide selector and feedback information to the descriptionText.
+        $util = new Utility();
+        $coralURL = $util->getCORALURL();
+        $selectorEmail =  isset(Flight::request()->data->selectorEmail) ? filter_var(Flight::request()->data->selectorEmail, FILTER_SANITIZE_EMAIL) : '';
+        $selectorFirstName =  isset(Flight::request()->data->selectorFirstName) ? filter_var(Flight::request()->data->selectorFirstName, FILTER_SANITIZE_STRING) : '';
+        $selectorLastName =  isset(Flight::request()->data->selectorLastName) ? filter_var(Flight::request()->data->selectorLastName, FILTER_SANITIZE_STRING) : '';
+        $selectorTitle =  isset(Flight::request()->data->selectorTitle) ? filter_var(Flight::request()->data->selectorTitle, FILTER_SANITIZE_STRING) : '';
+        $resourceIDInt = (int) $resourceID;
+        $descriptionText = "Trial ends. Provide feedback to <a href=\"mailto:$selectorEmail\">$selectorFirstName $selectorLastName</a>, $selectorTitle or fill out a <a href=\"{$coralURL}tamu_trial_feedback.php?resourceID=$resourceIDInt\">short survey</a>.\n";
+        $resource->descriptionText = $descriptionText . $resource->descriptionText;
+        $resource->save();
 
 		if (isset(Flight::request()->data->isbn)){
 		    $isbnIssnArray = (is_array(Flight::request()->data->isbn))? Flight::request()->data->isbn : array(Flight::request()->data->isbn);
@@ -111,11 +137,13 @@ Flight::route('/proposeResource/', function(){
 
         // General notes
         $noteText = '';
-        foreach (array("noteText" => "Note", "providerText" => "Provider", "publicationYear" => "Publication Year or order start date", "edition" => "Edition", "holdLocation" => "Hold location", "patronHold" => "Patron hold", "neededByDate" => "Urgent") as $key => $value) {
+        foreach (array("noteText" => FALSE, "providerText" => "Provider", "publicationYear" => "Publication Year or order start date", "edition" => "Edition", "holdLocation" => "Hold location", "patronHold" => "Patron hold", "neededByDate" => "Urgent") as $key => $value) {
             if (isset(Flight::request()->data[$key])) {
-                $noteText .= $value . ": " . Flight::request()->data[$key] . "\n";
+                if ($value) {
+                    $noteText .= $value . ": ";
+                }
+                $noteText .= Flight::request()->data[$key] . "\n";
             }
-
         }
         if ($noteText) {
             $noteType = new NoteType();
@@ -378,6 +406,61 @@ Flight::route('GET /organizations/@id', function($id) {
         $organization = new Organization(new NamedArguments(array('primaryKey' => $id)));
         Flight::json($organization->asArray());
     }
+});
+
+// TAMU Customization - This may now be a duplicate of 'Flight::route('GET /resources/@id', function($id) {' above ^
+Flight::route('/getResource/@id', function($id) {
+   $resource = new Resource(new NamedArguments(array('primaryKey' => $id)));
+    Flight::json($resource->attributes);
+});
+
+//TAMU Customization
+Flight::route('/postResourceNote/', function() {
+    $user = userExists(Flight::request()->data['user']) ? Flight::request()->data['user'] : 'API';
+    $noteText = Flight::request()->data['noteText'];
+    $resourceID = Flight::request()->data['resourceID'];
+    if ($resourceID && $noteText) {
+        try {
+            $noteType = new NoteType();
+            $noteTypeID = $noteType->getNoteTypeIDByName(isset(Flight::request()->data['noteTypeName']) ? Flight::request()->data['noteTypeName'] : "Feedback");
+            $resourceNote = new ResourceNote();
+            $resourceNote->resourceNoteID   = '';
+            $resourceNote->updateLoginID    = $user;
+            $resourceNote->updateDate       = date( 'Y-m-d' );
+            $resourceNote->noteTypeID       = $noteTypeID;
+            $resourceNote->tabName          = 'Product';
+            $resourceNote->entityID         = $resourceID;
+            $resourceNote->noteText         = $noteText;
+            $resourceNote->save();
+            Flight::json(array("resourceNoteID"=>$resourceNote->primaryKey));
+        } catch (Exception $e) {
+            Flight::json(array('error' => $e->getMessage()));
+        }
+    }
+    else {
+        Flight::json(array('error' => 'Error adding note'));
+    }
+});
+
+//TAMU Customization
+Flight::route('/findResourcesByTitle/', function() {
+    $searchTerm = Flight::request()->query['searchTerm'];
+    if ($searchTerm) {
+        $resourceObj = new Resource();
+        $resources = $resourceObj->findResourcesByTitle($searchTerm);
+        $matches = array();
+        foreach ($resources as $resource) {
+            $matches[] = $resource->attributes;
+        }
+        Flight::json($matches);
+    }
+});
+
+//TAMU Customization
+Flight::route('/getAcquisitionTypeByName/', function() {
+    $name = Flight::request()->query->name;
+    $acquisitionTypeObj = new AcquisitionType();
+    Flight::json($acquisitionTypeObj->getAcquisitionTypeIDByName($name));
 });
 
 Flight::start();

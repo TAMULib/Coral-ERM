@@ -3,6 +3,8 @@ $resourceStepID = $_POST['resourceStepID'];
 $userGroupID = $_POST['userGroupID'];
 $note = $_POST['note'];
 $applyToAll = ($_POST['applyToAll'] == "true")? true:false;
+//TAMU Customization - Editable stepStartDate
+$newStepStartDate = date("Y-m-d",strtotime($_POST['newStepStartDate']));
 $userGroupIDChanged = $_POST['userGroupIDChanged'];
 
 
@@ -30,6 +32,15 @@ if($resourceStepID != ''){
                     }
                 }
             }
+        } catch (Exception $e) {
+            echo $e->getMessage();
+        }
+    }
+    //TAMU Customization - Editable stepStartDate
+    if ($newStepStartDate != $step->stepStartDate) {
+        $step->stepStartDate = $newStepStartDate;
+        try {
+            $step->save();
         } catch (Exception $e) {
             echo $e->getMessage();
         }

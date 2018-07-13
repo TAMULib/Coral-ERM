@@ -3260,7 +3260,7 @@ msgid "Downtime"
 msgstr "Ausfall"
 
 #: ajax_htmldata/getIssues.php:44
-msgid "report new Downtime"
+msgid "report new downtime"
 msgstr "Neuen Ausfall melden"
 
 #: ajax_htmldata/getIssues.php:48

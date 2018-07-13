@@ -28,8 +28,8 @@ include 'templates/header.php';
 
 $tabs = array(array("id"=>"OutstandingTasks","spanClass"=>"OutstandingTasksNumber","text"=>"Outstanding Tasks"),
 				array("id"=>"SavedRequests","spanClass"=>"SavedRequestsNumber","text"=>"Saved Requests"),
-				array("id"=>"SubmittedRequests","spanClass"=>"SubmittedRequestsNumber","text"=>"Submitted Requests"));
-
+				array("id"=>"SubmittedRequests","spanClass"=>"SubmittedRequestsNumber","text"=>"Submitted Requests"),
+				array("id"=>"CompletedRequests","spanClass"=>"CompletedRequestsNumber","text"=>"Completed Requests"));
 ?>
 
 

@@ -26,10 +26,14 @@
 			<td><input type='text' id='updateVal' value='<?php echo $instance->shortName; ?>' style='width:190px;'/></td>
 			</tr>
 			<?php
-				if($className == 'ResourceType' && ($config->settings->usageModule == 'Y')){
-					if($instance->includeStats == 1){$stats = 'checked';}else{$stats='';}
-					echo "<tr><td><label for='stats'>"._("Show stats button?")."</label>";
-					echo "<input type='checkbox' id='stats' ".$stats." /></td></tr>";
+				if($className == 'ResourceType') {
+					if ($config->settings->usageModule == 'Y') {
+						if($instance->includeStats == 1){$stats = 'checked';}else{$stats='';}
+						echo "<tr><td><label for='stats'>"._("Show stats button?")."</label>";
+						echo "<input type='checkbox' id='stats' ".$stats." /></td></tr>";
+					}
+					echo "<tr><td><label for='hideArchived'>"._("Hide archived Resources of this type from Resource list by default?")."</label>";
+					echo "<input type='checkbox' id='hideArchived'".(($instance->hideArchived) ? ' checked':'')." /></td></tr>";
 				}
 			?>
 			</table>

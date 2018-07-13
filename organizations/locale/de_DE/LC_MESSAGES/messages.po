@@ -356,7 +356,7 @@ msgid "Downtime"
 msgstr "Ausfallzeit"
 
 #: ajax_htmldata.php:688
-msgid "report new Downtime"
+msgid "report new downtime"
 msgstr "neue Ausfallzeit melden"
 
 #: ajax_htmldata.php:692

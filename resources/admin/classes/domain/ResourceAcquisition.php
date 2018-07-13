@@ -114,6 +114,12 @@ class ResourceAcquisition extends DatabaseObject {
 	}
 
     public function isCurrentWorkflowComplete() {
+		$status = new Status();
+		$statusID = $status->getIDFromName('complete');
+		if ($this->statusID == $statusID) {
+			return true;
+		}
+
         $steps = $this->getCurrentWorkflowResourceSteps(); 
         foreach ($steps as $step) {
             if (!$step->isComplete()) return false;
@@ -459,6 +465,39 @@ class ResourceAcquisition extends DatabaseObject {
 		if (isset($result['licenseStatusID'])) {
 			return $result['licenseStatusID'];
 		}
+	}
+
+	public function processLicense($licenseList, $licenseStatusID=null,$loginID=null) {
+	  if ($licenseStatusID && ($licenseStatusID != $this->getCurrentResourceLicenseStatus())) {
+	    $resourceLicenseStatus = new ResourceLicenseStatus();
+	    $resourceLicenseStatus->resourceAcquisitionID     = $this->primaryKey;
+	    $resourceLicenseStatus->licenseStatusID       = $licenseStatusID;
+	    //TODO get $loginID
+	    $resourceLicenseStatus->licenseStatusChangeLoginID  = $loginID;
+	    $resourceLicenseStatus->licenseStatusChangeDate   = date( 'Y-m-d H:i:s' );
+	    $resourceLicenseStatus->save();
+	  }
+
+	  try {
+
+	    //first remove all license links, then we'll add them back
+	    $this->removeResourceLicenses();
+	    foreach ($licenseList as $key => $value){
+	      if ($value){
+	        $resourceLicenseLink = new ResourceLicenseLink();
+	        $resourceLicenseLink->resourceAcquisitionID = $this->primaryKey;
+	        $resourceLicenseLink->licenseID = $value;
+	        try {
+	          $resourceLicenseLink->save();
+	        } catch (Exception $e) {
+	          echo $e->getMessage();
+	        }
+	      }
+	    }
+
+	  } catch (Exception $e) {
+	    echo $e->getMessage();
+	  }
 	}
 
     //removes this order
