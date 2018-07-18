@@ -129,7 +129,10 @@
 		?>
 	</section>
 
-	<footer><?php echo _("Powered by");?><img src="images/logo-coral.jpg" /></footer>
+	<footer><?php echo _("Powered by");?><img src="images/logo-coral.jpg" />
+	<br><span class="smallDarkRedText"><br>Don't have a login? <a href="http://coraldemo.library.tamu.edu/usermanagement/">Click Here</a> to create one.</span>
+
+	</footer>
 
 	<script type="text/javascript">
 		/*
