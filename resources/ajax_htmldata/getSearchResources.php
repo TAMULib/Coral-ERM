@@ -51,8 +51,15 @@
 			//div for displaying record count
 			echo "<span style='float:left; font-weight:bold; width:650px;'>";
 				echo sprintf(ngettext('Displaying %d to %d of %d Resource Record', 'Displaying %d to %d of %d Resource Records', $totalRecords), $displayStartingRecNumber, $displayEndingRecNumber, $totalRecords);
-			echo "</span><span style='float:right;width:20px;'><a href='javascript:void(0);'><img src='images/xls.gif' id='export'></a></span>";
-
+			echo "</span>";
+      //TAMU Customization - Export notes by type
+?>
+            <div style="float:right;">
+              <input type="radio" name="exportType" class="export-type" value="resources" checked="checked" /> Resources
+              <input type="radio" name="exportType" class="export-type" value="notes" /> Notes
+              <a href='javascript:void(0);'><img style="vertical-align:middle;" src='images/xls.gif' id='export'></a>
+            </div>
+<?php
 
 			//print out page selectors as long as there are more records than the number that should be displayed
 			if ($totalRecords > $recordsPerPage){
@@ -110,7 +117,7 @@
 
 			<table id='resource_table' class='dataTable' style='width:840px'>
 			<thead><tr>
-			<th><table class='noBorderTable' style='width:100%'><tr><td><?php echo _("Resource ID");?></td></tr></table></th>			
+			<th><table class='noBorderTable' style='width:100%'><tr><td><?php echo _("Resource ID");?></td></tr></table></th>
 			<th><table class='noBorderTable' style='width:100%'><tr><td><?php echo _("Name");?></td><td style='width:10px;'><a href='javascript:setOrder("R.titleText","asc");'><img src='images/arrowup.png' alt="<?php echo _("Ascending sort"); ?>" border=0></a></td><td style='width:10px;'><a href='javascript:setOrder("R.titleText","desc");'><img src='images/arrowdown.png' alt="<?php echo _("Descending sort"); ?>" border=0></a></td></tr></table></th>
 			<th><table class='noBorderTable' style='width:100%'><tr><td><?php echo _("ID");?></td><td style='width:10px;'><a href='javascript:setOrder("R.resourceID + 0","asc");'><img src='images/arrowup.png' alt="<?php echo _("Ascending sort"); ?>" border=0></a></td><td style='width:10px;'><a href='javascript:setOrder("R.resourceID + 0","desc");'><img src='images/arrowdown.png' alt="<?php echo _("Descending sort"); ?>" border=0></a></td></tr></table></th>
 			<th><table class='noBorderTable' style='width:100%'><tr><td><?php echo _("Creator");?></td><td style='width:10px;'><a href='javascript:setOrder("CU.loginID","asc");'><img src='images/arrowup.png' alt="<?php echo _("Ascending sort"); ?>" border=0></a></td><td style='width:10px;'><a href='javascript:setOrder("CU.loginID","desc");'><img src='images/arrowdown.png' alt="<?php echo _("Descending sort"); ?>" border=0></a></td></tr></table></th>
@@ -131,15 +138,15 @@
 					$classAdd="class='alt'";
 				}
 				echo "<tr>";
-				
+
 				echo "<td $classAdd>" . $resource['resourceID'] . "</td>";
-				
+
 				echo "<td $classAdd>"
 					. "<a href='resource.php?resourceID=" . $resource['resourceID'] . "' title=\"" . $resource['titleText'] . "\">"
 					. $resource['titleText']
 					. "</a></td>";
 
-				echo "<td $classAdd>";					
+				echo "<td $classAdd>";
 				$isbnOrIssns = $resource['isbnOrIssns'];
 				foreach ($isbnOrIssns as $isbnOrIssn) {
 					echo $isbnOrIssn . "<br />";

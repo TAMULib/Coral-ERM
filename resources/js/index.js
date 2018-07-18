@@ -85,8 +85,13 @@ $(document).ready(function(){
 
 
 	//for performing excel output
+  //TAMU Customization - Exportable notes
 	$("#export").live('click', function () {
-		window.open('export.php');
+    var exportPage = 'export.php';
+    if ($(".export-type:checked").val() == 'notes') {
+      exportPage = 'export_notes.php';
+    }
+		window.open(exportPage);
 		return false;
 	});
 
@@ -192,8 +197,8 @@ function setNumberOfRecords(recordsPerPageNumber){
 
 
   $("#searchName").focus(function () {
-  	$("#div_searchName").css({'display':'block'}); 
-  });    
+  	$("#div_searchName").css({'display':'block'});
+  });
   $("#searchPublisher").focus(function () {
     $("#div_searchPublisher").css({'display':'block'});
   });
