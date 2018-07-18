@@ -129,12 +129,7 @@
 		?>
 	</section>
 
-	<footer>
-		<?php echo _("Powered by");?><img src="images/logo-coral.jpg" />
-	    <br> Need Help? Contact the <a href="mailto:coral-erm@listserv.nd.edu?subject=&quot;CORAL Help&quot;">List Server</a>.
-
-		<br><span class="smallDarkRedText"><br>Don't have a login? <a href="http://coraldemo.library.tamu.edu/usermanagement/">Click Here</a> to create one.</span>
-	</footer>
+	<footer><?php echo _("Powered by");?><img src="images/logo-coral.jpg" /></footer>
 
 	<script type="text/javascript">
 		/*
@@ -150,7 +145,7 @@
 			var cookievalid=2592000000; // 30 days (1000*60*60*24*30)
 			time += cookievalid;
 			now.setTime(time);
-			document.cookie ='lang='+lang+';path=/'+';domain='+wl.host+';expires='+now;
+			document.cookie ='lang='+lang+';path=/'+';domain='+wl.hostname+';expires='+now;
 		}
 	</script>
 </body>
