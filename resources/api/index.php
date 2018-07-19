@@ -463,6 +463,23 @@ Flight::route('/getAcquisitionTypeByName/', function() {
     Flight::json($acquisitionTypeObj->getAcquisitionTypeIDByName($name));
 });
 
+//TAMU Customization
+Flight::route('/findOrganizationsByName/', function() {
+    $searchTerm = Flight::request()->query['searchTerm'];
+    if ($searchTerm) {
+        $orgObj = new Organization();
+        $organizations = $orgObj->findOrganizationsByName($searchTerm);
+        Flight::json($organizations);
+    }
+});
+
+//TAMU Customization
+Flight::route('/getOrganizationContacts/', function() {
+    $organizationID = Flight::request()->query->organizationID;
+    $organizationObj = new Organization();
+    Flight::json($organizationObj->getPrimaryContactFromOrgModule($organizationID));
+});
+
 Flight::start();
 
 function isAllowed() {
