@@ -184,6 +184,42 @@ class Organization extends DatabaseObject {
 			return $result;
 		}
 	}
+
+  //TAMU Customization - find organiztions with names similar to the search criteria
+  public function findOrganizationsByName($name) {
+    $config = new Configuration;
+    if ($config->settings->organizationsModule == 'Y') {
+      $dbName = $config->settings->organizationsDatabaseName;
+      $query = "SELECT *
+        FROM {$dbName}.Organization
+        WHERE UPPER(name) LIKE '" .$this->db->escapeString(str_replace("'", "''", strtoupper($name))) . "%'
+        ORDER BY name";
+
+      $result = $this->db->processQuery($query, 'assoc');
+
+      $orgArray = [];
+      //need to do this since it could be that there's only one request and this is how the dbservice returns result
+      if (isset($result['organizationID'])) { $result = [$result]; }
+      foreach ($result as $row) {
+        array_push($orgArray, $row);
+      }
+
+      return $orgArray;
+    }
+    return [];
+  }
+
+  //TAMU Customization - returns the first contact by alpha sort (We use * to move primary contacts to the top) FROM ORG MODULE ONLY
+  public function getPrimaryContactFromOrgModule($organizationID) {
+    $config = new Configuration;
+    if ($config->settings->organizationsModule == 'Y' && is_numeric($organizationID)) {
+      $dbName = $config->settings->organizationsDatabaseName;
+      $query = "SELECT * FROM {$dbName}.Contact WHERE organizationID ={$organizationID} AND (archiveDate = '0000-00-00' || archiveDate = '' || archiveDate is null) AND (name IS NOT NULL AND name!='') order by name LIMIT 1";
+      return $this->db->processQuery($query, 'assoc');
+    }
+    return [];
+  }
+
 }
 
 ?>

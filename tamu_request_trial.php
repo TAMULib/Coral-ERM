@@ -55,25 +55,25 @@
           background-color: #f7d9d9;
         }
 
-        #doTitleMatches .potential-matches-list {
+        .potential-matches-list {
           margin: 4px;
           padding: 4px;
           border: 1px dashed #e9ba00;
           background-color: #feffdb;
         }
 
-        #doTitleMatches .potential-matches-title {
+        .potential-matches-title {
           font-size: 1.6rem;
           margin: 0px 0px 4px 0px;
         }
 
-        #doTitleMatches .potential-matches-item {
+        .potential-matches-item {
           list-style-type: disc;
           margin-left: 20px;
           padding-left: 4px;
         }
 
-        #doTitleMatches .potential-matches-item a {
+        .potential-matches-item a {
           color: #265a87;
         }
 
@@ -166,7 +166,44 @@
           });
         });
 
+        $("#vendorName").change(function() {
+          getCoralData('findOrganizationsByName',{'searchTerm':$(this).val()}).done(function(data) {
+            if (Array.isArray(data) && data.length > 0) {
+              var matchesHtml = '<h4 class="potential-matches-title">Potential Matches:</h4>';
+              $.each(data,function(k,v) {
+                matchesHtml += '<li class="potential-matches-item"><a data-vendor="'+v.name+'" data-vendorid="'+v.organizationID+'" class="do-select-vendor" href="#">' + v.name + '</a></li>';
+              });
+              $("#doVendorMatches").html("<ul class=\"potential-matches-list\">" + matchesHtml + "</ul>");
+            }
+            else {
+              $("#doVendorMatches").html("");
+            }
+          });
+        });
+
+        $("#doVendorMatches").on("click",".do-select-vendor",function(e) {
+          e.preventDefault();
+          $("#noteVendor").val("Checking for Vendor contact info...");
+          $("#doVendorMatches").html("");
+          var vendor = $(this).data("vendor");
+          var vendorID = $(this).data("vendorid");
+
+          $("#vendorName").val(vendor);
+          getCoralData('getOrganizationContacts',{'organizationID':vendorID}).done(function(contact) {
+            $("#noteVendor").val("");
+            if (contact.contactID) {
+              var fieldNames = {"name":"Name","emailAddress":"Email","title":"Title"};
+              $.each(fieldNames, function(key,gloss) {
+                if (typeof contact[key] !== 'undefined') {
+                  $("#noteVendor").val($("#noteVendor").val()+gloss+" - "+contact[key]+"\r\n");
+                }
+              });
+            }
+          });
+        });
+
         $("#proposeResourceForm").submit(function() {
+          $("#noteVendor").val("Vendor - "+$("#vendorName").val()+"\r\n"+$("#noteVendor").val());
           var noteText = "";
           $(this).find(".do-note").each(function() {
             noteText += $(this).siblings("label").children(".label-text").first().text() + ": " + $(this).val() + ".\n\n";
@@ -254,6 +291,11 @@
                 <div class="form-group">
                   <label for="noteDates"><span class="label-text">Desired Dates of Trial</span>:<span class="required-asterisk" aria-hidden="true">*</span></label>
                   <input type="text" class="form-control do-note" id="noteDates" value="" minlength="1" required>
+                </div>
+                <div class="form-group">
+                  <label for="vendorName"><span class="label-text">Vendor Name</span>:</label>
+                  <input type="text" class="form-control" id="vendorName" name="vendorName" value="">
+                  <div id="doVendorMatches"></div>
                 </div>
                 <div class="form-group">
                   <label for="noteVendor"><span class="label-text">Vendor Contact Information (Name, Phone, Email, Date of Contact)</span>:<span class="required-asterisk" aria-hidden="true">*</span></label>
