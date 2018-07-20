@@ -188,12 +188,27 @@ try {
             $resourceAcquisition->subscriptionEndDate = date("Y-m-d");
             $resourceAcquisition->save();
 
-      if ($createMode == 'clone' && $oldResourceAcquisition) {
-        $licenseIds = array();
-        foreach ($oldResourceAcquisition->getLicenseArray() as $license) {
-          $licenseIds[] = $license['licenseID'];
+      //TAMU Customization - Clone original Resource licenses and Relationships
+      if ($createMode == 'clone') {
+        if ($oldResourceAcquisition) {
+          $licenseIds = array();
+          foreach ($oldResourceAcquisition->getLicenseArray() as $license) {
+            $licenseIds[] = $license['licenseID'];
+          }
+          $resourceAcquisition->processLicense($licenseIds);
         }
-        $resourceAcquisition->processLicense($licenseIds);
+        $cloneParents = $oldResource->getParentResources();
+        foreach ($cloneParents as $parent) {
+          $resourceRelationship = new ResourceRelationship();
+          $resourceRelationship->resourceID = $resourceID;
+          $resourceRelationship->relatedResourceID = $parent->relatedResourceID;
+          $resourceRelationship->relationshipTypeID = '1';  //hardcoded because we're only allowing parent relationships
+          try {
+            $resourceRelationship->save();
+          } catch (Exception $e) {
+            echo $e->getMessage();
+          }
+        }
       }
   }
 
