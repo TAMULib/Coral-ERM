@@ -192,7 +192,7 @@
           getCoralData('getOrganizationContacts',{'organizationID':vendorID}).done(function(contact) {
             $("#noteVendor").val("");
             if (contact.contactID) {
-              var fieldNames = {"name":"Name","emailAddress":"Email","title":"Title"};
+              var fieldNames = {"name":"Name","phoneNumber":"Phone Number","emailAddress":"Email","title":"Title"};
               $.each(fieldNames, function(key,gloss) {
                 if (typeof contact[key] !== 'undefined') {
                   $("#noteVendor").val($("#noteVendor").val()+gloss+" - "+contact[key]+"\r\n");
