@@ -88,8 +88,8 @@ class Resource extends DatabaseObject implements ResourceInterface {
 		}
 
 		return $rarray;
-		
-  
+
+
     }
 
 	//returns resource objects by title
@@ -802,7 +802,8 @@ class Resource extends DatabaseObject implements ResourceInterface {
 			$searchDisplay[] = _("Provider name contains: ") . $search['publisher'];
 		}
 
-		$orderBy = $search['orderBy'];
+    //TAMU Customization - Sort by date created when explicitly viewing a hidden by default acquisition type
+    $orderBy = (!empty($search['acquisitionTypeID']) && !empty($hiddenAcquisitionIds) && in_array($search['acquisitionTypeID'],explode(',',$hiddenAcquisitionIds))) ? 'R.createDate ASC':$search['orderBy'];
 
 
 		$page = $search['page'];
@@ -1028,12 +1029,12 @@ class Resource extends DatabaseObject implements ResourceInterface {
 						RA.authenticationPassword, RA.coverageText, CT.shortName catalogingType, CS.shortName catalogingStatus, RA.recordSetIdentifier, RA.bibSourceURL,
 						RA.numberRecordsAvailable, RA.numberRecordsLoaded, RA.hasOclcHoldings, GROUP_CONCAT(DISTINCT I.isbnOrIssn ORDER BY isbnOrIssnID SEPARATOR '; ') AS isbnOrIssn,
                         RPAY.year,
-                        F.shortName as fundName, F.fundCode, 
-                        ROUND(COALESCE(RPAY.priceTaxExcluded, 0) / 100, 2) as priceTaxExcluded, 
-                        ROUND(COALESCE(RPAY.taxRate, 0) / 100, 2) as taxRate, 
-                        ROUND(COALESCE(RPAY.priceTaxIncluded, 0) / 100, 2) as priceTaxIncluded, 
-                        ROUND(COALESCE(RPAY.paymentAmount, 0) / 100, 2) as paymentAmount, 
-                        RPAY.currencyCode, CD.shortName as costDetails, OT.shortName as orderType, RPAY.costNote, RPAY.invoiceNum, 
+                        F.shortName as fundName, F.fundCode,
+                        ROUND(COALESCE(RPAY.priceTaxExcluded, 0) / 100, 2) as priceTaxExcluded,
+                        ROUND(COALESCE(RPAY.taxRate, 0) / 100, 2) as taxRate,
+                        ROUND(COALESCE(RPAY.priceTaxIncluded, 0) / 100, 2) as priceTaxIncluded,
+                        ROUND(COALESCE(RPAY.paymentAmount, 0) / 100, 2) as paymentAmount,
+                        RPAY.currencyCode, CD.shortName as costDetails, OT.shortName as orderType, RPAY.costNote, RPAY.invoiceNum,
 						" . $orgSelectAdd . ",
 						" . $licSelectAdd . "
 						GROUP_CONCAT(DISTINCT A.shortName ORDER BY A.shortName DESC SEPARATOR '; ') aliases,
