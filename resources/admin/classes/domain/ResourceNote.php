@@ -23,7 +23,22 @@ class ResourceNote extends DatabaseObject {
 
 	protected function overridePrimaryKeyName() {}
 
+  public function getNotesByEntityIds($entityIDs, $noteTypeID = null) {
+    $query = "SELECT * FROM ResourceNote WHERE entityID IN (".implode(",",$entityIDs).")";
+    if ($noteTypeID && is_numeric($noteTypeID)) {
+      $query .= " AND noteTypeID={$noteTypeID}";
+    }
 
+    $result = $this->db->processQuery($query, 'assoc');
+    //need to do this since it could be that there's only one result and this is how the dbservice returns result
+    $notesArray = [];
+    if (isset($result['resourceNoteID'])) { $result = [$result]; }
+
+    foreach ($result as $row) {
+      array_push($notesArray, $row);
+    }
+    return $notesArray;
+  }
 }
 
 ?>
