@@ -32,6 +32,7 @@ if ($resourceID && $createMode != 'clone') {
 
   //get the Resource Object we'll use for cloning data from later
   if ($resourceID && $createMode == 'clone') {
+    $oldResource = new Resource(new NamedArguments(array('primaryKey' => $resourceID)));
     $oldResourceAcquisition = new ResourceAcquisition(new NamedArguments(array('primaryKey' => $resourceAcquisitionID)));
   }
 }
@@ -234,7 +235,17 @@ try {
 			$resource->removeResourceOrganizations();
 		}
 
-		if ($organizationRoleID) {
+    //TAMU Customization - when cloning, grab all the source Resource's Organizations for the new Resource
+    if ($createMode == 'clone') {
+      $cloneOrgs = $oldResource->getOrganizationArray();
+      foreach ($cloneOrgs as $org) {
+        $resourceOrganizationLink = new ResourceOrganizationLink();
+        $resourceOrganizationLink->resourceID = $resourceID;
+        $resourceOrganizationLink->organizationID = $org['organizationID'];
+        $resourceOrganizationLink->organizationRoleID = $org['organizationRoleID'];
+        $resourceOrganizationLink->save();
+      }
+    } elseif ($organizationRoleID) {
 			$resourceOrganizationLink = new ResourceOrganizationLink();
 			$resourceOrganizationLink->resourceID = $resourceID;
 			$resourceOrganizationLink->organizationID = $organizationID;
