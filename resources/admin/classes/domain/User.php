@@ -111,11 +111,12 @@ class User extends DatabaseObject {
 		$status = new Status();
 		$statusID = $status->getIDFromName($statusName);
 
+    //TAMU Customization - Remove limit of 25 records
 		$query = "SELECT resourceID, date_format(createDate, '%c/%e/%Y') createDate, titleText, statusID
 			FROM Resource
 			WHERE statusID = '" . $statusID . "'
 			AND createLoginID = '" . $this->loginID . "'
-			ORDER BY 1 desc LIMIT 0,25";
+			ORDER BY 1 desc";
 
 		$result = $this->db->processQuery($query, 'assoc');
 
@@ -167,8 +168,8 @@ class User extends DatabaseObject {
 
 		$status = new Status();
 		$excludeStatus =  Array();
-		$excludeStatus[]=$status->getIDFromName('complete');
-		$excludeStatus[]=$status->getIDFromName('archive');
+		$excludeStatus[]=$status->getIDFromName('completed');
+		$excludeStatus[]=$status->getIDFromName('archived');
 
 		if (count($excludeStatus) > 1){
 			$whereAdd = "AND R.statusID NOT IN (" . implode(",", $excludeStatus) . ")";
@@ -181,11 +182,11 @@ class User extends DatabaseObject {
 		$orderBy = '1 desc';
 		switch($type) {
 			case 'future':
-				$whereAdd = "AND {$futureSql}";
+				$whereAdd .= "AND {$futureSql}";
 			break;
 			case 'current':
 			default:
-				$whereAdd = "AND {$currentSql}";
+				$whereAdd .= "AND {$currentSql}";
 				$orderBy = 'RS.reviewDate ASC, 1 DESC';
 			break;
 		}
