@@ -78,7 +78,7 @@ foreach ($resourceGroups as $type=>$resourceGroup) {
 				<td " . $classAdd . " " . $styleAdd . ">" . $task['fundCode'] . "</td>
 				<td " . $classAdd . " " . $styleAdd . ">" . format_date($task['startDate']) ." <a href=\"ajax_forms.php?action=getResourceStepForm&amp;resourceStepID={$task['resourceStepID']}&amp;height=250&amp;width=750&amp;modal=true\" class=\"thickbox\"><img src=\"images/edit.gif\" alt=\"edit\" title=\"edit\"></a></td>
 				<td " . $classAdd . " " . $styleAdd . ">" .(($task['reviewDate']) ? format_date($task['reviewDate']):_('not reviewed'))."</td>
-				<td " . $classAdd . " " . $styleAdd . "><a class=\"thickbox\" href=\"ajax_forms.php?action=getNoteForm&height=500&width=410&tab=Product&resourceID={$resource['resourceID']}&resourceNoteID=&modal=true&shownotes=1\">"._("view")."</a></td>
+				<td " . $classAdd . " " . $styleAdd . "><a class=\"thickbox\" href=\"ajax_forms.php?action=getNoteForm&height=500&width=410&tab=Product&entityID={$resource['resourceID']}&resourceNoteID=&modal=true&shownotes=1\">"._("view")."</a></td>
 				<td " . $classAdd . " " . $styleAdd . ">";
 
 					if (($user->isAdmin || $user->isInGroup($task['userGroupID']))) {

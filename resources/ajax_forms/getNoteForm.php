@@ -67,9 +67,10 @@
 		</form>
 		</div>
 <?php
+//TAMU Customization - Show existing notes if requested
 $showNotes = (isset($_GET['shownotes']) && $_GET['shownotes']) ? true:false;
-if ($showNotes && $resourceID) {
-	$resource = new Resource(new NamedArguments(array('primaryKey' => $resourceID)));
+if ($showNotes && $entityID) {
+	$resource = new Resource(new NamedArguments(array('primaryKey' => $entityID)));
 	//get notes for this tab
 	$sanitizedInstance = array();
 	$noteArray = array();
@@ -107,7 +108,7 @@ if ($showNotes && $resourceID) {
 	if (count($noteArray) > 0){
 ?>
 			<table class='linedFormTable'>
-<?php 
+<?php
 		foreach ($noteArray as $resourceNote) {
 ?>
 				<tr>
@@ -116,7 +117,7 @@ if ($showNotes && $resourceID) {
 					</td>
 					<td><?php echo nl2br($resourceNote['noteText']); ?><br /><i><?php echo format_date($resourceNote['updateDate']) . _(" by ") . $resourceNote['updateUser']; ?></i></td>
 				</tr>
-<?php 
+<?php
 		}
 ?>
 			</table>
