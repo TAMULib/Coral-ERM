@@ -16,6 +16,7 @@
 
     $canonicalPath = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['SERVER_NAME'] . $shortPath;
     $longPath = '//' . $_SERVER['SERVER_NAME'] . (($serverPort != 80) ? ':'.$serverPort:'') . $basePath;
+    $longPath = rtrim($longPath,'/');
   }
 
   $fields = [
