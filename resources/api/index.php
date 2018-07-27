@@ -250,9 +250,22 @@ Flight::route('/proposeResource/', function(){
             $rp->save();
         }
 
+      //TAMU Customization - Create Org link
+      $organizationID = Flight::request()->data['vendorID'];
+      if ($organizationID) {
+        //get the provider ID in case we insert what was entered in the provider text box as an organization link
+        $organizationRole = new OrganizationRole();
+        $organizationRoleID = $organizationRole->getOrganizationRoleIdByName("publisher");
+        if ($organizationRoleID) {
+          $resourceOrganizationLink = new ResourceOrganizationLink();
+          $resourceOrganizationLink->resourceID = $resourceID;
+          $resourceOrganizationLink->organizationID = $organizationID;
+          $resourceOrganizationLink->organizationRoleID = $organizationRoleID;
+          $resourceOrganizationLink->save();
+        }
+      }
 
       $resourceAcquisition->enterNewWorkflow();
-
 
     } catch (Exception $e) {
         Flight::json(array('error' => $e->getMessage()));

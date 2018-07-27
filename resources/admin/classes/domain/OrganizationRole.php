@@ -125,8 +125,28 @@ class OrganizationRole extends DatabaseObject {
 
 
 
+  /*
+  * TAMU Customization - get an OrganizationRoleID by its shortName
+  */
+  public function getOrganizationRoleIdByName($shortName) {
 
+    $config = new Configuration;
 
+    //if the org module is installed get the org name from org database
+    $dbName = '';
+    if ($config->settings->organizationsModule == 'Y'){
+      $dbName = $config->settings->organizationsDatabaseName;
+    }
+    //get roles
+    $query = "SELECT * FROM " . $dbName . ".OrganizationRole WHERE upper(shortName) LIKE '".strtoupper($this->db->escapeString($shortName))."';";
+    $result = $this->db->processQuery($query, 'assoc');
+
+    if (isset($result['organizationRoleID'])){
+      return $result['organizationRoleID'];
+    }else{
+      return '';
+    }
+  }
 }
 
 ?>

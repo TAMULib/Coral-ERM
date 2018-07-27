@@ -187,7 +187,7 @@
           $("#doVendorMatches").html("");
           var vendor = $(this).data("vendor");
           var vendorID = $(this).data("vendorid");
-
+          $("#doVendorId").val(vendorID);
           $("#vendorName").val(vendor);
           getCoralData('getOrganizationContacts',{'organizationID':vendorID}).done(function(contact) {
             $("#noteVendor").val("");
@@ -203,7 +203,6 @@
         });
 
         $("#proposeResourceForm").submit(function() {
-          $("#noteVendor").val("Vendor - "+$("#vendorName").val()+"\r\n"+$("#noteVendor").val());
           var noteText = "";
           $(this).find(".do-note").each(function() {
             noteText += $(this).siblings("label").children(".label-text").first().text() + ": " + $(this).val() + ".\n\n";
@@ -258,6 +257,7 @@
             <form id="proposeResourceForm" action="" method="POST" class="request_trial-form form">
               <input type="hidden" id="noteText" name="noteText" value="">
               <input type="hidden" id="doAcquisitionTypeId" name="acquisitionTypeID" value="0">
+              <input type="hidden" id="doVendorId" name="vendorID" value="0">
               <fieldset id="userInformation">
                 <legend>User Information</legend>
                 <div class="form-group">
