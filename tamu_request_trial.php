@@ -5,7 +5,9 @@
   $shortPath = NULL;
   $longPath = NULL;
   $canonicalPath = NULL;
-  $helpdeskPath = '//helpdesk.library.tamu.edu';
+  $helpdeskPath = 'https://helpdesk.library.tamu.edu';
+  $serverPort = $_SERVER['SERVER_PORT'];
+
   if (isset($_SERVER['SERVER_NAME']) && strlen($_SERVER['SERVER_NAME']) > 0 && isset($_SERVER['REQUEST_SCHEME']) && strlen($_SERVER['REQUEST_SCHEME']) > 0) {
     if (isset($_SERVER['SCRIPT_NAME']) && strlen($_SERVER['SCRIPT_NAME']) > 0) {
       $shortPath = $_SERVER['SCRIPT_NAME'];
@@ -13,7 +15,7 @@
     }
 
     $canonicalPath = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['SERVER_NAME'] . $shortPath;
-    $longPath = '//' . $_SERVER['SERVER_NAME'] . $basePath;
+    $longPath = '//' . $_SERVER['SERVER_NAME'] . (($serverPort != 80) ? ':'.$serverPort:''). $basePath;
   }
 ?><!DOCTYPE html>
 <html lang="en" dir="ltr" class="no-js">
@@ -102,7 +104,8 @@
     <script type="text/javascript" src="<?php print($helpdeskPath); ?>/js/jquery-2.1.4.min.js"></script>
     <script type="text/javascript" src="<?php print($helpdeskPath); ?>/js/bootstrap.min.js"></script>
     <script type="text/javascript">
-      var coralAPI = 'resources/api/';
+      var coralBase = '<?php echo $longPath;?>';
+      var coralAPI = coralBase+'/resources/api/';
       function getCoralData(endpoint,parameters) {
         return $.ajax({
                   type: "GET",
@@ -156,7 +159,7 @@
             if (Array.isArray(data) && data.length > 0) {
               var matchesHtml = '<h4 class="potential-matches-title">Potential Matches:</h4>';
               $.each(data,function(k,v) {
-                matchesHtml += '<li class="potential-matches-item"><a target="_blank" href="tamu_trial_feedback.php?resourceid=' + v.resourceID + '">' + v.titleText + '</a></li>';
+                matchesHtml += '<li class="potential-matches-item"><a target="_blank" href="'+coralBase+'/tamu_trial_feedback.php?resourceid=' + v.resourceID + '">' + v.titleText + '</a></li>';
               });
               $("#doTitleMatches").html("<ul class=\"potential-matches-list\">" + matchesHtml + "</ul>");
             }
