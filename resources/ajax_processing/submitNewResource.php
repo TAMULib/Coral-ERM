@@ -99,17 +99,18 @@ try {
 
 			$resource->setTitleText($remoteResourceRepo->getResourceObject()->getTitleText());
 
-			$addableIsbnOrIssns = array();
-			foreach ($remoteResourceRepo->getIsbnOrIssnObjects() as $isbnOrIssnObject) {
-				$addableIsbnOrIssns[] = $isbnOrIssnObject->getIsbnOrIssn();
-			}
-			$resource->setIsbnOrIssn($addableIsbnOrIssns);
-
       try {
         $resource->save();
       } catch (Exception $e) {
         echo $e->getMessage();
       }
+
+      $addableIsbnOrIssns = array();
+      foreach ($remoteResourceRepo->getIsbnOrIssnObjects() as $isbnOrIssnObject) {
+        $addableIsbnOrIssns[] = $isbnOrIssnObject->getIsbnOrIssn();
+      }
+
+      $resource->setIsbnOrIssn($addableIsbnOrIssns);
 
       $resourceAcquisition = new ResourceAcquisition();
       $resourceAcquisition->resourceID = $resource->primaryKey;
