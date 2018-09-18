@@ -37,7 +37,7 @@ if (empty($_GET['exportDetails'])) {
   $noteTypeObject = new NoteType();
   $noteTypes = $noteTypeObject->allAsArrayForDD();
 ?>
-<form name="exportDetailsForm">
+<form name="exportDetailsForm" method="GET">
   <select name="exportDetails[noteTypeID]">
 <?php
   foreach ($noteTypes as $noteType) {
@@ -71,38 +71,45 @@ if (empty($_GET['exportDetails'])) {
   $searchDisplay = $queryDetails["display"];
   $orderBy = $queryDetails["order"];
 
-  //get the results of the query into an array
-  $resourceObj = new Resource();
-  $resourceArray = array();
-  $resourceArray = $resourceObj->export($whereAdd, $orderBy);
+  $noteTypeID = is_numeric($_GET['exportDetails']['noteTypeID']) ? $_GET['exportDetails']['noteTypeID']:null;
 
-  $resourceIDs = array();
-  foreach ($resourceArray as $resource) {
-    $resourceIDs[] = $resource['resourceID'];
+  if ($noteTypeID) {
+
+    //get the results of the query into an array
+    $resourceObj = new Resource();
+    $resourceArray = array();
+    $resourceArray = $resourceObj->export($whereAdd, $orderBy);
+
+    $resourceIDs = array();
+    foreach ($resourceArray as $resource) {
+      $resourceIDs[] = $resource['resourceID'];
+    }
+
+    $resourceNote = new ResourceNote();
+
+    $exportableNotes = $resourceNote->getNotesByEntityIds($resourceIDs,$noteTypeID);
+
+    echo array_to_csv_row(array(_("Notes Export") . " " . format_date( date( 'Y-m-d' ))));
+    if (!$searchDisplay) {
+      $searchDisplay = array(_("All Resource Notes"));
+    }
+    echo array_to_csv_row(array(implode('; ', $searchDisplay)));
+    echo array_to_csv_row($columnHeaders);
+
+    foreach ($exportableNotes as $note) {
+      $noteValues = array(
+        $note['resourceNoteID'],
+        $note['entityID'],
+        $note['noteTypeID'],
+        format_date($note['updateDate']),
+        $note['updateLoginID'],
+        $note['noteText']);
+
+      echo array_to_csv_row($noteValues);
+    }
+
+  } else {
+    echo 'Note Type was not selected.';
   }
-
-  $resourceNote = new ResourceNote();
-
-  $exportableNotes = $resourceNote->getNotesByEntityIds($resourceIDs,14);
-
-  echo array_to_csv_row(array(_("Notes Export") . " " . format_date( date( 'Y-m-d' ))));
-  if (!$searchDisplay) {
-    $searchDisplay = array(_("All Resource Notes"));
-  }
-  echo array_to_csv_row(array(implode('; ', $searchDisplay)));
-  echo array_to_csv_row($columnHeaders);
-
-  foreach ($exportableNotes as $note) {
-    $noteValues = array(
-      $note['resourceNoteID'],
-      $note['entityID'],
-      $note['noteTypeID'],
-      format_date($note['updateDate']),
-      $note['updateLoginID'],
-      $note['noteText']);
-
-    echo array_to_csv_row($noteValues);
-  }
-
 }
 ?>
