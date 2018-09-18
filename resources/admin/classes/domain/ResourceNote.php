@@ -19,14 +19,16 @@
 
 class ResourceNote extends DatabaseObject {
 
-	protected function defineRelationships() {}
+  protected function defineRelationships() {}
 
-	protected function overridePrimaryKeyName() {}
+  protected function overridePrimaryKeyName() {}
 
+  //TAMU Customization
   public function getNotesByEntityIds($entityIDs, $noteTypeID = null) {
-    $query = "SELECT * FROM ResourceNote WHERE entityID IN (".implode(",",$entityIDs).")";
+    $query = "SELECT r.titleText,rn.* FROM ResourceNote rn
+              LEFT JOIN Resource r ON r.resourceID=rn.entityID WHERE rn.entityID IN (".implode(",",$entityIDs).")";
     if ($noteTypeID && is_numeric($noteTypeID)) {
-      $query .= " AND noteTypeID={$noteTypeID}";
+      $query .= " AND rn.noteTypeID={$noteTypeID}";
     }
 
     $result = $this->db->processQuery($query, 'assoc');

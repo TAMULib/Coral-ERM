@@ -59,6 +59,7 @@ if (empty($_GET['exportDetails'])) {
 
   $columnHeaders = array(
     _("Note ID"),
+    _("Resource Name"),
     _("Entity ID"),
     _("Note Type"),
     _("Update Date"),
@@ -99,6 +100,7 @@ if (empty($_GET['exportDetails'])) {
     foreach ($exportableNotes as $note) {
       $noteValues = array(
         $note['resourceNoteID'],
+        $note['titleText'],
         $note['entityID'],
         $note['noteTypeID'],
         format_date($note['updateDate']),
@@ -107,7 +109,6 @@ if (empty($_GET['exportDetails'])) {
 
       echo array_to_csv_row($noteValues);
     }
-
   } else {
     echo 'Note Type was not selected.';
   }
