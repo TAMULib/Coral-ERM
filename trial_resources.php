@@ -34,7 +34,8 @@ SELECT
   `Resource`.`providerText`
 FROM
   `Resource`
-  INNER JOIN `AcquisitionType` ON (`Resource`.`acquisitionTypeID` = `AcquisitionType`.`acquisitionTypeID`)
+  INNER JOIN `ResourceAcquisition` ON (`Resource`.`resourceID` = `ResourceAcquisition`.`resourceID`)
+  INNER JOIN `AcquisitionType` ON (`ResourceAcquisition`.`resourceAcquisitionID` = `AcquisitionType`.`acquisitionTypeID`)
   INNER JOIN `ResourceType` ON (`Resource`.`resourceTypeID` = `ResourceType`.`resourceTypeID`)
   INNER JOIN `Status` ON (`Resource`.`statusID` = `Status`.`statusID`)
 WHERE

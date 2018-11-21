@@ -122,7 +122,7 @@ if ($row["acquisitionTypeID"] == 2) {
 	}	
 }
 
-  $redirect = (strlen($userText) == 0) && (strlen($userNote) == 0) ? $resourceUrl : FALSE;
+  $redirect = (strlen($userText) == 0) && (strlen($userNote) == 0) ? $resourceURL : FALSE;
 
   printHeader($redirect);
   if (is_string($redirect)) {
@@ -164,7 +164,7 @@ function printHeader($redirect = FALSE) {
   $shortPath = NULL;
   $longPath = NULL;
   $canonicalPath = NULL;
-  $helpdeskPath = '//helpdesk.library.tamu.edu';
+  $helpdeskPath = 'https://helpdesk.library.tamu.edu';
   if (isset($_SERVER['SERVER_NAME']) && strlen($_SERVER['SERVER_NAME']) > 0 && isset($_SERVER['REQUEST_SCHEME']) && strlen($_SERVER['REQUEST_SCHEME']) > 0) {
     if (isset($_SERVER['SCRIPT_NAME']) && strlen($_SERVER['SCRIPT_NAME']) > 0) {
       $shortPath = $_SERVER['SCRIPT_NAME'];

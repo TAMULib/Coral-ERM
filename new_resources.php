@@ -46,19 +46,21 @@ SELECT
   `AcquisitionType`.`acquisitionTypeID`
 FROM
   `Resource`
-  INNER JOIN `AcquisitionType` ON (`Resource`.`acquisitionTypeID` = `AcquisitionType`.`acquisitionTypeID`)
   INNER JOIN `ResourceType` ON (`Resource`.`resourceTypeID` = `ResourceType`.`resourceTypeID`)
   INNER JOIN `Status` ON (`Resource`.`statusID` = `Status`.`statusID`)
+  INNER JOIN `ResourceAcquisition` ON (`Resource`.`resourceID` = `ResourceAcquisition`.`resourceID`)
+  INNER JOIN `AcquisitionType` ON (`ResourceAcquisition`.`resourceAcquisitionID` = `AcquisitionType`.`acquisitionTypeID`)
 WHERE
   `AcquisitionType`.`acquisitionTypeID` <> 3 AND 
   `Resource`.`statusID` = 1 AND 
-  (`ResourceType`.`resourceTypeID` = 1 OR `ResourceType`.`resourceTypeID` = 9) AND 
-  `Resource`.`currentStartDate` BETWEEN (CURDATE() - INTERVAL " . $days . " DAY) AND (CURDATE() + INTERVAL 1 DAY) 
-OR 
+  (`ResourceType`.`resourceTypeID` = 1 OR 
+  `ResourceType`.`resourceTypeID` = 9) AND 
+  `Resource`.`currentStartDate` BETWEEN (CURDATE() - INTERVAL ' . $days . ' DAY) AND (CURDATE() + INTERVAL 1 DAY) OR 
   `AcquisitionType`.`acquisitionTypeID` <> 3 AND 
   `Resource`.`statusID` = 2 AND 
-  (`ResourceType`.`resourceTypeID` = 1 OR `ResourceType`.`resourceTypeID` = 9) AND 
-  `Resource`.`currentStartDate` BETWEEN (CURDATE() - INTERVAL " . $days . " DAY) AND (CURDATE() + INTERVAL 1 DAY) 
+  (`ResourceType`.`resourceTypeID` = 1 OR 
+  `ResourceType`.`resourceTypeID` = 9) AND 
+  `Resource`.`currentStartDate` BETWEEN (CURDATE() - INTERVAL ' . $days . ' DAY) AND (CURDATE() + INTERVAL 1 DAY)
 ORDER BY
   `Resource`.`titleText`
 ";
