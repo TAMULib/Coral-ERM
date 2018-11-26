@@ -100,7 +100,7 @@ $result = mysqli_query($link, $query);
 	`$license_databaseName`.`License`.`shortName`,
 	`$license_databaseName`.`License`.`licenseID`, `$resource_databaseName`.`ResourceType`.`shortName` AS resourceTypeName, `$resource_databaseName`.`ResourceType`.`resourceTypeID`
 	FROM `$resource_databaseName`.`Resource`
-	LEFT JOIN `$resource_databaseName`.`ResourceLicenseLink` ON (`$resource_databaseName`.`Resource`.`resourceID` = `$resource_databaseName`.`ResourceLicenseLink`.`resourceID`)
+	LEFT JOIN `$resource_databaseName`.`ResourceLicenseLink` ON (`$resource_databaseName`.`Resource`.`resourceID` = `$resource_databaseName`.`ResourceLicenseLink`.`resourceAcquisitionID`)
 	LEFT JOIN `$license_databaseName`.`License` ON (`ResourceLicenseLink`.`licenseID` = `$license_databaseName`.`License`.`licenseID`)
 	INNER JOIN `$resource_databaseName`.`ResourceType` ON (`$resource_databaseName`.`Resource`.`resourceTypeID` = `$resource_databaseName`.`ResourceType`.`resourceTypeID`)
 	WHERE
@@ -144,11 +144,12 @@ $result = mysqli_query($link, $query) or die(_("Bad Query Failure"));
 					  `$resource_databaseName`.`AuthorizedSite`.`authorizedSiteID`
 					FROM
 					  `$resource_databaseName`.`Resource`
-					  INNER JOIN `$resource_databaseName`.`ResourceAuthorizedSiteLink` ON (`$resource_databaseName`.`Resource`.`resourceID` = `$resource_databaseName`.`ResourceAuthorizedSiteLink`.`resourceID`)
+					  INNER JOIN `$resource_databaseName`.`ResourceAuthorizedSiteLink` ON (`$resource_databaseName`.`Resource`.`resourceID` = `$resource_databaseName`.`ResourceAuthorizedSiteLink`.`resourceAcquisitionID`)
 					  INNER JOIN `$resource_databaseName`.`AuthorizedSite` ON (`$resource_databaseName`.`ResourceAuthorizedSiteLink`.`authorizedSiteID` = `$resource_databaseName`.`AuthorizedSite`.`authorizedSiteID`)
 					WHERE
 					  `$resource_databaseName`.`Resource`.`resourceID` = " . $row["resourceID"] .
 					  " order by `$resource_databaseName`.`AuthorizedSite`.`shortName`";
+
 					$result2 = mysqli_query($link, $query2) or die(_("Bad Query Failure"));
 
 					$i = $i + 1;
