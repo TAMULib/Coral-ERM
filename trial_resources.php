@@ -26,8 +26,8 @@ $query = "
 SELECT 
   `Resource`.`resourceID`,
   `Resource`.`titleText`,
-   `Resource`.`createDate`,
-  `Resource`.`updateDate`, 
+  `Resource`.`createDate`,
+  `Resource`.`updateDate`,
   `AcquisitionType`.`shortName`,
   `Resource`.`descriptionText`,
   `ResourceType`.`shortName` AS `ResourceType`,
@@ -35,19 +35,21 @@ SELECT
 FROM
   `Resource`
   INNER JOIN `ResourceAcquisition` ON (`Resource`.`resourceID` = `ResourceAcquisition`.`resourceID`)
-  INNER JOIN `AcquisitionType` ON (`ResourceAcquisition`.`resourceAcquisitionID` = `AcquisitionType`.`acquisitionTypeID`)
   INNER JOIN `ResourceType` ON (`Resource`.`resourceTypeID` = `ResourceType`.`resourceTypeID`)
   INNER JOIN `Status` ON (`Resource`.`statusID` = `Status`.`statusID`)
+  INNER JOIN `AcquisitionType` ON (`ResourceAcquisition`.`acquisitionTypeID` = `AcquisitionType`.`acquisitionTypeID`)
 WHERE
-  `AcquisitionType`.`acquisitionTypeID` = 3 AND 
+  (`AcquisitionType`.`acquisitionTypeID` = 3 OR 
+  `AcquisitionType`.`acquisitionTypeID` = 8) AND 
   `Resource`.`statusID` = 1 OR 
-  `AcquisitionType`.`acquisitionTypeID` = 3 AND 
+  (`AcquisitionType`.`acquisitionTypeID` = 3 OR 
+  `AcquisitionType`.`acquisitionTypeID` = 8) AND 
   `Resource`.`statusID` = 2
 ORDER BY
   `Resource`.`titleText`
 ";
 
-//echo $query . "<br>";
+echo $query . "<br>";
 
 $resultID = mysql_query($query, $linkID) or die("<?xml version=\"1.0\"?>\n<resources>\n</resources>");
 
