@@ -49,7 +49,7 @@ ORDER BY
   `Resource`.`titleText`
 ";
 
-echo $query . "<br>";
+//echo $query . "<br>";
 
 $resultID = mysql_query($query, $linkID) or die("<?xml version=\"1.0\"?>\n<resources>\n</resources>");
 
