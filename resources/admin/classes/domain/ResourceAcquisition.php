@@ -1025,7 +1025,23 @@ class ResourceAcquisition extends DatabaseObject {
 		return $objects;
 	}
 
-
+    // Returns true if today is between the order's subscription start date and end date
+    // Returns false otherwise
+    public function isActiveToday() {
+        $start = new DateTime($this->subscriptionStartDate);
+        $end = new DateTime($this->subscriptionEndDate);
+        $now = new DateTime(date("Y-m-d"));
+        if ($this->subscriptionStartDate && $this->subscriptionEndDate) {
+            return ($start <= $now && $end >= $now) ? true : false;
+        }
+        if ($this->subscriptionStartDate && !$this->subscriptionEndDate) {
+            return ($start <= $now) ? true : false;
+        }
+        if (!$this->subscriptionStartDate && $this->subscriptionEndDate) {
+            return ($end >= $now) ? true : false;
+        }
+        return false;
+    }
 
 }
 

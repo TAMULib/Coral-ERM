@@ -2880,6 +2880,19 @@ img.remove {
     padding-bottom: 5px;
 }
 
+#saveCurrentMappingDiv fieldset legend {
+	padding: 0 5px;
+	font-weight: bold;
+	width: initial;
+}
+
+#saveCurrentMappingDiv fieldset {
+	border: solid 1px #ccc;
+    margin-left: 25px;
+    margin-right: 25px;
+    padding-bottom: 10px;
+}
+
 #importConfigColumns fieldset legend {
 	padding: 0 5px;
 	font-weight: bold;
@@ -3310,13 +3323,16 @@ input#archiveInd {
 	overflow-x: hidden !important;
 }
 
-.existing-notes {
-	margin-top: 12px;
+#resourceAcquisitionSelect {
+    max-width: 1000px;
 }
 
-.existing-notes h3 {
-	margin: 8px 0;
+#resourceAcquisitionSelectDiv {
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
+
+/*--- TAMU Customization - ToDo Form --- */
 
 #quickToDoForm td {
 	padding: 6px;
@@ -3344,66 +3360,7 @@ input#archiveInd {
 	display: none;
 }
 
-/* Have to use important here, in order to override its use in .resource_tab_content */
-#div_acquisitions.enhanced-cost {
-    width: 900px !important;
-}
-
-#div_acquisitions.enhanced-cost .mainContent {
-    width: 880px;
-}
-
-#div_acquisitions.enhanced-cost #div_fullRightPanel {
-	display: none;
-}
-
-.paymentTable td.fund, .newPaymentTable td.fund {
-	width: 110px;
-	min-width: 110px;
-}
-
-.paymentTable td.fund select, .newPaymentTable td.fund select {
-	max-width: 80px;
-}
-
-.paymentTable td.fund input, .newPaymentTable td.fund input {
-	max-width: 20px;
-}
-
-#outstandingTasks .sortable {
-	cursor: pointer;
-}
-
-div.surroundBox .form-element {
-	display:inline-block;
-	vertical-align:middle;
-}
-
-div.surroundBox .form-element-label {
-	margin-right: 30px;
-}
-
-.surroundBox {
-	border-width: 1px;
-	border-style: solid;
-	border-color: #e6e5e9;
-	font-size:100%;
-}
-
-div.surroundBox {
-	padding: 24px;
-}
-
-table.newPaymentTable td {
-	padding:2px 5px;
-}
-
-.paymentTable td.date-wrapper, .newPaymentTable td.date-wrapper {
-	width: 90px;
-	min-width: 90px;
-}
-
-/*--- Overriding Table Column Widths ---*/
+/*--- TAMU Customization - Overriding Table Column Widths ---*/
 
 table.dataTable th:nth-of-type(1) {
 	min-width: 36px;
@@ -3432,5 +3389,3 @@ table.dataTable th:nth-of-type(6) {
 table.dataTable th:nth-of-type(7) {
 	min-width: 68px;
 }
-
-/*-----*/
