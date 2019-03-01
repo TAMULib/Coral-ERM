@@ -39,12 +39,8 @@ FROM
   INNER JOIN `Status` ON (`Resource`.`statusID` = `Status`.`statusID`)
   INNER JOIN `AcquisitionType` ON (`ResourceAcquisition`.`acquisitionTypeID` = `AcquisitionType`.`acquisitionTypeID`)
 WHERE
-  (`AcquisitionType`.`acquisitionTypeID` = 3 OR 
-  `AcquisitionType`.`acquisitionTypeID` = 8) AND 
-  `Resource`.`statusID` = 1 OR 
-  (`AcquisitionType`.`acquisitionTypeID` = 3 OR 
-  `AcquisitionType`.`acquisitionTypeID` = 8) AND 
-  `Resource`.`statusID` = 2
+  (`AcquisitionType`.`acquisitionTypeID` = 3 AND `Resource`.`statusID` = 1) OR
+  (`AcquisitionType`.`acquisitionTypeID` = 3 AND   `Resource`.`statusID` = 2)
 ORDER BY
   `Resource`.`titleText`
 ";

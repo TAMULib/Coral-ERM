@@ -99,13 +99,13 @@ if (empty($_GET['exportDetails'])) {
 
     foreach ($exportableNotes as $note) {
       $noteValues = array(
-        $note['resourceNoteID'],
-        $note['titleText'],
-        $note['entityID'],
-        $note['noteTypeID'],
-        format_date($note['updateDate']),
-        $note['updateLoginID'],
-        $note['noteText']);
+        trim($note['resourceNoteID']),
+        trim($note['titleText']),
+        trim($note['entityID']),
+        trim($note['noteTypeID']),
+        format_date(trim($note['updateDate'])),
+        trim($note['updateLoginID']),
+        trim($note['noteText']) );
 
       echo array_to_csv_row($noteValues);
     }
