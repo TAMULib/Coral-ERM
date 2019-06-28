@@ -14,8 +14,9 @@
 class ParameterFactory {
     public static function makeParam($reportID,$reportParameterID) {
         $parm = null;
-        $db = new DBService();
+        $db = DBService::getInstance();
         $result = $db
+            ->selectDB(Config::$database->name)
             ->query("SELECT rp.*, rpm.parentReportParameterID
             FROM ReportParameter rp, ReportParameterMap rpm
             WHERE rp.reportParameterID = '$reportParameterID' LIMIT 1")

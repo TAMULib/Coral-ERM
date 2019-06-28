@@ -16,7 +16,10 @@
 */
 
 $(function(){
+
+
 	$('.date-pick').datePicker({startDate:'01/01/1996'});
+	$('.date-pick').attr('placeholder', Date.format);
 
 	//bind all of the inputs
 
@@ -118,7 +121,7 @@ $(function(){
 		var fName     = $('.newPaymentTable').find('.fundName').val();
 		var pte       = $('.newPaymentTable').find('.priceTaxExcluded').val();
 		var tr        = $('.newPaymentTable').find('.taxRate').val();
-		var pti 	  = $('.newPaymentTable').find('.priceTaxIncluded').val();
+		var pti       = $('.newPaymentTable').find('.priceTaxIncluded').val();
 		var typeID    = $('.newPaymentTable').find('.orderTypeID').val();
 		var detailsID = $('.newPaymentTable').find('.costDetailsID').val();
 		var pAmount   = $('.newPaymentTable').find('.paymentAmount').val();
@@ -268,6 +271,7 @@ function submitCostForm()
 			cache: false,
 			data: {
 				resourceID: $("#editResourceID").val(),
+				resourceAcquisitionID: $("#editResourceAcquisitionID").val(),
 				years: yearList,
 				subStarts: subStartList,
 				subEnds: subEndList,
@@ -319,8 +323,8 @@ function validateTable(objRows)
 		var pAmount    = $(objRows[currentRow]).find('.paymentAmount').val();
 		var typeID     = $(objRows[currentRow]).find('.orderTypeID').val();
 		var detailsID  = $(objRows[currentRow]).find('.costDetailsID').val();
-		var pte 	   = $(objRows[currentRow]).find('.priceTaxIncluded').val();
-		var pti 	   = $(objRows[currentRow]).find('.priceTaxExcluded').val();
+		var pte        = $(objRows[currentRow]).find('.priceTaxIncluded').val();
+		var pti        = $(objRows[currentRow]).find('.priceTaxExcluded').val();
 		var cNote      = $(objRows[currentRow]).find('.costNote').val();
 		var invoiceNum = $(objRows[currentRow]).find('.invoiceNum').val();
 
