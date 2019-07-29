@@ -34,6 +34,8 @@ function getCAS($cas_base, $casIP) {
 		$http = "http";
 	  }
 
+	$http = "https";
+
   ##
   ## Validate through CAS
   ##
