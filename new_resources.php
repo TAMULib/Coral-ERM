@@ -39,28 +39,27 @@ SELECT
   `Resource`.`providerText`,
   `Resource`.`createDate`,
   `Resource`.`updateDate`,
-  `Resource`.`currentStartDate`,
+  `ResourceAcquisition`.`subscriptionStartDate` as `currentStartDate`,
   `ResourceType`.`resourceTypeID`,
   `Status`.`statusID`,
   `Status`.`shortName` AS `StatusShort`,
   `AcquisitionType`.`acquisitionTypeID`
 FROM
   `Resource`
-  INNER JOIN `ResourceType` ON (`Resource`.`resourceTypeID` = `ResourceType`.`resourceTypeID`)
-  INNER JOIN `Status` ON (`Resource`.`statusID` = `Status`.`statusID`)
-  INNER JOIN `ResourceAcquisition` ON (`Resource`.`resourceID` = `ResourceAcquisition`.`resourceID`)
-  INNER JOIN `AcquisitionType` ON (`ResourceAcquisition`.`resourceAcquisitionID` = `AcquisitionType`.`acquisitionTypeID`)
+  LEFT OUTER JOIN `ResourceType` ON (`Resource`.`resourceTypeID` = `ResourceType`.`resourceTypeID`)
+  LEFT OUTER JOIN `Status` ON (`Resource`.`statusID` = `Status`.`statusID`)
+  LEFT OUTER JOIN `ResourceAcquisition` ON (`Resource`.`resourceID` = `ResourceAcquisition`.`resourceID`)
+  LEFT OUTER JOIN `AcquisitionType` ON (`ResourceAcquisition`.`acquisitionTypeID` = `AcquisitionType`.`acquisitionTypeID`)
 WHERE
-  `AcquisitionType`.`acquisitionTypeID` <> 3 AND 
-  `Resource`.`statusID` = 1 AND 
-  (`ResourceType`.`resourceTypeID` = 1 OR 
-  `ResourceType`.`resourceTypeID` = 9) AND 
-  `Resource`.`currentStartDate` BETWEEN (CURDATE() - INTERVAL ' . $days . ' DAY) AND (CURDATE() + INTERVAL 1 DAY) OR 
-  `AcquisitionType`.`acquisitionTypeID` <> 3 AND 
-  `Resource`.`statusID` = 2 AND 
-  (`ResourceType`.`resourceTypeID` = 1 OR 
-  `ResourceType`.`resourceTypeID` = 9) AND 
-  `Resource`.`currentStartDate` BETWEEN (CURDATE() - INTERVAL ' . $days . ' DAY) AND (CURDATE() + INTERVAL 1 DAY)
+    (`AcquisitionType`.`acquisitionTypeID` <> 3
+        AND `Resource`.`statusID` = 1
+        AND (`ResourceType`.`resourceTypeID` = 1 OR `ResourceType`.`resourceTypeID` = 9)
+        AND `ResourceAcquisition`.`subscriptionStartDate` BETWEEN (CURDATE() - INTERVAL " . $days . " DAY) AND (CURDATE() + INTERVAL 1 DAY))
+        OR (`AcquisitionType`.`acquisitionTypeID` <> 3
+        AND `Resource`.`statusID` = 2
+        AND (`ResourceType`.`resourceTypeID` = 1
+        OR `ResourceType`.`resourceTypeID` = 9) 
+		AND `ResourceAcquisition`.`subscriptionStartDate` BETWEEN (CURDATE() - INTERVAL " . $days . " DAY) AND (CURDATE() + INTERVAL 1 DAY))
 ORDER BY
   `Resource`.`titleText`
 ";
@@ -88,7 +87,7 @@ for($x = 0 ; $x < mysql_num_rows($resultID) ; $x++){
 	$xml_output .= "\t\t<descriptionText>" . $descriptionText . "</descriptionText>\n";
 
 		// Escaping illegal characters
-		$resourceURL =	"http://ezproxy.library.tamu.edu/login?url=http://coral.library.tamu.edu/resourcelink.php?resource=" . $row["resourceID"];						
+		$resourceURL =	"http://proxy.library.tamu.edu/login?url=https://coral.library.tamu.edu/resourcelink.php?resource=" . $row["resourceID"];						
 
 	$xml_output .= "\t\t<resourceURL>" . $resourceURL . "</resourceURL>\n";
 	
@@ -96,7 +95,7 @@ for($x = 0 ; $x < mysql_num_rows($resultID) ; $x++){
         $providerText = htmlspecialchars($row['providerText']);		
 	
 	$xml_output .= "\t\t<providerText>" . $providerText . "</providerText>\n";	
-	
+	$xml_output .= "\t\t<currentStartDate>" . $row['currentStartDate'] . "</currentStartDate>\n";	
 	$xml_output .= "\t\t<createDate>" . $row['createDate'] . "</createDate>\n";	
 	$xml_output .= "\t\t<updateDate>" . $row['updateDate'] . "</updateDate>\n";	
 	$xml_output .= "\t\t<resourceType>" . $row['ResourceType'] . "</resourceType>\n";	
