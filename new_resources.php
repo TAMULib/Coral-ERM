@@ -51,11 +51,13 @@ FROM
   LEFT OUTER JOIN `ResourceAcquisition` ON (`Resource`.`resourceID` = `ResourceAcquisition`.`resourceID`)
   LEFT OUTER JOIN `AcquisitionType` ON (`ResourceAcquisition`.`acquisitionTypeID` = `AcquisitionType`.`acquisitionTypeID`)
 WHERE
-    (`AcquisitionType`.`acquisitionTypeID` <> 3
+    (`AcquisitionType`.`acquisitionTypeID` <> 3 
+		AND `AcquisitionType`.`acquisitionTypeID` <> 8
         AND `Resource`.`statusID` = 1
         AND (`ResourceType`.`resourceTypeID` = 1 OR `ResourceType`.`resourceTypeID` = 9)
         AND `ResourceAcquisition`.`subscriptionStartDate` BETWEEN (CURDATE() - INTERVAL " . $days . " DAY) AND (CURDATE() + INTERVAL 1 DAY))
-        OR (`AcquisitionType`.`acquisitionTypeID` <> 3
+        OR (`AcquisitionType`.`acquisitionTypeID` <> 3 
+		AND `AcquisitionType`.`acquisitionTypeID` <> 8
         AND `Resource`.`statusID` = 2
         AND (`ResourceType`.`resourceTypeID` = 1
         OR `ResourceType`.`resourceTypeID` = 9) 
