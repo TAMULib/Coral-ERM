@@ -34,12 +34,9 @@ if ($user->isAdmin()){
 <tr><td>
 
 
-<span class="headerText"><?php echo _("Users");?></span>&nbsp;&nbsp;<span id='span_User_response' class='redText'></span><span id='span_newUser' class='adminAddInput'><?php echo "<a href='ajax_forms.php?action=getAdminUserUpdateForm&height=202&width=288&modal=true' class='thickbox' id='expression'><img id='addUser class='AdminAddIcon' src='images/plus.gif' title='"._("add User")."' /></a>";?></span>
+<span class="headerText"><?php echo _("Users Disabled");?></span>
 
 <br /><br />
-<div id='div_User'>
-<img src = "images/circle.gif"><?php echo _("Loading...");?>
-</div>
 </td></tr>
 </table>
 

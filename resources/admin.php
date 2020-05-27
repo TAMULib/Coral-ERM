@@ -49,7 +49,7 @@ if ($user->isAdmin()){
 		<tr>
 		<td style='width:170px;vertical-align:top;'>
 			<table class='adminMenuTable' style='width:170px;'>
-				<tr><td><div class='adminMenuLink'><a href='javascript:void(0);' class='UserAdminLink'><?php echo _("Users");?></a></div></td></tr>
+			<!--	<tr><td><div class='adminMenuLink'><a href='javascript:void(0);' class='UserAdminLink'><?php echo _("Users");?></a></div></td></tr> -->
 				<tr><td><div class='adminMenuLink'><a href='javascript:void(0);' class='WorkflowAdminLink'><?php echo _("Workflow / User Group");?></div></td></tr>
 				<tr><td><div class='adminMenuLink'><a href='javascript:void(0);' id='AccessMethod' class='AdminLink'><?php echo _("Access Method");?></div></td></tr>
 				<tr><td><div class='adminMenuLink'><a href='javascript:void(0);' id='AcquisitionType' class='AdminLink'><?php echo _("Acquisition Type");?></div></td></tr>

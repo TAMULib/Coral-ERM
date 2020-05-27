@@ -14,7 +14,7 @@
 
 
 
-		if (count($instanceArray) > 0){
+		if ((count($instanceArray) > 0) && (1==2)){
 			?>
 			<div class="adminHeader">
 			<div class="adminRightHeader"><?php echo _("Users");?></div>
@@ -58,7 +58,7 @@
 			<?php
 
 		}else{
-			echo _("(none found)")."<br /><a href='ajax_forms.php?action=getAdminUserUpdateForm&loginID=&height=275&width=315&modal=true' class='thickbox' id='addUser'>"._("add new user")."</a>";
+			echo _("(Users are disabled)");
 		}
 
 ?>
