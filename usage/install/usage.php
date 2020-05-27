@@ -126,6 +126,28 @@ function register_usage_provider()
                 }
             ];
 
+        case "3.0.1":
+            return [
+                "function" => function($shared_module_info) {
+                    $return = new stdClass();
+                    $return->yield = new stdClass();
+                    $return->success = true;
+                    $return->yield->title = _("Usage Module");
+                    return $return;
+                }
+            ];
+
+        case "2020.02":
+            return [
+                "function" => function($shared_module_info) {
+                    $return = new stdClass();
+                    $return->yield = new stdClass();
+                    $return->success = true;
+                    $return->yield->title = _("Usage Module");
+                    return $return;
+                }
+            ];
+
 				default:
 					return null;
 			}
