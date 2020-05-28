@@ -2,16 +2,14 @@
 
 header("Content-type: text/xml");
 
-//$host = "128.194.154.234";
-//$user = "root";
-//$pass = "ZpvOI6xr~~";
-//$database = "coral_resources_prod";
+$global_config = parse_ini_file("common/configuration.ini", TRUE);
+$resources_config = parse_ini_file("resources/admin/configuration.ini", TRUE);
 
-$host = "srv-mysql-coral.library.tamu.edu";
-$database = "coral_resources_prod";
-$user = "coral";
-$pass = "va7uCUQ2";
-
+$host = $global_config['database']['host'];
+$user = $global_config['database']['username'];
+$pass = $global_config['database']['password'];
+$database = $resources_config['settings']['resourcesDatabaseName'];
+  
 $linkID = mysql_connect($host, $user, $pass) or die("Could not connect to host.");
 mysql_select_db($database, $linkID) or die("Could not find database.");
 
