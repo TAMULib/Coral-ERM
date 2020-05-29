@@ -20,8 +20,15 @@
 include_once 'directory.php';
 
 $resourceID = $_GET['resourceID'];
+$resourceAcquisitionID = isset($_GET['resourceAcquisitionID']) ? $_GET['resourceAcquisitionID'] : null;
 $resource = new Resource(new NamedArguments(array('primaryKey' => $resourceID)));
 $status = new Status(new NamedArguments(array('primaryKey' => $resource->statusID)));
+$resourceAcquisitions = $resource->getResourceAcquisitions();
+
+$currentPage = $_SERVER["SCRIPT_NAME"];
+$parts = Explode('/', $currentPage);
+$currentPage = $parts[count($parts) - 1];
+
 
 //used to get default email address for feedback link in the right side panel
 $config = new Configuration();
@@ -35,7 +42,16 @@ if ((isset($_GET['ref'])) && ($_GET['ref'] == 'new')){
 }
 
 //set this to turn off displaying the title header in header.php
-$pageTitle=$resource->titleText;;
+$pageTitle=$resource->titleText;
+$customJSInclude =  '<script type="text/javascript" src="../js/plugins/jquery-1.8.0.js"></script>' . "\n";
+
+$customJSInclude .= '<script type="text/javascript" src="js/plugins/thickbox.js"></script>' . "\n";
+$customJSInclude .= '<script type="text/javascript" src="../js/plugins/jquery.autocomplete.js"></script>' . "\n";
+$customJSInclude .= '<script type="text/javascript" src="../js/plugins/datejs-patched-for-i18n.js"></script>' . "\n";
+$customJSInclude .= '<script type="text/javascript" src="../js/plugins/jquery.datePicker-patched-for-i18n.js"></script>' . "\n";
+$customJSInclude .= '<script type="text/javascript" src="../js/common.js"></script>' . "\n";
+$customJSInclude .= '<script type="text/javascript" src="js/common.js"></script>' . "\n";
+
 include 'templates/header.php';
 
 
@@ -48,9 +64,52 @@ if ($resource->titleText){
 	<td style='margin:0;padding:0;text-align:left;'>
 
 		<div style='vertical-align:top; width:100%; height:35px; margin-left:5px;padding:0;'>
-			<span class="headerText" id='span_resourceName' style='float:left;vertical-align:text-top;'><?php echo $resource->titleText; ?>&nbsp;</span>
-			<div id='div_new' style='float:left;vertical-align:bottom;font-weight:115%;margin-top:3px;' class='darkRedText'><?php if ($_GET['ref'] == 'new'){ ?>&nbsp;&nbsp;<img src='images/red_checkmark.gif' />
-				<span class='boldText'><?php echo _("Success!");?></span>&nbsp;&nbsp;<?php echo _("New resource added"); } ?>
+			<span class="headerText" id='span_resourceName' style='vertical-align:text-top;'><?php echo $resource->titleText; ?>&nbsp;</span>
+            <?php
+                if ($resource->countResourceAcquisitions() > 1) {
+            ?>
+            <div id="resourceAcquisitionSelectDiv">
+            <label for="resourceAcquisitionSelect">Order:&nbsp;</label>
+            <select id="resourceAcquisitionSelect">
+            <?php
+                    $selected = false;
+                    foreach ($resourceAcquisitions as $resourceAcquisition) {
+                        echo "<option value=\"$resourceAcquisition->resourceAcquisitionID\"";
+                        if (!$selected) {
+                            if ($resourceAcquisitionID == $resourceAcquisition->resourceAcquisitionID ||
+                                (!$resourceAcquisitionID && $resourceAcquisition->isActiveToday())) {
+                                    $selected = true;
+                                    echo " selected=\"selected\"";
+                            }
+                        }
+                        echo ">";
+                        if ($resourceAcquisition->subscriptionStartDate && $resourceAcquisition->subscriptionEndDate) {
+                            echo "$resourceAcquisition->subscriptionStartDate - $resourceAcquisition->subscriptionEndDate";
+                        } elseif ($resourceAcquisition->subscriptionStartDate) {
+                            echo _("Start date") . ": " . $resourceAcquisition->subscriptionStartDate;
+                        } elseif ($resourceAcquisition->subscriptionEndDate) {
+                            echo _("End date") . ": " . $resourceAcquisition->subscriptionEndDate;
+                        } else {
+                            echo _("Order") . " " . $resourceAcquisition->resourceAcquisitionID;
+                        }
+                        $organization = $resourceAcquisition->getOrganization();
+                        if ($organization) {
+                            echo " - " . $organization['organization'];
+                        }
+                        echo "</option>";
+                    }
+                    echo "</select>";
+                    echo ("</div>");
+                } else {
+                    echo '<input type="hidden" id="resourceAcquisitionSelect" value="'.$resourceAcquisitions[0]->resourceAcquisitionID .'" />';
+                }
+            ?>
+			<div id='div_new' style='float:left;vertical-align:bottom;font-weight:115%;margin-top:3px;color:#46841A;'>
+                <?php if (isset($_GET['ref']) && $_GET['ref'] == 'new'): ?>
+                    &nbsp;&nbsp;<i class="fa fa-check fa-2x"></i>
+				    <span class='boldText'><?php echo _("Success!");?></span>
+                    &nbsp;&nbsp;<?php echo _("New resource added"); ?>
+                <?php endif; ?>
 			</div>
 		</div>
 
@@ -69,6 +128,26 @@ if ($resource->titleText){
 				<tr>
 					<td class="sidemenu">
 						<?php echo resource_sidemenu(watchString('product')); ?>
+					</td>
+					<td class='mainContent'>
+
+						<div class='div_mainContent'>
+						</div>
+					</td>
+				</tr>
+			</table>
+
+		</div>
+
+        <?php if (isset($_GET['showTab']) && $_GET['showTab'] == 'orders'){ ?>
+		<div style="width: 597px;" id='div_orders' class="resource_tab_content">
+		<?php } else { ?>
+		<div style="display:none;width: 597px;" id='div_orders' class="resource_tab_content">
+		<?php } ?>
+			<table cellpadding="0" cellspacing="0" style="width: 100%;">
+				<tr>
+					<td class="sidemenu">
+						<?php echo resource_sidemenu(watchString('orders')); ?>
 					</td>
 					<td class='mainContent'>
 
@@ -137,6 +216,22 @@ if ($resource->titleText){
 
 						<div class='div_mainContent'></div>
 						<div id='div_archivedContactDetails'></div>
+
+					</td>
+				</tr>
+			</table>
+
+		</div>
+
+		<div style="display:none;width: 597px;" id='div_accounts' class="resource_tab_content">
+			<table cellpadding="0" cellspacing="0" style="width: 100%;">
+				<tr>
+					<td class="sidemenu">
+						<?php echo resource_sidemenu(watchString('accounts')); ?>
+					</td>
+					<td class='mainContent'>
+
+						<div class='div_mainContent'></div>
 
 					</td>
 				</tr>
