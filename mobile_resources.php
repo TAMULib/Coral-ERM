@@ -16,11 +16,11 @@ $host = $config->database->host;
 $username = $config->database->username;
 $password = $config->database->password;
 $databaseName = $config->database->name;
-	
+
 header("Content-type: text/xml");
 
-$linkID = mysql_connect($host, $username, $password) or die("Could not connect to host.");
-mysql_select_db($databaseName, $linkID) or die("Could not find database.");
+$linkID = mysqli_connect($host, $username, $password) or die("Could not connect to host.");
+mysqli_select_db($linkID, $databaseName) or die("Could not find database.");
 
 $query = "SELECT 
   `ResourceFormat`.`shortName` AS resourceFormat,
@@ -41,18 +41,18 @@ WHERE
 ORDER BY
   `titleText`";
 
-//echo $query . "<br>";
+// echo $query . "<br>";
 // Apps = 5
 // Electronic = 2
 // Electronic + Mobile = 3
 
-$resultID = mysql_query($query, $linkID) or die("<?xml version=\"1.0\"?>\n<resources>\n</resources>");
+$resultID = mysqli_query($linkID, $query) or die("<?xml version=\"1.0\"?>\n<resources>\n</resources>");
 
 $xml_output = "<?xml version=\"1.0\"?>\n";
 $xml_output .= "<resources>\n";
 
-for($x = 0 ; $x < mysql_num_rows($resultID) ; $x++){
-    $row = mysql_fetch_assoc($resultID);
+for($x = 0 ; $x < mysqli_num_rows($resultID) ; $x++){
+    $row = mysqli_fetch_assoc($resultID);
     $xml_output .= "\t<resource>\n";
     $xml_output .= "\t\t<resourceID>" . $row['resourceID'] .  "</resourceID>\n";
 
@@ -81,8 +81,8 @@ for($x = 0 ; $x < mysql_num_rows($resultID) ; $x++){
 	$xml_output .= "\t\t<resourceFormat>" . $row['resourceFormat'] . "</resourceFormat>\n";	
 
 	$query2 = "SELECT `ResourceNote`.`noteText` FROM `ResourceNote` WHERE `ResourceNote`.`noteTypeID` = 9 AND `ResourceNote`.`resourceID` = " . $row['resourceID'];
-	$note_text = mysql_query($query2, $linkID);
-	$row2 = mysql_fetch_assoc($note_text);
+	$note_text = mysqli_query($query2, $linkID);
+	$row2 = mysqli_fetch_assoc($note_text);
 	$notes = htmlspecialchars($row2['noteText']);
 	
 	$xml_output .= "\t\t<noteText>" . $notes . "</noteText>\n";	

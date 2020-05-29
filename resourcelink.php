@@ -51,8 +51,8 @@ require_once('on_off_campus_check.php');
     if ( ($authenticated) && (strlen($request) > 0) ) {
 			// Ok I am good so lets get the resource
 			
-			$linkID = mysql_connect($host, $username, $password) or themedDie("error");
-			mysql_select_db($databaseName, $linkID) or themedDie("Error Select (1).");
+			$linkID = mysqli_connect($host, $username, $password) or themedDie("error");
+			mysqli_select_db($linkID, $databaseName) or themedDie("Error Select (1).");
 
 			$query = "SELECT r.resourceID, r.metalibID, r.titleText, r.resourceURL, ra.authenticationUserName, ra.authenticationPassword, ra.acquisitionTypeID FROM Resource r";
       $query .= " INNER JOIN ResourceAcquisition ra ON r.resourceID = ra.resourceID";
@@ -63,9 +63,9 @@ require_once('on_off_campus_check.php');
 					$query = $query . " Where metalibID = '" . $request . "'";
 				}
 				
-			$rs = mysql_query($query, $linkID) or themedDie("Error Query:  " . mysql_errno($linkID));
+			$rs = mysqli_query($linkID, $query) or themedDie("Error Query:  " . mysqli_errno($linkID));
 			
-				if ($row = mysql_fetch_assoc($rs)) {
+				if ($row = mysqli_fetch_assoc($rs)) {
 				
 					$resourceURL = "";
 					
@@ -102,8 +102,8 @@ require_once('on_off_campus_check.php');
 					$query = "SELECT noteText FROM " .  $databaseName . ".ResourceNote Where entityID = " . $request . " and noteTypeID = 11";
 					$userNote = "";
 					
-					$rs2 = mysql_query($query, $linkID) or themedDie("Error Query:  " . mysql_errno($linkID));
-						if ($row2 = mysql_fetch_assoc($rs2)) {
+					$rs2 = mysqli_query($linkID, $query) or themedDie("Error Query:  " . mysqli_errno($linkID));
+						if ($row2 = mysqli_fetch_assoc($rs2)) {
 							debugout("I have a special notes");
 							$userNote = "<div class=\"notes-note-special_instructions\">This resource has special access instructions:</div>";
 							$userNote .= "<div class=\"notes-note-special_notes\" title='Special Access Notes'>" . $row2["noteText"] . '</div>';
@@ -139,7 +139,7 @@ if ($row["acquisitionTypeID"] == 2) {
   }
   printFooter();
 
-			mysql_close($linkID);	
+			mysqli_close($linkID);	
 			
 		} else {
 			debugout("I could not autheticate");

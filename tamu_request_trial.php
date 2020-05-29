@@ -264,7 +264,7 @@
               <input type="hidden" id="doVendorId" name="vendorID" value="0">
               <fieldset id="userInformation">
                 <legend>User Information</legend>
-		<div class="form-group">
+				<div class="form-group">
                   <label for="selectorTitle"><span class="label-text">Position Title</span>:<span class="required-asterisk" aria-hidden="true">*</span></label>
                   <input type="text" class="form-control" id="selectorTitle" name="selectorTitle" value="" minlength="1" required>
                 </div>
