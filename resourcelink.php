@@ -24,7 +24,7 @@ require_once('on_off_campus_check.php');
 				$authenticated = TRUE;
 			} else {
 				debugout("I do not have a header send to Ezp.");
-						header( "Location: http://ezproxy.library.tamu.edu/login?url=http://" . $hostname . $_SERVER[REQUEST_URI] ) ;
+						header( "Location: http://proxy.library.tamu.edu/login?url=http://" . $hostname . $_SERVER[REQUEST_URI] ) ;
 						//header( "Location: http://" . $hostname . $_SERVER[REQUEST_URI] ) ;
 			}
 		} else {
@@ -116,9 +116,9 @@ if ($row["acquisitionTypeID"] == 2) {
   $resourceURL = $resourceURL;
 } else {
 	if ($resource['resourceID'] != 2477) {
-		$resourceURL = "http://ezproxy.library.tamu.edu/login?url=" . $resourceURL;
+		$resourceURL = "http://proxy.library.tamu.edu/login?url=" . $resourceURL;
 	} else {
-		$resourceURL = "http://lib-ezproxy.tamu.edu/login?url=" . $resourceURL;
+		$resourceURL = "http://proxy.library.tamu.edu/login?url=" . $resourceURL;
 	}	
 }
 
