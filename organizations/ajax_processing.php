@@ -21,6 +21,7 @@
 include_once 'directory.php';
 include_once 'user.php';
 
+$config = new Configuration();
 
 switch ($_GET['action']) {
 
@@ -88,6 +89,31 @@ switch ($_GET['action']) {
 
 			}
 
+            if ($organization->hasILSVendorRole()) {
+                $ilsClient = (new ILSClientSelector())->select();
+                // Create vendor in ILS
+                if ($organization->ilsID == null) {
+                    $ilsID = $ilsClient->addVendor(array(
+                                                "name" => $organization->name,
+                                                "companyURL" => $organization->companyURL,
+                                                "noteText" => $organization->noteText,
+                                                "accountDetailText" => $organization->accountDetailText,
+                                                )
+                                            );
+                    if ($ilsID) {
+                        $organization->ilsID = $ilsID;
+                    }
+
+                } else {
+                    // Retrieve organization data from ILS
+                    $ilsVendor = $ilsClient->getVendor($organization->ilsID);
+                    $organization->name = $ilsVendor['name'];
+                    $organization->companyURL = $ilsVendor['companyURL'];
+                    $organization->noteText = $ilsVendor['noteText'];
+                    $organization->accountDetailText = $ilsVendor['accountDetailText'];
+                }
+                $organization->save();
+            }
 
 		} catch (Exception $e) {
 			echo $e->getMessage();
@@ -335,7 +361,7 @@ switch ($_GET['action']) {
 	case 'updateDowntime':
 		if (is_numeric($_POST['downtimeID'])) {
 			$downtime = new Downtime(new NamedArguments(array('primaryKey' => $_POST['downtimeID'])));
-			$downtime->endDate = ($_POST['endDate']) ?  date('Y-m-d H:i:s', strtotime($_POST['endDate']." ".$_POST['endTime']['hour'].":".$_POST['endTime']['minute'].$_POST['endTime']['meridian'])):null;
+			$downtime->endDate = ($_POST['endDate']) ?  date('Y-m-d H:i:s', create_date_from_js_format($_POST['endDate'])->format('Y-m-d')." ".$_POST['endTime']['hour'].":".$_POST['endTime']['minute'].$_POST['endTime']['meridian']) : null;
 			$downtime->note = ($_POST['note']) ? $_POST['note']:null;
 			$downtime->save();
 		}
@@ -347,8 +373,8 @@ switch ($_GET['action']) {
 		$newDowntime->downtimeTypeID = $_POST['downtimeType'];
 		$newDowntime->issueID = $_POST['issueID'];
 
-		$newDowntime->startDate = date('Y-m-d H:i:s', strtotime($_POST['startDate']." ".$_POST['startTime']['hour'].":".$_POST['startTime']['minute'].$_POST['startTime']['meridian']));
-		$newDowntime->endDate = ($_POST['endDate']) ?  date('Y-m-d H:i:s', strtotime($_POST['endDate']." ".$_POST['endTime']['hour'].":".$_POST['endTime']['minute'].$_POST['endTime']['meridian'])):null;
+		$newDowntime->startDate = date('Y-m-d H:i:s', create_date_from_js_format($_POST['statDate'])->format('Y-m-d')." ".$_POST['startTime']['hour'].":".$_POST['startTime']['minute'].$_POST['startTime']['meridian']);
+		$newDowntime->endDate = ($_POST['endDate']) ?  date('Y-m-d H:i:s', create_date_from_js_format($_POST['endDate'])->format('Y-m-d')." ".$_POST['endTime']['hour'].":".$_POST['endTime']['minute'].$_POST['endTime']['meridian']):null;
 
 		$newDowntime->dateCreated = date( 'Y-m-d H:i:s');
 		$newDowntime->entityTypeID = 1;
@@ -369,13 +395,13 @@ switch ($_GET['action']) {
 		}
 
 		if ($_POST['issueStartDate']){
-			$issueLog->issueStartDate = date("Y-m-d", strtotime($_POST['issueStartDate']));
+			$issueLog->issueStartDate = create_date_from_js_format($_POST['issueStartDate'])->format('Y-m-d');
 		}else{
 			$issueLog->issueStartDate = '';
 		}
 
     if ($_POST['issueEndDate']){
-			$issueLog->issueEndDate = date("Y-m-d", strtotime($_POST['issueEndDate']));
+			$issueLog->issueEndDate = create_date_from_js_format($_POST['issueEndDate'])->format('Y-m-d');
 		}else{
 			$issueLog->issueEndDate = '';
 		}
@@ -513,32 +539,55 @@ switch ($_GET['action']) {
 
 		break;
 
+    case 'getILSVendorList':
+        if ($config->ils->ilsConnector) {
+            $ilsClient = (new ILSClientSelector())->select();
+            $vendors = $ilsClient->getVendorByName($_GET['q']);
+            foreach ($vendors as $vendor) {
+                print $vendor->name . "\n";
+            }
+        }
+        break;
+
+    case 'getILSVendorInfos':
+        if ($config->ils->ilsConnector) {
+            $ilsClient = (new ILSClientSelector())->select();
+            $vendor = $ilsClient->getVendorByName($_GET['name']);
+            print json_encode($vendor[0]);
+        }
+
+        break;
+
+    case 'getExistingOrganization':
+        $name = $_GET['name'];
+        if (isset($_GET['organizationID'])) $organizationID = $_GET['organizationID']; else $organizationID = '';
 
 
+        $organization = new Organization();
+        $orgArray = array();
 
-	case 'getExistingOrganizationName':
-		$name = $_GET['name'];
-		if (isset($_GET['organizationID'])) $organizationID = $_GET['organizationID']; else $organizationID = '';
+        $exists = 0;
 
+        foreach ($organization->allAsArray() as $orgArray) {
+            if ((strtoupper($orgArray['name']) == strtoupper($name)) && ($orgArray['organizationID'] != $organizationID)) {
+                $exists = $orgArray['organizationID']; break;
+            }
+        }
+        echo $exists;
+        break;
 
-		$organization = new Organization();
-		$orgArray = array();
+    case 'getExistingVendor':
+        $name = $_GET['name'];
+        $exists = -1;
+        if ($config->ils->ilsConnector) {
+            $ilsClient = (new ILSClientSelector())->select();
+            if ($name) {
+                echo $ilsClient->vendorExists($name);
+            }
+        }
+        break;
 
-		$exists = 0;
-
-		foreach ($organization->allAsArray() as $orgArray) {
-			if ((strtoupper($orgArray['name']) == strtoupper($name)) && ($orgArray['organizationID'] != $organizationID)) {
-				$exists = $orgArray['organizationID']; break;
-			}
-		}
-
-		echo $exists;
-
-		break;
-
-
-
-	default:
+    default:
        echo _("Action ") . $action . _(" not set up!");
        break;
 

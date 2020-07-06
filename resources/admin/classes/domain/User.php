@@ -57,8 +57,7 @@ class User extends DatabaseObject {
 	//used only for allowing access to admin page
 	public function isAdmin(){
 		$privilege = new Privilege(new NamedArguments(array('primaryKey' => $this->privilegeID)));
-
-		if (strtoupper($privilege->shortName) == 'ADMIN'){
+		if (mb_strtoupper($privilege->shortName) == 'ADMIN'){
 			return true;
 		}else{
 			return false;
@@ -70,7 +69,7 @@ class User extends DatabaseObject {
 	public function canEdit(){
 		$privilege = new Privilege(new NamedArguments(array('primaryKey' => $this->privilegeID)));
 
-		if ((strtoupper($privilege->shortName) == 'ADD/EDIT') || (strtoupper($privilege->shortName) == 'ADMIN')){
+		if ((mb_strtoupper($privilege->shortName) == 'ADD/EDIT') || (mb_strtoupper($privilege->shortName) == 'ADMIN')){
 			return true;
 		}else{
 			return false;
@@ -111,7 +110,7 @@ class User extends DatabaseObject {
 		$status = new Status();
 		$statusID = $status->getIDFromName($statusName);
 
-		$query = "SELECT resourceID, date_format(createDate, '%c/%e/%Y') createDate, acquisitionTypeID, titleText, statusID
+		$query = "SELECT resourceID, date_format(createDate, '%c/%e/%Y') createDate, titleText, statusID
 			FROM Resource
 			WHERE statusID = '" . $statusID . "'
 			AND createLoginID = '" . $this->loginID . "'
@@ -166,9 +165,13 @@ class User extends DatabaseObject {
 			$whereAdd = "";
 		}
 
-		$query = "SELECT DISTINCT R.resourceID, date_format(createDate, '%c/%e/%Y') createDate, acquisitionTypeID, titleText, statusID
-			FROM Resource R, ResourceStep RS, UserGroupLink UGL
-			WHERE R.resourceID = RS.resourceID
+		$query = "SELECT DISTINCT R.resourceID, date_format(createDate, '%c/%e/%Y') createDate, titleText, statusID, 
+            RA.resourceAcquisitionID, RA.acquisitionTypeID,
+            date_format(subscriptionStartDate, '%c/%e/%Y') subscriptionStartDate,
+            date_format(subscriptionEndDate, '%c/%e/%Y') subscriptionEndDate
+			FROM Resource R, ResourceAcquisition RA, ResourceStep RS, UserGroupLink UGL
+			WHERE R.resourceID = RA.resourceID
+            AND RA.resourceAcquisitionID = RS.resourceAcquisitionID
 			AND RS.userGroupID = UGL.userGroupID
 			AND UGL.loginID = '" . $this->loginID . "'
 			AND (RS.stepEndDate IS NULL OR RS.stepEndDate = '0000-00-00')
@@ -226,8 +229,9 @@ class User extends DatabaseObject {
 		}
 
 		$query = "SELECT DISTINCT RS.stepName, date_format(stepStartDate, '%c/%e/%Y') startDate
-			FROM Resource R, ResourceStep RS, UserGroupLink UGL
-			WHERE R.resourceID = RS.resourceID
+			FROM Resource R, ResourceAcquisition RA, ResourceStep RS, UserGroupLink UGL
+			WHERE R.resourceID = RA.resourceID
+            AND RA.resourceAcquisitionID = RS.resourceAcquisitionID
 			AND RS.userGroupID = UGL.userGroupID
 			AND UGL.loginID = '" . $this->loginID . "'
 			AND R.resourceID = '" . $outstandingResourceID . "'

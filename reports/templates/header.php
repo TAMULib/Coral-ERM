@@ -36,20 +36,19 @@ $currentPage = $parts[count($parts) - 1];
 <title>CORAL Usage Statistics Reporting - <?php echo $pageTitle; ?></title>
 <link rel="stylesheet" href="css/style.css" type="text/css" media="screen" />
 <link rel="stylesheet" href="css/thickbox.css" type="text/css" media="screen" />
-<link rel="stylesheet" href="css/datePicker.css" type="text/css" media="screen" />
-<link rel="stylesheet" href="css/jquery.autocomplete.css" type="text/css" media="screen" />
+<link rel="stylesheet" href="../css/datePicker.css" type="text/css" media="screen" />
+<link rel="stylesheet" href="../css/jquery.autocomplete.css" type="text/css" media="screen" />
 <link rel="stylesheet" href="css/jquery.tooltip.css" type="text/css" media="screen" />
 <link rel="stylesheet" href="css/report.css" type="text/css" media="screen" />
 <link rel="SHORTCUT ICON" href="images/favicon.ico" />
 <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" />
 <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>
-<script type="text/javascript" src="js/plugins/jquery.js"></script>
-<script type="text/javascript" src="js/plugins/ajaxupload.3.5.js"></script>
+<script type="text/javascript" src="../js/plugins/jquery-1.8.0.js"></script>
 <script type="text/javascript" src="js/plugins/thickbox.js"></script>
-<script type="text/javascript" src="js/plugins/date.js"></script>
-<script type="text/javascript" src="js/plugins/jquery.datePicker.js"></script>
-<script type="text/javascript" src="js/plugins/jquery.autocomplete.js"></script>
-<script type="text/javascript" src="js/plugins/Gettext.js"></script>
+<script type="text/javascript" src="../js/plugins/datejs-patched-for-i18n.js"></script>
+<script type="text/javascript" src="../js/plugins/jquery.datePicker-patched-for-i18n.js"></script>
+<script type="text/javascript" src="../js/plugins/jquery.autocomplete.js"></script>
+<script type="text/javascript" src="../js/plugins/Gettext.js"></script>
 <?php
     // Add translation for the JavaScript files
     global $http_lang;
@@ -64,9 +63,12 @@ $currentPage = $parts[count($parts) - 1];
             echo "<link rel='gettext' type='application/x-po' href='./locale/".$http_lang."/LC_MESSAGES/messages.po' />";
     }
 ?>
-<script type="text/javascript" src="js/plugins/jquery.tooltip.js"></script>
+<script type="text/javascript" src="../js/plugins/jquery.tooltip.js"></script>
 <script type="text/javascript" src="js/plugins/jquery.floatThead.min.js"></script>
 <script type="text/javascript" src="js/common.js"></script>
+<script type="text/javascript">
+Date.format = '<?php echo return_datepicker_date_format(); ?>';
+</script>
 </head>
 <body>
 <?php echo "<noscript><font face=arial>" . _("JavaScript must be enabled in order for you to use CORAL. However, it seems JavaScript is either disabled or not supported by your browser. To use CORAL, enable JavaScript by changing your browser options, then") . " <a href=''>" . _("try again") . "</a>. </font></noscript>";?>

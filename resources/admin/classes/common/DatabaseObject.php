@@ -52,10 +52,10 @@ class DatabaseObject extends DynamicObject {
 		$this->primaryKeyName = $arguments->primaryKeyName;
 
 		$this->primaryKey = $arguments->primaryKey;
-		$this->db = new DBService;
+		$this->db = DBService::getInstance();;
 
 		$arguments->setDefaultValueForArgumentName('db',false);
-		$this->db = $arguments->db ? $arguments->db : new DBService;
+		$this->db = $arguments->db ? $arguments->db : DBService::getInstance();
 
 		$this->defineRelationships();
 		//$this->defineAttributes();  //now performed in load
@@ -113,7 +113,7 @@ class DatabaseObject extends DynamicObject {
 				$result = $this->db->processQuery($query);
 				if (isset($result[0])) $this->attributes[$key] = stripslashes($result[0]);
 			}
-			return $this->attributes[$key];
+			return isset($this->attributes[$key]) ? $this->attributes[$key] : NULL;
 		} else if (array_key_exists($key, $this->parentNames)) {
 			if (!array_key_exists($key, $this->parents)) {
 				$parentClassName = $this->parentNames[$key];
@@ -215,33 +215,42 @@ class DatabaseObject extends DynamicObject {
 		return $this->db->processQuery($query);
 	}
 
-	public function save() {
+	public function save($new = 0) {
 		$pairs = array();
 		foreach (array_keys($this->attributeNames) as $attributeName) {
-			$value = $this->attributes[$attributeName];
-			if ($value == '' || !isset($value)) {
-				$value = "NULL";
-			} else {
-				$value = $this->db->escapeString($value);
-				$value = "'$value'";
+			if (isset($this->attributes[$attributeName]))
+			{
+				$value = $this->attributes[$attributeName];
+				if (($value == '' || !isset($value)) && $value !== 0) {
+					$value = "NULL";
+				} else {
+					$value = $this->db->escapeString($value);
+					$value = "'$value'";
+				}
+				$pair = "`$attributeName`=$value";
+				array_push($pairs, $pair);
 			}
-			$pair = "`$attributeName`=$value";
-			array_push($pairs, $pair);
 		}
 		$set = implode(', ', $pairs);
-		if (isset($this->primaryKey)) {
-			// Update object
-			$query = "UPDATE `$this->tableName` SET $set WHERE `$this->primaryKeyName` = '$this->primaryKey'";
-			//echo $query;
-			$this->db->processQuery($query);
-		} else {
-			// Insert object
-			$query = "INSERT INTO `$this->tableName` SET $set";
-			//echo $query;
-			$this->primaryKey = $this->db->processQuery($query);
-		}
+        if ($set && trim($set) != '') {
+            if (($new == 0) && isset($this->primaryKey)) {
+                // Update object
+                $query = "UPDATE `$this->tableName` SET $set WHERE `$this->primaryKeyName` = '$this->primaryKey'";
+                //echo $query;
+                $this->db->processQuery($query);
+            } else {
+                // Insert object
+                $query = "INSERT INTO `$this->tableName` SET $set";
+                //echo $query;
+                $this->primaryKey = $this->db->processQuery($query);
+                if ($new) return $this->primaryKey;
+            }
+        }
 	}
 
+    public function saveAsNew() {
+        return $this->save(1);
+    }
 
 	public function all() {
 		$query = "SELECT * FROM `$this->tableName` ORDER BY 2, 1";
