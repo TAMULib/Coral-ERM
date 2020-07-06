@@ -1,6 +1,6 @@
 <?php
-require 'vendor/autoload.php';
-$server = "http://coral.local/resources/api/";
+require '/var/www/html/coral-tamu/vendor/autoload.php';
+$server = "https://dhahn.library.tamu.edu/resources/api/";
 $user = $_SERVER['REMOTE_USER'] ? $_SERVER['REMOTE_USER'] : 'API';
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
