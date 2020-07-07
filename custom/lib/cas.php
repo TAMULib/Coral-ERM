@@ -54,7 +54,7 @@ function getCAS($cas_base, $casIP) {
   ##
     
 	if ( preg_match("/&ticket=/", $QUERY_STRING) || ($QUERY_STRING && !$ticket) ) {
-		list ($getVars, $ticket) = split("&ticket=", $QUERY_STRING);
+		list ($getVars, $ticket) = explode("&ticket=", $QUERY_STRING);
 		
 		$getVars = "?" . $getVars;
 		$myService = $PHP_SELF . $getVars;
