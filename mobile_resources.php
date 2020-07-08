@@ -6,7 +6,7 @@ define('CLASSES_DIR', ADMIN_DIR . 'classes/');
 
 require_once(CLASSES_DIR . 'common/' . 'Utility.php');
 require_once(CLASSES_DIR . 'common/' . 'NamedArguments.php');
-require_once(CLASSES_DIR . 'common/' . 'Object.php');
+require_once(CLASSES_DIR . 'common/' . 'Base_Object.php');
 require_once(CLASSES_DIR . 'common/' . 'DynamicObject.php');
 require_once(CLASSES_DIR . 'common/' . 'Configuration.php');
 
