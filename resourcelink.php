@@ -55,7 +55,7 @@ require_once('on_off_campus_check.php');
 			mysqli_select_db($linkID, $databaseName) or themedDie("Error Select (1).");
 
 			$query = "SELECT r.resourceID, r.metalibID, r.titleText, r.resourceURL, ra.authenticationUserName, ra.authenticationPassword, ra.acquisitionTypeID FROM Resource r";
-      $query .= " INNER JOIN ResourceAcquisition ra ON r.resourceID = ra.resourceID";
+			$query .= " INNER JOIN ResourceAcquisition ra ON r.resourceID = ra.resourceID";
 			
 				if (stripos($request, "TEX") === false) {
 					$query = $query . " Where r.resourceID = " . $request . "";
