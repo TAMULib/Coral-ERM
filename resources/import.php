@@ -233,7 +233,7 @@
                             cache:      false,
                             data:       { shortName: $('#saveName').val(), configuration: currentConfig['configuration'], orgNameImported: currentConfig['orgNameImported'], orgNameMapped: currentConfig['orgNameMapped']},
                             success:    function(html) {
-                                $("#saveDiv").html(html == '' ? '<?php echo _('The import configuration has been successfully saved.'); ?>' : '<?php echo _('The import configuration could not be saved: '); ?>' + html);
+                                $("#saveDiv").html(html == '' ? '<?php echo addslashes(_('The import configuration has been successfully saved.')); ?>' : '<?php echo addslashes(_('The import configuration could not be saved: ')); ?>' + html);
                             }
                         });
                     }
@@ -724,14 +724,16 @@
 							foreach($noteArray as $currentNote)
 							{
                                 if (isset($proceed)) {
-                                    $noteObj = new ResourceNote();
-                                    $noteObj->entityID = $resource->primaryKey;
-                                    $noteObj->noteTypeID = $note['noteType'];
-                                    $noteObj->updateLoginID = '';
-                                    $noteObj->updateDate = date('Y-m-d H:i:s');
-                                    $noteObj->noteText = $currentNote;
-                                    $noteObj->tabName = 'Product';
-                                    $noteObj->save();
+									if (!empty($currentNote)) {
+										$noteObj = new ResourceNote();
+										$noteObj->entityID = $resource->primaryKey;
+										$noteObj->noteTypeID = $note['noteType'];
+										$noteObj->updateLoginID = $loginID;
+										$noteObj->updateDate = date('Y-m-d H:i:s');
+										$noteObj->noteText = $currentNote;
+										$noteObj->tabName = 'Product';
+										$noteObj->save();
+									}
                                 }
 								$noteInserted++;
 							}

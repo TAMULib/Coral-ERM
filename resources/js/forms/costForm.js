@@ -38,12 +38,12 @@ $(function(){
 	 $('.changeDefault').live('blur', function() {
 		if(this.value == ''){
 			this.value = this.defaultValue;
-		}		
+		}
 	 });
 
-	
+
     	$('.changeInput').addClass("idleField");
-    	
+
 	$('.changeInput').live('focus', function() {
 
 
@@ -79,7 +79,7 @@ $(function(){
 	$('textarea').focus(function() {
 		$(this).removeClass("idleField").addClass("focusField");
 	});
-	    
+
 	$('textarea').blur(function() {
 		$(this).removeClass("focusField").addClass("idleField");
 	});
@@ -97,7 +97,8 @@ $(function(){
     	pte = $(this).val();
     	taxRate = $(this).parent().next().children(".taxRate").val();
     	if (pte && taxRate) {
-      		amount = parseFloat(pte) + (pte * taxRate / 100);
+            amount = calcPriceTaxIncluded(pte, taxRate);
+            amount = numberFormat(amount);
       		$(this).parent().next().next().children(".priceTaxIncluded").val(amount);
       		$(this).parent().next().next().next().children(".paymentAmount").val(amount);
     	}
@@ -107,7 +108,8 @@ $(function(){
     	taxRate = $(this).val();
     	pte = $(this).parent().prev().children(".priceTaxExcluded").val();
     	if (pte && taxRate) {
-    	  	amount = parseFloat(pte) + (pte * taxRate / 100);
+            amount = calcPriceTaxIncluded(pte, taxRate);
+            amount = numberFormat(amount);
       		$(this).parent().next().children(".priceTaxIncluded").val(amount);
       		$(this).parent().next().next().children(".paymentAmount").val(amount);
 	    }
@@ -126,14 +128,14 @@ $(function(){
 		var detailsID = $('.newPaymentTable').find('.costDetailsID').val();
 		var pAmount   = $('.newPaymentTable').find('.paymentAmount').val();
 		var cNote     = $('.newPaymentTable').find('.costNote').val();
-		
+
 		if(validateTable($('.newPaymentTable tbody tr')))
 		{
 			//we're going to strip out the $ of the payment amount
 			pAmount = pAmount.replace('$','');
-		
+
 			$('#div_errorPayment').html('');
-			
+
 			var newPaymentTR = $('.newPaymentTR')
 			var duplicateTR = newPaymentTR.clone(); //copy the payment being added
 			var selectedOptions=newPaymentTR.find('select'); //get selected options
@@ -154,6 +156,7 @@ $(function(){
 			$('.newPaymentTable').find('.subscriptionStartDate').val('');
 			$('.newPaymentTable').find('.subscriptionEndDate').val('');
 			$('.newPaymentTable').find('.fundID').val('');
+			//TAMU Customization
 			$('.newPaymentTable').find('.fundSpecial').val('');
 			$('.newPaymentTable').find('.priceTaxExcluded').val('');
 			$('.newPaymentTable').find('.taxRate').val('');
@@ -163,9 +166,11 @@ $(function(){
 			$('.newPaymentTable').find('.costDetailsID').val('');
 			$('.newPaymentTable').find('.costNote').val('');
 			$('.newPaymentTable').find('.invoiceNum').val('');
+			//TAMU Customization
 			$('.newPaymentTable').find('.purchaseOrder').val('');
 			$('.newPaymentTable').find('.systemID').val('');
 			$('.newPaymentTable').find('.vendorCode').val('');
+			//End TAMU Customization
 			var tableDiv=$('.paymentTableDiv')[0];
 			tableDiv.scrollTop=tableDiv.scrollHeight;
 			return true;
@@ -189,11 +194,13 @@ function submitCostForm()
 	var cNote      = $('.newPaymentTR').find('.costNote').val();
 	var invoiceNum = $('.newPaymentTR').find('.invoiceNum').val();
 
+	//TAMU Customization
 	var purchaseOrder = $('.newPaymentTR').find('.purchaseOrder').val();
 	var systemID = $('.newPaymentTR').find('.systemID').val();
 	var vendorCode = $('.newPaymentTR').find('.vendorCode').val();
+	//End TAMU Customization
 
-	if(y != '' || ssd != '' || sed != '' || fName != '' || pAmount != '' || typeID != '' || detailsID != '' || cNote != '' || invoiceNum != '' || purchaseOrder != '' || systemID != '' || vendorCode != '')
+	if(y != '' || ssd != '' || sed != '' || fName != '' || pAmount != '' || typeID != '' || detailsID != '' || cNote != '' || invoiceNum != '')
 	{
 		if(confirm('There is unsaved information on the add line. To discard this information, click OK, otherwise click Cancel.')==false)
 		{
@@ -205,78 +212,81 @@ function submitCostForm()
 		purchaseSitesList ='';
 		$(".paymentTable").find(".check_purchaseSite:checked").each(function(id) {
 		      purchaseSitesList += $(this).val() + ":::";
-		}); 
-		
+		});
+
 		yearList ='';
 		$(".paymentTable").find(".year").each(function(id) {
 		      yearList += $(this).val() + ":::";
-		}); 
+		});
 
 		subStartList ='';
 		$(".paymentTable").find(".subscriptionStartDate").each(function(id) {
 		      subStartList += $(this).val() + ":::";
-		}); 
+		});
 
 		subEndList ='';
 		$(".paymentTable").find(".subscriptionEndDate").each(function(id) {
 		      subEndList += $(this).val() + ":::";
-		}); 
+		});
 
 		fundNameList ='';
 		$(".paymentTable").find(".fundID").each(function(id) {
 		      fundNameList += $(this).val() + ":::";
 		});
 
+		//TAMU Customization
 		fundSpecialList ='';
 		$(".paymentTable").find(".fundSpecial").each(function(id) {
 		      fundSpecialList += $(this).val() + ":::";
 		});
+		//End TAMU Customization
 
 		priceTaxExcludedList ='';
 		$(".paymentTable").find(".priceTaxExcluded").each(function(id) {
-			priceTaxExcludedList += $(this).val() + ":::";
-		}); 
+			priceTaxExcludedList += parseFloatI18n($(this).val()) * 100 + ":::";
+		});
 
 		taxRateList ='';
 		$(".paymentTable").find(".taxRate").each(function(id) {
-			taxRateList += $(this).val() + ":::";
-		}); 
+			taxRateList += parseFloatI18n($(this).val()) * 100 + ":::";
+		});
 
 		priceTaxIncludedList ='';
 		$(".paymentTable").find(".priceTaxIncluded").each(function(id) {
-			priceTaxIncludedList += $(this).val() + ":::";
-		}); 
+			priceTaxIncludedList += parseFloatI18n($(this).val()) * 100 + ":::";
+		});
 
 		paymentAmountList ='';
 		$(".paymentTable").find(".paymentAmount").each(function(id) {
-			paymentAmountList += $(this).val() + ":::";
-		}); 
+			paymentAmountList += parseFloatI18n($(this).val()) * 100 + ":::";
+		});
 
 		currencyCodeList ='';
 		$(".paymentTable").find(".currencyCode").each(function(id) {
 		      currencyCodeList += $(this).val() + ":::";
-		}); 
-		
+		});
+
 		orderTypeList ='';
 		$(".paymentTable").find(".orderTypeID").each(function(id) {
 		      orderTypeList += $(this).val() + ":::";
-		}); 
+		});
 
 		detailsList ='';
 		$(".paymentTable").find(".costDetailsID").each(function(id) {
 		      detailsList += $(this).val() + ":::";
-		}); 
+		});
 
 		costNoteList ='';
 		$(".paymentTable").find(".costNote").each(function(id) {
 		      costNoteList += $(this).val() + ":::";
-		}); 
+		});
 
 		invoiceList ='';
 		$(".paymentTable").find(".invoiceNum").each(function(id) {
 		      invoiceList += $(this).val() + ":::";
 		});
 
+		//TAMU Customization
 		purchaseOrderList ='';
 		$(".paymentTable").find(".purchaseOrder").each(function(id) {
 		      purchaseOrderList += $(this).val() + ":::";
@@ -291,9 +301,9 @@ function submitCostForm()
 		$(".paymentTable").find(".vendorCode").each(function(id) {
 		      vendorCodeList += $(this).val() + ":::";
 		});
+		//End TAMU Customization
 
-		$('#submitCost').attr("disabled", "disabled"); 
-
+		$('#submitCost').attr("disabled", "disabled");
 		$.ajax({
 			type:  "POST",
 			url:   "ajax_processing.php?action=submitCost",
@@ -328,7 +338,7 @@ function submitCostForm()
 					window.parent.tb_remove();
 					window.parent.updateAcquisitions();
 					return false;
-				}					
+				}
 
 			}
 		});
@@ -340,11 +350,17 @@ function submitCostForm()
 	}
 }
 
+function calcPriceTaxIncluded(priceTaxExcluded, taxRate) {
+    priceTaxExcluded = parseFloatI18n(priceTaxExcluded);
+    taxRate = parseFloatI18n(taxRate);
+    return priceTaxExcluded + (priceTaxExcluded * taxRate / 100);
+}
+
 function validateTable(objRows)
 {
 	//var currentRow = 0;
 	var hasNoErrors = true;
- 	
+
  	$(objRows).find('.div_errorPayment').each(function() {$(this).html('');}); //clear existing errors
  	//while(typeof objRows[currentRow] !== "undefined")
         for (var currentRow = 0; currentRow < objRows.length; currentRow += 2)
@@ -356,8 +372,8 @@ function validateTable(objRows)
 		var pAmount    = $(objRows[currentRow]).find('.paymentAmount').val();
 		var typeID     = $(objRows[currentRow]).find('.orderTypeID').val();
 		var detailsID  = $(objRows[currentRow]).find('.costDetailsID').val();
-		var pte        = $(objRows[currentRow]).find('.priceTaxIncluded').val();
-		var pti        = $(objRows[currentRow]).find('.priceTaxExcluded').val();
+		var pti        = $(objRows[currentRow]).find('.priceTaxIncluded').val();
+		var pte        = $(objRows[currentRow]).find('.priceTaxExcluded').val();
 		var cNote      = $(objRows[currentRow]).find('.costNote').val();
 		var invoiceNum = $(objRows[currentRow]).find('.invoiceNum').val();
 
@@ -373,7 +389,7 @@ function validateTable(objRows)
 		}
 		else if ((pAmount != '') && (pAmount != null) && (isAmount(pAmount) === false))
 		{
-			$(objRows[currentRow+1]).find('.div_errorPayment').html(_("Error - price is not numeric"));
+			$(objRows[currentRow+1]).find('.div_errorPayment').html(_("Error - Price (payment) is not numeric"));
 			hasNoErrors = false;
 		}
 		else if ((pte != '') && (pte != null) && (isAmount(pte) === false)){
@@ -387,11 +403,11 @@ function validateTable(objRows)
  	}
  	return hasNoErrors;
 }
- 
+
 //kill all binds done by jquery live
 function kill()
 {
-	$('.addPayment').die('click'); 
+	$('.addPayment').die('click');
 	$('.changeDefault').die('blur');
 	$('.changeDefault').die('focus');
 	$('.changeInput').die('blur');

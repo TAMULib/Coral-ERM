@@ -12,8 +12,10 @@
 			$yearArray          = array();  $yearArray          = explode(':::',$_POST['years']);
 			$subStartArray      = array();  $subStartArray      = explode(':::',$_POST['subStarts']);
 			$subEndArray        = array();  $subEndArray        = explode(':::',$_POST['subEnds']);
+			//TAMU Customization
 			$fundIDArray        = array();  $fundIDArray      	= explode(':::',$_POST['fundIDs']);
 			$fundSpecialArray	= array();  $fundSpecialArray 	= explode(':::',$_POST['fundSpecials']);
+			//End TAMU Customization
             $pteArray           = array();  $pteArray           = explode(':::',$_POST['pricesTaxExcluded']);
             $taxRateArray       = array();  $taxRateArray       = explode(':::',$_POST['taxRates']);
             $ptiArray           = array();  $ptiArray           = explode(':::',$_POST['pricesTaxIncluded']);
@@ -23,34 +25,37 @@
 			$costDetailsArray   = array();  $costDetailsArray   = explode(':::',$_POST['costDetails']);
 			$costNoteArray      = array();  $costNoteArray      = explode(':::',$_POST['costNotes']);
 			$invoiceArray       = array();  $invoiceArray       = explode(':::',$_POST['invoices']);
+			//TAMU Customization
 			$purchaseOrderArray = array();  $purchaseOrderArray = explode(':::',$_POST['purchaseOrders']);
 			$systemIDArray      = array();  $systemIDArray      = explode(':::',$_POST['systemIDs']);
 			$vendorCodeArray    = array();  $vendorCodeArray    = explode(':::',$_POST['vendorCodes']);
+			//End TAMU Customization
 			foreach ($orderTypeArray as $key => $value){
 				if (($value) && ($paymentAmountArray[$key] || $yearArray[$key] || $fundIDArray[$key] || $costNoteArray[$key])){
 					$resourcePayment = new ResourcePayment();
 					$resourcePayment->resourceAcquisitionID    = $resourceAcquisitionID;
 					$resourcePayment->year          = $yearArray[$key];
-					$start = $subStartArray[$key] ? date("Y-m-d", strtotime($subStartArray[$key])) : null;
-					$end   = $subEndArray[$key]   ? date("Y-m-d", strtotime($subEndArray[$key]))   : null;
+					$start = $subStartArray[$key] ? create_date_from_js_format($subStartArray[$key])->format('Y-m-d') : null;
+					$end   = $subEndArray[$key]   ? create_date_from_js_format($subEndArray[$key])->format('Y-m-d') : null;
 					$resourcePayment->subscriptionStartDate = $start;
 					$resourcePayment->subscriptionEndDate   = $end;
 					$resourcePayment->fundID        = $fundIDArray[$key];
+					//TAMU Customization
 					$resourcePayment->fundSpecial        = $fundSpecialArray[$key];
-					$resourcePayment->priceTaxExcluded = cost_to_integer($pteArray[$key]);
-					$resourcePayment->taxRate       = cost_to_integer($taxRateArray[$key]);
-					$resourcePayment->priceTaxIncluded = cost_to_integer($ptiArray[$key]);
-					$resourcePayment->paymentAmount = cost_to_integer($paymentAmountArray[$key]);
+					$resourcePayment->priceTaxExcluded = $pteArray[$key];
+					$resourcePayment->taxRate       = $taxRateArray[$key];
+					$resourcePayment->priceTaxIncluded = $ptiArray[$key];
+					$resourcePayment->paymentAmount = $paymentAmountArray[$key];
 					$resourcePayment->currencyCode  = $currencyCodeArray[$key];
 					$resourcePayment->orderTypeID   = $value;
 					$resourcePayment->costDetailsID = $costDetailsArray[$key];
 					$resourcePayment->costNote      = $costNoteArray[$key];
 					$resourcePayment->invoiceNum    = $invoiceArray[$key];
-
+					//TAMU Customization
 					$resourcePayment->purchaseOrder	= $purchaseOrderArray[$key];
 					$resourcePayment->systemID		= $systemIDArray[$key];
 					$resourcePayment->vendorCode   	= $vendorCodeArray[$key];
-
+					//End TAMU Customization
 					try {
 						$resourcePayment->save();
 					} catch (Exception $e) {

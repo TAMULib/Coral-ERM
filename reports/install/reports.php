@@ -115,6 +115,28 @@ function register_reports_provider()
                     $return->yield->title = _("Reports Module");
                     return $return;
                 }
+              ];
+
+        case "2020.02":
+            return [
+                "function" => function($shared_module_info) {
+                    $return = new stdClass();
+                    $return->yield = new stdClass();
+                    $return->success = true;
+                    $return->yield->title = _("Reports Module");
+                    return $return;
+                }
+            ];
+
+        case "2020.09":
+            return [
+                "function" => function($shared_module_info) {
+                    $return = new stdClass();
+                    $return->yield = new stdClass();
+                    $return->success = true;
+                    $return->yield->title = _("Reports Module");
+                    return $return;
+                }
             ];
 
 				default:
