@@ -13,9 +13,9 @@
 $metalib_config = array (
   'dbconfig' => 
   array (
-    'db_host_name' => 'srv-mysql-coral.library.tamu.edu',
-    'db_user_name' => 'coral',
-    'db_password' => '!FMWUC4^uc@vGzpY',
+    'db_host_name' => '',
+    'db_user_name' => '',
+    'db_password' => '',
     'db_name' => 'coral_resources_prod',
   ),
  
