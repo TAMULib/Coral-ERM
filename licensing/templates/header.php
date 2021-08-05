@@ -16,6 +16,9 @@
 **************************************************************************************************************************
 */
 
+$util = new Utility();
+$config = new Configuration();
+
 // tamu customization
 // use cas for authentication
 if($config->tamu->enableCAS == 'Y') {
@@ -25,9 +28,6 @@ if($config->tamu->enableCAS == 'Y') {
 }
 
 include_once 'user.php';
-
-$util = new Utility();
-$config = new Configuration();
 
 //get the current page to determine which menu button should be depressed
 $currentPage = $_SERVER["SCRIPT_NAME"];
