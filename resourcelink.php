@@ -72,6 +72,7 @@ require_once('on_off_campus_check.php');
 					if ($row["resourceURL"]) {
 						debugout("I have a url");
 						$resourceURL = $row["resourceURL"];
+						$resourceTitle = $row["titleText"];
 					}
 					
 					// Check for username and password
@@ -116,7 +117,9 @@ if ($row["acquisitionTypeID"] == 2) {
   $resourceURL = $resourceURL;
 } else {
 	if ($resource['resourceID'] != 2477) {
-		$resourceURL = "http://proxy.library.tamu.edu/login?url=" . $resourceURL;
+		if (strlen($resourceURL) > 0 ) {
+			$resourceURL = "http://proxy.library.tamu.edu/login?url=" . $resourceURL;
+		} 
 	} else {
 		$resourceURL = "http://proxy.library.tamu.edu/login?url=" . $resourceURL;
 	}	
@@ -124,7 +127,7 @@ if ($row["acquisitionTypeID"] == 2) {
 
   $redirect = (strlen($userText) == 0) && (strlen($userNote) == 0) ? $resourceURL : FALSE;
 
-  printHeader($redirect);
+  printHeader($redirect, $resourceTitle);
   if (is_string($redirect)) {
       print('<div class="redirect">');
       print("<div class=\"redirect-leave\">You are about to leave the Texas A&M University Libraries' website. The site may not comply with accessibility standards.</div>");
@@ -159,7 +162,7 @@ function themedDie($message) {
   exit();
 }
 
-function printHeader($redirect = FALSE) {
+function printHeader($redirect = FALSE, $resourceTitle = '') {
   $basePath = NULL;
   $shortPath = NULL;
   $longPath = NULL;
@@ -176,23 +179,33 @@ function printHeader($redirect = FALSE) {
   } ?><!DOCTYPE html>
 <html lang="en" dir="ltr" class="no-js">
   <head>
+	<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+	new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+	j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+	'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+	})(window,document,'script','dataLayer','GTM-M5GSSQR');</script>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0">
-    <?php if (is_string($redirect)) { ?>
-      <meta content="1; URL='<?php print($redirect); ?>'" http-equiv="REFRESH"/><?php
-      debugout("Nothing special move along");
-    } ?>
-
+    <?php 
+	
+		if ( (strlen($redirect) > 0) && ( is_string($redirect) ) && (DEBUG_OUT == false) ) { ?>
+			<meta content="1; URL='<?php print($redirect); ?>'" http-equiv="REFRESH"/><?php debugout("Nothing special move along"); 
+		} ?>
     <base href="<?php print($basePath); ?>/">
     <?php if (isset($canonicalPath)) { ?>
       <link rel="canonical" href="<?php print($canonicalPath); ?>">
     <?php } ?>
-
+	
+	<?php if (strlen($redirect) > 0) { ?>
+		<title><?php echo $resourceTitle; ?></title>
+	<?php } else { ?>
+		<title>No URL was passes</title>
+	<?php } ?>	
     <link rel="shortcut icon" href="<?php print($helpdeskPath); ?>/favicon.ico" type="image/x-icon">
     <link rel="stylesheet" type="text/css" href="<?php print($helpdeskPath); ?>/css/bootstrap.min.css" media="all">
     <link rel="stylesheet" type="text/css" href="<?php print($helpdeskPath); ?>/css/tamu.css" media="all">
-    <!--<link rel="stylesheet" type="text/css" href="css/survey.css">	-->
+    <!-- <link rel="stylesheet" type="text/css" href="css/survey.css">	-->
     <style type="text/css" media="all">
         #wrap {
           color: #ffffff;
@@ -256,6 +269,7 @@ function printHeader($redirect = FALSE) {
     <script type="text/javascript" src="<?php print($helpdeskPath); ?>/js/bootstrap.min.js"></script>
   </head>
   <body>
+	<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-M5GSSQR" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>  
     <header id="wrap">
       <nav class="navbar navbar-default no-print">
         <div class="container-fluid">
@@ -269,8 +283,8 @@ function printHeader($redirect = FALSE) {
           </div>
           <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <span class="navbar-brand tamu-header-brand tamu-header-display">
-              <a class="top-nav-link" href="<?php print($helpdeskPath); ?>"><img src="<?php print($helpdeskPath); ?>/images/tamu-logo-with-bar.png" alt="Texas A&amp;M University Libraries"></a>
-              <a class="top-nav-link" href="<?php print($helpdeskPath); ?>"><span class="tamu-header-brand-text hidden-xs">Texas A&amp;M University Libraries</span></a>
+              <a class="top-nav-link" href="https://library.tamu.edu/"><img src="<?php print($helpdeskPath); ?>/images/tamu-logo-with-bar.png" alt="Texas A&amp;M University Libraries"></a>
+              <a class="top-nav-link" href="https://library.tamu.edu/"><span class="tamu-header-brand-text hidden-xs">Texas A&amp;M University Libraries</span></a>
             </span>
             <ul class="nav navbar-nav navbar-right">
               <li><a class="nav-link" href="//askus.library.tamu.edu/">Help</a></a></li>
@@ -287,24 +301,24 @@ function printHeader($redirect = FALSE) {
     <section id="doContent" class="container well">
       <div class="row">
         <div class="span">
-          <div class="content"><?php
-}
-
-function printFooter() { ?></div>
+          <div class="content">
+			<?php if (strlen($redirect) == 0) {
+				echo "No URL was passed.";
+			} ?> 
+			<?php } function printFooter() { ?>
+		  </div>
         </div>
       </div>
     </section>
     <footer id="footer">
       <div class="container text-center">
         <ul class="list-inline" role="navigation">
-          <li><a href="//library.tamu.edu/giving/">Giving to the Libraries</a></li>
           <li><a href="//www.tamu.edu/">Texas A&amp;M University</a></li>
           <li><a href="//library.tamu.edu/about/employment/index.html">Employment</a></li>
-          <li><a href="//library.tamu.edu/services/forms/contact-info.html">Webmaster</a></li>
-          <li><a href="//library.tamu.edu/about/general-information/legal-notices.html">Legal</a></li>
+          <li><a href="//library.tamu.edu/about/compliance">Site Policies</a></li>
+		  <li><a href="//library.tamu.edu/services/accessibility">Accessibility</a></li>
           <li><a href="//askus.library.tamu.edu/">Comments</a></li>
           <li><a href="//library.tamu.edu/about/phone/">979-845-5741</a></li>
-          <li><a href="//sugar.library.tamu.edu/">Staff Login</a></li>
         </ul>
       </div>
     </footer>
