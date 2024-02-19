@@ -46,6 +46,11 @@ if ($config->settings->enableAlerts == 'Y'){
 		//now get unique resource IDs out
 		$resourceIDArray = array_unique($resourceIDArray);
 
+		//get unique note type ID for additional email context
+		$noteTypeClass = new NoteType();
+		$requesterNotes = [];
+		$requestorNoteTypeId = $noteTypeClass->getNoteTypeIDByName("Requester Details");
+
 		//now loop through each resource and send the email alert
 		foreach ($resourceIDArray as $resourceID){
 
@@ -60,11 +65,24 @@ if ($config->settings->enableAlerts == 'Y'){
 				$sendToArray[] = $alertEmail['emailAddress'];
 			}
 
+			//check to see if we have any note types to add into the email
+			if (!empty($requestorNoteTypeId)){
+				$resourceNotes = $resource->getNotes();
+				$requesterNotes = array_filter($resourceNotes, function($note) use ($requestorNoteTypeId) {return $note->noteTypeID == $requestorNoteTypeId;});
+			}
+
 
 			//formulate email to be sent
 			$email = new Email();
 			$email->to = implode(", ", $sendToArray);
-			$email->message = $util->createMessageFromTemplate('Alert', $resourceID, $resource->titleText, '', '', '');
+
+			//formulate notes to be sent (if any)
+			$noteText = '';
+			if (count($requesterNotes) > 0){
+				$noteText = implode('\n - ', array_column($requesterNotes, 'noteText'));
+			}
+
+			$email->message = $util->createMessageFromTemplate('Alert', $resourceID, $resource->titleText, '', '', '', $noteText);
 			$email->subject		= "CORAL Alert: " . $resource->titleText;
 
 			$email->send();
