@@ -84,7 +84,7 @@ if ($config->settings->enableAlerts == 'Y'){
 			//formulate notes to be sent (if any)
 			$noteText = '';
 			if (count($requesterNotes) > 0){
-				$noteText = implode('\n - ', array_column($requesterNotes, 'noteText'));
+				$noteText = implode('\n - ', array_map(function($note) { return $note->noteText;}, $requesterNotes));
 			}
 
 			$email->message = $util->createMessageFromTemplate('Alert', $resourceID, $resource->titleText, '', '', '', $noteText);
