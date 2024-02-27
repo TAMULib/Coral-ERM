@@ -29,7 +29,7 @@
 		updatePage($(this).attr("id"),"getSavedQueue");
 	});
 
-	$('.deleteRequest').on('click', function () {
+	$('#div_QueueContent').on('click', '.deleteRequest', function () {
 		deleteRequest($(this).attr("id"));
 	});
 
