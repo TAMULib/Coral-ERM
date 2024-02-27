@@ -1142,11 +1142,11 @@ switch ($_GET['action']) {
 					}
 
 					echo "</td>";
-					
+
 					if ($user->canEdit()){
 						echo "<td class='alt' style='text-align:center;'><a href='ajax_forms.php?action=getExpressionForm&licenseID=" . $licenseID . "&expressionID=" . $expressionIns['expressionID'] . "&height=420&width=345&modal=true' class='thickbox'><img id='Edit' src='images/edit.gif' title= '"._("Edit")."' /></a>&nbsp;&nbsp;<a href='javascript:deleteExpression(" . $expressionIns['expressionID'] . ");'><img id='Remove' class='removeIcon' src='images/cross.gif' title= '"._("Remove")."' /></a></td>";
 					}
-					
+
 					echo "</tr>";
 
 					if ($user->canEdit()){
@@ -1393,12 +1393,14 @@ switch ($_GET['action']) {
 							$resourceType = new ResourceType();
 							$siteCount = 0;
 								foreach($resourceType->getAllResourceType() as $display) {
-									if (in_array($display['resourceTypeID'], explode(",", $instance['value']))) {
-										if ($siteCount > 0) {
-											echo ", ";
+									if(isset($display['resourceTypeID'])) {
+										if (in_array($display['resourceTypeID'], explode(",", $instance['value']))) {
+											if ($siteCount > 0) {
+												echo ", ";
+											}
+											echo $display['shortName'];
+											$siteCount = $siteCount + 1;
 										}
-										echo $display['shortName'];
-										$siteCount = $siteCount + 1;
 									}
 								}
 						} else {
@@ -1496,7 +1498,9 @@ switch ($_GET['action']) {
 			$reset = '';
 
 			if (isset($_GET['page'])){
-				$selectedValue = $_SESSION['license_qualifierID'];
+				if(isset($_SESSION['license_qualifierID'])){
+					$selectedValue = $_SESSION['license_qualifierID'];
+				}
 				$reset = $_GET['reset'];
 			}
 
