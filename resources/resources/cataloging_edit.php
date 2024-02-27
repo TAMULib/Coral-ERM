@@ -2,8 +2,18 @@
 include_once '../directory.php';
 include_once '../user.php';
 
-$resourceID = $_GET['resourceID'];
-$resourceAcquisitionID = $_GET['resourceAcquisitionID'];
+if (isset($_GET['resourceID'])) {
+	$resourceID = $_GET['resourceID'];
+} else {
+	$resourceID = '';
+}
+
+if (isset($_GET['resourceAcquisitionID'])) {
+	$resourceAcquisitionID = $_GET['resourceAcquisitionID'];
+} else {
+	$resourceAcquisitionID = '';
+}
+
 $resource = new Resource(new NamedArguments(array('primaryKey' => $resourceID)));
 $resourceAcquisition = new ResourceAcquisition(new NamedArguments(array('primaryKey' => $resourceAcquisitionID)));
 
