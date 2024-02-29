@@ -141,7 +141,13 @@
 						s.renderCallback(d, currentDate, month, year);
 					}
 					r.append(d);
-					currentDate.addDays(1);
+					/* Fix found in http://2008.kelvinluck.com/assets/jquery/datePicker/v2/demo/scripts/jquery.datePicker.js
+					*  and file copied to ./plugins/jquery.datePicker.original.js
+					*/
+					// addDays(1) fails in some locales due to daylight savings. See issue 39.
+					//currentDate.addDays(1);
+					// set the time to midday to avoid any weird timezone issues??
+					currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate()+1, 12, 0, 0);
 				}
 				tbody.append(r);
 			}
