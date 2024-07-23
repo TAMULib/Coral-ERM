@@ -21,7 +21,7 @@ spl_autoload_register(function($class) {
 
 try {
     if (!isset($config)) {
-        throw new SAMLException("Coral Config is missing");
+        throw new SAMLException("Coral config is missing");
     }
 
     if (!array_key_exists('loginID', $_SESSION) || empty($_SESSION['loginID'])) {
