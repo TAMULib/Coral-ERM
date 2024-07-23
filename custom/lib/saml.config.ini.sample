@@ -1,0 +1,18 @@
+[claims]
+;Optionally override the default 'netid' claim mapping
+;username =
+
+[sp]
+;Identifier of the SP entity  (must be a URI)
+entityId =
+;Where the <AuthnResponse> message MUST be returned
+assertionConsumerService[url] =
+;Where the <Response> from the IdP will be returned
+singleLogoutService[url] =
+
+[idp]
+entityId =
+singleSignOnService[url] =
+singleLogoutService[url] =
+singleLogoutService[responseUrl] =
+x509cert =
