@@ -123,8 +123,8 @@ class SAMLUser
 
         $config = $this->coralConfig;
 
-        $configFilePath = $scriptDir . "/../" . $config->tamu->customLibPath . SELF::CONFIG_FILE;
-        $defaultSettingsFilePath = $scriptDir . "/vendor/onelogin/php-saml/settings_example.php";
+        $configFilePath = $scriptDir . "/../../" . $config->tamu->customLibPath . SELF::CONFIG_FILE;
+        $defaultSettingsFilePath = $scriptDir . "/../vendor/onelogin/php-saml/settings_example.php";
 
         if (!is_file($configFilePath)) {
             throw new \RuntimeException("SAML config file not found");

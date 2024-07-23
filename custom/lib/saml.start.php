@@ -1,11 +1,23 @@
 <?php
-namespace Custom;
 use Custom\Lib\Classes as Classes;
 use Custom\Lib\Exceptions;
 
-//require_once __DIR__.'/Classes/SAMLUser.php';
+//Have to load Coral native classes the old way
 require_once __DIR__."/../../auth/admin/classes/domain/Session.php";
+
+//autoloader for composer supplied dependencies
 $autoLoader = require_once __DIR__."/../vendor/autoload.php";
+
+//autoloader for our TAMU custom classes
+spl_autoload_register(function($class) {
+    if (str_contains($class, "Custom\\Lib\\" )) {
+        $customClassPath = str_replace("Custom\\Lib\\", "custom\\lib\\", $class);
+        $file = __DIR__."/../../".str_replace('\\', '/', $customClassPath).'.php';
+        if (file_exists($file)) {
+            require $file;
+        }
+    }
+});
 
 if (!isset($config)) {
     throw new \RuntimeException("SAML auth: Coral Config is missing");
