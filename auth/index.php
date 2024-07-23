@@ -17,10 +17,12 @@
 **************************************************************************************************************************
 */
 
+
 session_start();
 
 include_once 'directory.php';
 $util = new Utility();
+
 
 /** TAMU Customization - bypass standard Coral auth and use our custom saml implementation for authentication */
 $config = new Configuration();
