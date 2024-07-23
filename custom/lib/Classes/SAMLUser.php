@@ -1,5 +1,7 @@
 <?php
 namespace Custom\Lib\Classes;
+
+use Custom\Lib\Exceptions as CustomExceptions;
 use OneLogin\Saml2 as OneLogin;
 
 class SAMLUser
@@ -45,24 +47,24 @@ class SAMLUser
         $errors = $auth->getErrors();
 
         if (!empty($errors)) {
-            throw new \RuntimeException("SAML error: " . implode(', ', $errors));
+            throw new CustomExceptions\SAMLException(implode(', ', $errors));
         }
 
         if (!$auth->isAuthenticated()) {
-            throw new \RuntimeException("SAML error: Not authenticated");
+            throw new  CustomExceptions\SAMLException("Not authenticated");
         }
 
         $userNameField = array_key_exists('username', $this->settings['claims']) ? $this->settings['claims']['username'] : self::DEFAULT_USERNAME_MAPPING;
 
         if (!array_key_exists($userNameField, $auth->getAttributes())) {
-            throw new \RuntimeException("SAML error: {$userNameField} claim not present in SAML response");
+            throw new  CustomExceptions\SAMLException("{$userNameField} claim not present in SAML response");
         }
 
         $samlUserName = $auth->getAttributes()[$userNameField][0];
         if ($this->processUser($samlUserName)) {
             $auth->redirectTo($_POST['RelayState']);
         } else {
-            throw new \RuntimeException("SAML auth: Error processing login");
+            throw new  CustomExceptions\SAMLException("SAML auth: Error processing login");
         }
     }
 
@@ -127,11 +129,11 @@ class SAMLUser
         $defaultSettingsFilePath = $scriptDir . "/../vendor/onelogin/php-saml/settings_example.php";
 
         if (!is_file($configFilePath)) {
-            throw new \RuntimeException("SAML config file not found");
+            throw new  CustomExceptions\SAMLException("SAML config file not found");
         }
 
         if (!is_file($defaultSettingsFilePath)) {
-            throw new \RuntimeException("SAML Library config missing. Have you run composer in: {$scriptDir}/");
+            throw new  CustomExceptions\SAMLException("SAML Library config missing. Have you run composer in: {$scriptDir}/");
         }
 
         $samlLocalConfig = parse_ini_file($configFilePath, true);
@@ -141,7 +143,7 @@ class SAMLUser
         $this->settings = array_replace($settings, $samlLocalConfig);
 
         if (!$this->checkSettings()) {
-            throw new \RuntimeException("Invalid SAML settings. Please check " . $configFilePath);
+            throw new  CustomExceptions\SAMLException("Invalid SAML settings. Please check " . $configFilePath);
         }
     }
 

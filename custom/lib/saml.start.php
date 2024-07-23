@@ -1,6 +1,6 @@
 <?php
 use Custom\Lib\Classes as Classes;
-use Custom\Lib\Exceptions;
+use Custom\Lib\Exceptions\SAMLException;
 
 //Have to load Coral native classes the old way
 require_once __DIR__."/../../auth/admin/classes/domain/Session.php";
@@ -19,25 +19,30 @@ spl_autoload_register(function($class) {
     }
 });
 
-if (!isset($config)) {
-    throw new \RuntimeException("SAML auth: Coral Config is missing");
-}
-
-if (!array_key_exists('loginID', $_SESSION) || empty($_SESSION['loginID'])) {
-    if (isset($_GET['service'])) {
-        $service = $_GET['service'];
-    } else {
-        $service = $util->getCORALURL();
+try {
+    if (!isset($config)) {
+        throw new SAMLException("Coral Config is missing");
     }
-    $samlUser = new Classes\SAMLUser($config, $util, new Session());
 
-    if (!empty($_POST['SAMLResponse'])) {
-        if (is_string($_POST['SAMLResponse'])) {
-            $samlUser->processLogIn();
-            exit;
+    if (!array_key_exists('loginID', $_SESSION) || empty($_SESSION['loginID'])) {
+        if (isset($_GET['service'])) {
+            $service = $_GET['service'];
+        } else {
+            $service = $util->getCORALURL();
         }
-    } else {
-        $samlUser->initiateLogIn($service);
+        $samlUser = new Classes\SAMLUser($config, $util, new Session());
+
+        if (!empty($_POST['SAMLResponse'])) {
+            if (is_string($_POST['SAMLResponse'])) {
+                $samlUser->processLogIn();
+                exit;
+            }
+        } else {
+            $samlUser->initiateLogIn($service);
+        }
     }
+} catch (SAMLException $e) {
+    echo 'There was an error with the login process.';
+    error_log("SAML Login problem: ".$e->getMessage());
 }
 ?>
