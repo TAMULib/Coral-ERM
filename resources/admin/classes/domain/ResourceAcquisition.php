@@ -740,7 +740,7 @@ class ResourceAcquisition extends DatabaseObject {
 		//get resource specific contacts
 		$query = "SELECT C.*, GROUP_CONCAT(CR.shortName SEPARATOR '<br /> ') contactRoles
 			FROM Contact C, ContactRole CR, ContactRoleProfile CRP
-			WHERE (archiveDate != '0000-00-00' && archiveDate != '')
+			WHERE (archiveDate != '0000-00-00' OR archiveDate is null)
 			AND C.contactID = CRP.contactID
 			AND CRP.contactRoleID = CR.contactRoleID
 			AND resourceAcquisitionID = '" . $this->resourceAcquisitionID . "'
@@ -762,7 +762,7 @@ class ResourceAcquisition extends DatabaseObject {
 
 			$query = "SELECT DISTINCT OC.*, O.name organizationName, GROUP_CONCAT(DISTINCT CR.shortName SEPARATOR '<br /> ') contactRoles
 					FROM " . $dbName . ".Contact OC, " . $dbName . ".ContactRole CR, " . $dbName . ".ContactRoleProfile CRP, " . $dbName . ".Organization O, Resource R, ResourceAcquisition RA, ResourceOrganizationLink ROL
-					WHERE (OC.archiveDate != '0000-00-00' && OC.archiveDate is not null)
+					WHERE (OC.archiveDate != '0000-00-00' OR OC.archiveDate is null)
 					AND R.resourceID = ROL.resourceID
 					AND ROL.organizationID = OC.organizationID
 					AND CRP.contactID = OC.contactID
