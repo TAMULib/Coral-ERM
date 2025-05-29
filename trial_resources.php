@@ -81,8 +81,8 @@ for($x = 0 ; $x < mysqli_num_rows($resultID) ; $x++){
 	$xml_output .= "\t\t<updateDate>" . $row['updateDate'] . "</updateDate>\n";	
 	$xml_output .= "\t\t<resourceType>" . $row['ResourceType'] . "</resourceType>\n";	
 	
-	$query2 = "SELECT `ResourceNote`.`noteText` FROM `ResourceNote` WHERE `ResourceNote`.`noteTypeID` = 9 AND `ResourceNote`.`resourceID` = " . $row['resourceID'];
-	$note_text = mysqli_query($query2, $linkID);
+	$query2 = "SELECT `ResourceNote`.`noteText` FROM `ResourceNote` WHERE `ResourceNote`.`noteTypeID` = 9 AND `ResourceNote`.`entityID` = " . $row['resourceID'];
+	$note_text = mysqli_query($linkID, $query2);
 	$row2 = mysqli_fetch_assoc($note_text);
 	$notes = htmlspecialchars($row2['noteText']);
 	
