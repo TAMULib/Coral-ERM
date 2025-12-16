@@ -24,6 +24,14 @@ include_once 'directory.php';
 $util = new Utility();
 
 
+/** TAMU Customization - bypass standard Coral auth and use our custom saml implementation for authentication */
+$config = new Configuration();
+if($config->tamu->useSAML == 'Y') {
+	$util = new Utility();
+	require_once "../".$config->tamu->customLibPath.'saml.start.php';
+}
+exit;
+/** End TAMU Customization - bypass standard Coral auth and use our custom saml implementation for authentication */
 
 if (isset($_GET['service'])){
 	$service = $_GET['service'];
