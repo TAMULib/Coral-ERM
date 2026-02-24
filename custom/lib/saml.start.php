@@ -25,7 +25,7 @@ try {
     }
     //$service should always be set in the auth index file but just in case
     if (!isset($service)) {
-        $service = isset($_GET['service']) ?$_GET['service'] : $util->getCORALURL();
+        $service = isset($_GET['service']) ? $_GET['service'] : $util->getCORALURL();
     }
     $samlUser = new Classes\SAMLUser($config, $util, new Session());
 
