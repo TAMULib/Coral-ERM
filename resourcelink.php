@@ -24,8 +24,8 @@ require_once('on_off_campus_check.php');
 				$authenticated = TRUE;
 			} else {
 				debugout("I do not have a header send to Ezp.");
-						header( "Location: http://proxy.library.tamu.edu/login?url=http://" . $hostname . $_SERVER[REQUEST_URI] ) ;
-						//header( "Location: http://" . $hostname . $_SERVER[REQUEST_URI] ) ;
+						header( "Location: http://proxy.library.tamu.edu/login?url=http://" . $hostname . $_SERVER['REQUEST_URI'] ) ;
+						//header( "Location: http://" . $hostname . $_SERVER['REQUEST_URI'] ) ;
 			}
 		} else {
 			debugout("I am on campus set auth true");
